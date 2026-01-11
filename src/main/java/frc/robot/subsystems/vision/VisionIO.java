@@ -9,7 +9,7 @@ public interface VisionIO {
     boolean ty();
     boolean ta();
 
-
+    boolean hasAprilTag();
     boolean botpose();
     Pose2d getRobotPose();
 

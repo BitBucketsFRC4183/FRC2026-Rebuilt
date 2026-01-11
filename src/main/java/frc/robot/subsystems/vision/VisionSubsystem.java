@@ -4,8 +4,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.vision.VisionIO;
 
 public class VisionSubsystem extends SubsystemBase{
+    private VisionIO io;
+    public VisionSubsystem(VisionIO io){
+        this.io = io;}
 
     //double tx = LimelightHelpers.getTX(""); //offset in x direction'
     //tx>0 right
