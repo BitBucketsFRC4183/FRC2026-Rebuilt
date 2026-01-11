@@ -35,6 +35,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final AutoSubsystem
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -100,7 +101,10 @@ public class RobotContainer {
     }
 
     // Set up auto routines
+    this.AutoSubsystem = new AutoSybsystem (DriveSubsystem drive, ClimbSubsystem climber, ShooterSubystem shooter);
+    autoChooser = new AutoChooser;
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
 
     // Set up SysId routines
     autoChooser.addOption(
