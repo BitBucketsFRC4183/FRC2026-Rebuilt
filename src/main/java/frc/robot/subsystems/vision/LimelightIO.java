@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision.VisionIO.java;
 
 public interface LimelightIO implements VisionIO{
 //Start of inputs
+@AutoLog
+class LimelightIOInputs{
      SwerveModulePosition swerveModulePosition = new SwerveModulePosition[]{
              frontLeft.getPosition(),
              frontRight.getPosition(),
@@ -16,11 +18,16 @@ public interface LimelightIO implements VisionIO{
      boolean hasTarget = LimelightHelpers.getTV("");// whether or not the camera has a target location
      double aprilTagID = 0;// turn into false if we decide to use MegaTag1
      // setting up the measured values of the camera to be set in the table//
+     LimelightHelpers.setFiducial3DOffset(//forward offset,Side offset,Height offset)
+             LimelightHelpers.setCameraPose_RobotSpace("",//forward offset,Side offset,Height offset,Roll,Pitch,Yaw)
+}
 
 //Start of outputs
 @Override
 public void periodic() {
 
-          LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    public Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
           // above code needs Drive System for robot orientation.
+
      }
+     public default void updateInputs(LimelightIOInputs inputs){}
