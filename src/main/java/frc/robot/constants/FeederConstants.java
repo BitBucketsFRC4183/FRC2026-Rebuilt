@@ -1,48 +1,39 @@
 package frc.robot.constants;
 
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public final class FeederConstants {
 
-    /* CAN */
-    public static final int FEEDER_MOTOR_ID = 21;
-    public static final String CAN_BUS = "rio"; // or "canivore"
+    // CAN ID
+    public static final int FEEDER_MOTOR_ID = 15;
 
-    /* Motor Config */
-    public static final InvertedValue MOTOR_INVERT =
-            InvertedValue.CounterClockwise_Positive;
-    public static final NeutralModeValue NEUTRAL_MODE =
-            NeutralModeValue.Brake;
+    // Motor configuration
+    public static final boolean MOTOR_INVERTED = false;
+    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+    public static final int CURRENT_LIMIT = 40;
 
-    /* Gear Ratio */
-    // motor rotations per arm rotation
-    public static final double GEAR_RATIO = 100.0;
+    // Encoder / gearing
+    // NEO internal encoder: 42 counts per motor revolution
+    public static final double GEAR_RATIO = 100.0; // update to match your mechanism
 
-    /* Arm Positions (arm rotations) */
-    public static final double STOWED_POSITION = 0.0;
-    public static final double INTAKE_POSITION = 0.35;
-    public static final double SCORE_POSITION = 0.15;
+    // Unit conversions
+    public static final double POSITION_CONVERSION =
+            2.0 * Math.PI / GEAR_RATIO; // radians
+    public static final double VELOCITY_CONVERSION =
+            POSITION_CONVERSION / 60.0; // rad/sec
 
-    /* Soft Limits (arm rotations) */
-    public static final double MIN_POSITION = -0.02;
-    public static final double MAX_POSITION = 0.40;
+    // Soft limits (radians)
+    public static final double MIN_ANGLE = Math.toRadians(-10.0);
+    public static final double MAX_ANGLE = Math.toRadians(115.0);
 
-    /* PID */
-    public static final double kP = 35.0;
+    // Manual control
+    public static final double MAX_OUTPUT = 0.6;
+
+    // PID values (safe starting point)
+    public static final double kP = 3.0;
     public static final double kI = 0.0;
-    public static final double kD = 0.5;
-    public static final double kV = 0.0; // velocity feedforward
-    public static final double kS = 0.0; // static feedforward
-    public static final double kG = 0.0; // gravity feedforward (add later)
-
-    /* Motion Limits */
-    public static final double CRUISE_VELOCITY = 3.0; // arm rotations / sec
-    public static final double ACCELERATION = 6.0;    // arm rotations / sec^2
-
-    /* Safety */
-    public static final double MAX_OUTPUT = 1.0;
-    public static final double HOLD_DEADBAND = 0.01;
+    public static final double kD = 0.2;
+    public static final double kFF = 0.0;
 
     private FeederConstants() {}
 }
