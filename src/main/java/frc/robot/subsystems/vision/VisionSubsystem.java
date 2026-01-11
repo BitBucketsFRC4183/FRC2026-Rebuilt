@@ -38,6 +38,7 @@ public class VisionSubsystem extends SubsystemBase{
         limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
         LimelightHelpers.setPipelineIndex("", 0);  //setting the pipeline ID to 0 (goes from 0-10)
         LimelightHelpers.setLEDMode_PipelineControl(""); //LED set by the pipeline
+        LimelightHelpers.setCropWindow("", -0.5, 0.5, -0.5, 0.5);
     }
 
     // issue! Lots of the code relies on Drive Subsystem. Need to add code that mentions the current position of the robot
