@@ -5,9 +5,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 public interface VisionIO {
     //
     boolean hasTarget();
-    boolean tx();
-    boolean ty();
-    boolean ta();
+    double tx();
+    double ty();
+    double ta();
 
     boolean hasAprilTag();
     boolean botpose();
