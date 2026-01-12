@@ -1,4 +1,11 @@
-package package frc.robot.subsystems.vision.VisionSubsystem.java;
+package frc.robot.subsystems.vision;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.LimelightHelpers;
+import org.littletonrobotics.junction.AutoLog;
+
 
 public class VisionIOSim {
     @AutoLog

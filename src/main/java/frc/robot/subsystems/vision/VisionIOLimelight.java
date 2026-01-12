@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIOLimelight implements VisionIO {
 
-    private final String BitBucketsCamera  = "limelight";
+    public final String BitBucketsCamera  = "limelight";
 
 
 
@@ -41,17 +41,17 @@ public interface VisionIOLimelight implements VisionIO {
 //
 //     }
     @Override
-    public void updateInputs (VisionIO.VisionIOInputs inputs){
-        inputs.cameraConnected = ;
-        inputs.tx = LimelightHelpers.getTX("");
-        inputs.ty = LimelightHelpers.getTY("");
-        inputs.ta = LimelightHelpers.getTA("");
+    public default void updateInputs(VisionIOInputs inputs){
+        inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera").exists();
+        inputs.tx = LimelightHelpers.getTX("BitBucketsCamera");
+        inputs.ty = LimelightHelpers.getTY("BitBucketsCamera");
+        inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
 
-        inputs.fiducialID = LimelightHelpers.getFiducialID("");
+        inputs.fiducialID = LimelightHelpers.getFiducialID("BitBucketsCamera");
         inputs.hasAprilTag = inputs.fiducialID != -1;
 
-        inputs.hasTarget = LimelightHelpers.getTV("");
-        inputs.robotPose = LimelightHelpers.getBotPose2d("");
+        inputs.hasTarget = LimelightHelpers.getTV("BitBucketsCamera");
+        inputs.robotPose = LimelightHelpers.getBotPose2d("BitBucketsCamera");
 
 
     }
