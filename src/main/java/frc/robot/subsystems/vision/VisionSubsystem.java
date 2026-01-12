@@ -2,14 +2,23 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO;
+import org.littletonrobotics.junction.Logger;
 
 
 public class VisionSubsystem extends SubsystemBase{
     private VisionIO io;
 
     private VisionSubsystem(VisionIO io){
+        this.inputs = VisionIOInputsAutoLogged inputs;
         this.io=io;
     }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Vision", inputs);
+    }
+
 }
 
     //double tx = LimelightHelpers.getTX(""); //offset in x direction'
