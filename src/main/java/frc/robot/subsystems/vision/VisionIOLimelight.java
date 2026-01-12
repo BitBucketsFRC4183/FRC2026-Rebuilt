@@ -42,7 +42,7 @@ public interface VisionIOLimelight extends VisionIO {
 //     }
     @Override
     public default void updateInputs(VisionIOInputs inputs){
-        inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera").exists();
+        inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera", "CameraIsConnected").exists();
         inputs.tx = LimelightHelpers.getTX("BitBucketsCamera");
         inputs.ty = LimelightHelpers.getTY("BitBucketsCamera");
         inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
