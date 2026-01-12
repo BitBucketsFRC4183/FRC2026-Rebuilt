@@ -14,6 +14,6 @@ public class VisionIOInputs{
     public double fiducialID = -1;
     public boolean hasAprilTag = false;
     public Pose2d robotPose = new Pose2d();
-
+    public double aprilTagID = 0;
     public double latency = 0.0;
 }

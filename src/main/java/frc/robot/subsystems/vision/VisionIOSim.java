@@ -5,16 +5,20 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import frc.robot.LimelightHelpers;
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 
 public class VisionIOSim {
+    public VisionIO visionIO;
+    public VisionIOInputs visionIOInputs;
+
     @AutoLog
-    class VisionIOSim{
+    public class VisionIOSimInputs{
         SwerveModulePosition swerveModulePosition = new SwerveModulePosition[]{
-                frontLeft.getPosition(),
-                frontRight.getPosition(),
-                backLeft.getPosition(),
-                backRight.getPosition()}
+                //frontLeft.getPosition(),
+                //frontRight.getPosition(),
+                //backLeft.getPosition(),
+                //backRight.getPosition()}
         double tx = LimelightHelpers.getTX(""); //offset in x direction'
         //tx>0 right
         //tx<0 left
@@ -24,23 +28,22 @@ public class VisionIOSim {
         boolean hasTarget = LimelightHelpers.getTV("");// whether or not the camera has a target location
         double aprilTagID = 0;// turn into false if we decide to use MegaTag1
         // setting up the measured values of the camera to be set in the table//
-     LimelightHelpers.setFiducial3DOffset(//forward offset,Side offset,Height offset)
-             LimelightHelpers .setCameraPose_RobotSpace("",//forward offset,Side offset,Height offset,Roll,Pitch,Yaw)
+     //LimelightHelpers.setFiducial3DOffset(forward offset,Side offset,Height offset)
+            // LimelightHelpers .setCameraPose_RobotSpace("",forward offset,Side offset,Height offset,Roll,Pitch,Yaw)
 
-        private NetworkTableEntry hasTarget;
-        private NetworkTableEntry tx;
-        private NetworkTableEntry ty;
-        private NetworkTableEntry ta;
-        private NetworkTableEntry aprilTagID;
-        private NetworkTableEntry swerveModulePosition;
     }
+    public void updateInputs(VisionIOInputs inputs) {
+        visionIO.updateInputs(visionIOInputs);
 
-    @Override
-    public void periodic() {
 
-        public Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        Logger.recordOutput("VisionSim/tx", visionIOInputs.tx);
+        Logger.recordOutput("VisionSim/ty", visionIOInputs.ty);
+        Logger.recordOutput("VisionSim/ta", visionIOInputs.ta);
+        Logger.recordOutput("VisionSim/hasTarget", visionIOInputs.hasTarget);
+        Logger.recordOutput("VisionSim/aprilTagID", visionIOInputs.aprilTagID);;;
+    }
+        //99% sure the code above doesn't belong here. Probably need to move it somewhere else (like command)
+        //Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         // above code needs Drive System for robot orientation.
-        private NetworkTableEntry estimatedRobotOrientation;
-    }
-    public default void updateInputs(LimelightIOInputs inputs){}
+
 }

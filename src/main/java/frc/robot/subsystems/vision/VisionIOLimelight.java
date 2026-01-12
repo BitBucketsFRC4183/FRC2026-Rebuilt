@@ -5,7 +5,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionIO;
 import org.littletonrobotics.junction.AutoLog;
 
-public class VisionIOLimelight implements VisionIO {
+public interface VisionIOLimelight extends VisionIO {
 
     public final String BitBucketsCamera  = "limelight";
 
@@ -41,10 +41,8 @@ public class VisionIOLimelight implements VisionIO {
 //
 //     }
     @Override
-    public void updateInputs(VisionIOInputs inputs){
-        double latency_pipeline = LimelightHelpers.getLatency_Pipeline("BitBucketsCamera");
-        inputs.cameraConnected = latency_pipeline >=0.0;
-
+    public default void updateInputs(VisionIOInputs inputs){
+        inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera").exists();
         inputs.tx = LimelightHelpers.getTX("BitBucketsCamera");
         inputs.ty = LimelightHelpers.getTY("BitBucketsCamera");
         inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
