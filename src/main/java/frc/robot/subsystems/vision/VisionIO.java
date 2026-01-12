@@ -1,16 +1,22 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
-    //
-    boolean hasTarget();
-    double tx();
-    double ty();
-    double ta();
+    @AutoLog
+    public class VisionIOInputs{
+        public boolean cameraConnected = false;
+        boolean hasTarget = false;
+        public double tx = 0.0;
+        public double ty = 0.0;
+        public double ta = 0.0;
 
-    boolean hasAprilTag();
-    boolean botpose();
-    Pose2d getRobotPose();
+        boolean hasAprilTag = false;
+        boolean robotPose = new pose2D();
+    }
+
+
+    void updateInputs(VisionIOInputs inputs);
 
 }

@@ -1,6 +1,11 @@
 package frc.robot.subsystems.vision.VisionIO.java;
 
-public interface VisionIOLimelight implements VisionIO{
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.vision.VisionIO;
+import org.littletonrobotics.junction.AutoLog;
+
+public interface VisionIOLimelight implements VisionIO {
 
     private final limelight = "limelight";
     //Start of inputs
