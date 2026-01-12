@@ -6,10 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionIO;
 
-public class VisionSubsystem extends SubsystemBase{
+public class Vision extends SubsystemBase{
     private VisionIO io;
-    public VisionSubsystem(VisionIO io){
-        this.io = io;}
+    private final
 
     //double tx = LimelightHelpers.getTX(""); //offset in x direction'
     //tx>0 right
@@ -34,7 +33,7 @@ public class VisionSubsystem extends SubsystemBase{
     private double cameraAngle = 0.0;
     private double targetHeight = 0.0;
 
-    public LimelightSubsystem() {
+    public Vision() {
         limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
         LimelightHelpers.setPipelineIndex("", 0);  //setting the pipeline ID to 0 (goes from 0-10)
         LimelightHelpers.setLEDMode_PipelineControl(""); //LED set by the pipeline

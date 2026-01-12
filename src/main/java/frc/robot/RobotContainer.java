@@ -25,7 +25,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
-import frc.robot.subsystems.vision.VisionSubsyetm;
+import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -36,7 +36,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final VisionSubsystem vision;
+  private final Vision vision;
   private final Drive drive;
 
   // Controller
@@ -77,7 +77,8 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        vision = new VisionSubsystem(new VisionIOLimelight());
+        vision =
+                new Vision(new VisionIOLimelight());
         break;
 
       case SIM:
@@ -89,6 +90,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        vision =
+                new Vision(new VisionIOSim());
         break;
 
       default:
