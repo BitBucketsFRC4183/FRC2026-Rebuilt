@@ -1,58 +1,78 @@
 package frc.robot.subsystems.shooter;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkRelativeEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
+import frc.robot.constants.ShooterConstants;
+
 public class FlywheelSubsystem {
     private final SparkMax m_topFlywheel = new SparkMax(ShooterConstants.topFlywheelID, MotorType.kBrushless);
     private final SparkMax m_bottomFlywheel = new SparkMax(ShooterConstants.bottomFlywheelID, MotorType.kBrushless);
 
-    private final RelativeEncoder m_topFlywheelEncoder = m_topFlywheel.getEncoder();
-    private final RelativeEncoder m_bottomFlywheelEncoder = m_bottomFlywheel.getEncoder();
+    private final SparkRelativeEncoder m_topFlywheelEncoder = m_topFlywheel.getEncoder();
+    private final SparkRelativeEncoder m_bottomFlywheelEncoder = m_bottomFlywheel.getEncoder();
 
-    double targetTopFlywheelVelocity, targetBottomFlywheelVelocity;
+    private final SparkClosedLoopController m_topPID = m_topFlywheel.getClosedLoopController();
+    private final SparkClosedLoopController m_bottomPID = m_bottomFlywheel.getClosedLoopController();
+
+    double topTargetFlywheelVelocity, bottomTargetFlywheelVelocity;
     //In meters
-    double hubHeight, shooterHeight;
+    double hubHeight, shooterHeight, topFlywheelRadius, bottomFlywheelRadius;
 
     public FlywheelSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(40);
-        config.idleMode(IdleMode.kCoast);
-        m_topFlywheel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        m_bottomFlywheel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        config.smartCurrentLimit(40)
+                .idleMode(IdleMode.kCoast);
 
-        //Sets up constants for the PID used to control the Flywheels
-        m_pidController.setP(ShooterConstants.kP);
-        m_pidController.setI(ShooterConstants.kI);
-        m_pidController.setD(ShooterConstants.kD);
-        m_pidController.setFF(ShooterConstants.kFF);
-        m_pidController.setOutputRange(ShooterConstants.kMinOutput, ShooterConstants.kMaxOutput);
+        config.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .p(ShooterConstants.kP)
+                .i(ShooterConstants.kI)
+                .d(ShooterConstants.kD)
+                .velocityFF(ShooterConstants.kFF)
+                .outputRange(ShooterConstants.kMinOutput, ShooterConstants.kMaxOutput);
 
+        //Convert all American Units to Metric
         hubHeight = ShooterConstants.hubHeight / 39.37;
         shooterHeight = ShooterConstants.shooterHeight / 39.37;
-        //startFlywheels();
+        topFlywheelRadius = ShooterConstants.topFlywheelRadius / 39.37;
+        bottomFlywheelRadius = ShooterConstants.bottomFlywheelRadius / 39.37;
+
+        m_topFlywheel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_bottomFlywheel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     //BACKUP PLAN
     public void startFlywheels() {
-        m_topFlywheel.setVoltage(0.8);
-        m_bottomFlywheel.setVoltage(0.8);
+
     }
 
-    public void setFlywheelVelocity(double distance) {
-        double time = 1;
-        double xVelocity = distance / time;
-        double yVelocity = ShooterConstants.gravity * time / 2;
+    //The Distance inputted should be the distance of the bot from the "center" of the hub
+    public void setTargetFlywheelVelocity(double distance) {
+        topTargetFlywheelVelocity = 0;
+        for(double distanceAchieved = 0; distanceAchieved <= distance + ShooterConstants.error && distanceAchieved >= distance - ShooterConstants.error; topTargetFlywheelVelocity++) {
+            double yVelocity = topTargetFlywheelVelocity * topFlywheelRadius;
+            double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
+            double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / 2 / h;
+            distanceAchieved = airTime * topTargetFlywheelVelocity * topFlywheelRadius * Math.tan(ShooterConstants.shooterAngle);
+            if(topTargetFlywheelVelocity > ShooterConstants.maxRPM) {break;}
+        }
+        m_topPID.setReference(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
 
-        //In radians/sec
-        //Arbitrary Value (change if not fast enough)
-        targetBottomFlywheelVelocity = 30;
-
-        targetTopFlywheelVelocity = (2 *  xVelocity - targetBottomFlywheelVelocity * ShooterConstants.flywheelRadius) / ShooterConstants.flywheelRadius;
-        targetBottomFlywheelVelocity = (2 * yVelocity + targetTopFlywheelVelocity * ShooterConstants.flywheelRadius) / ShooterConstants.flywheelRadius;
-
-        m_topFlywheel.setSetpoint(targetTopFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-        m_bottomFlywheel.setSetpoint(targetBottomFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
+        //Makes both Flywheels have same tangential velocity
+        bottomTargetFlywheelVelocity = topFlywheelRadius * bottomFlywheelRadius / topFlywheelRadius;
+        m_bottomPID.setReference(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
     }
 
-    public boolean velocityReached() {
-        return false;
+    public boolean targetReached() {
+        double tolerance = 50.0;
+        return Math.abs(m_topEncoder.getVelocity() - topTargetRPM) < tolerance && Math.abs(m_bottomEncoder.getVelocity() - bottomTargetRPM) < tolerance;
     }
 }
