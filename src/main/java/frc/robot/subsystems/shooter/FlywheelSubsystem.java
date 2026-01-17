@@ -57,6 +57,7 @@ public class FlywheelSubsystem {
         hubDistance = ShooterConstants.distanceFromCenter / 39.37;
 
         //Configures both Flywheels, inverts the bottom Flywheel
+        //Deprecated again lol
         m_topFlywheel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         config.inverted(true);
@@ -64,6 +65,7 @@ public class FlywheelSubsystem {
     }
 
     public void setTargetFlywheelVelocity(double distance) {
+        //Method for setting flywheel speeds assuming constant hood angle
         //Distance from April-Tag + Distance away from center of the Hub
         distance += hubDistance;
         topTargetFlywheelVelocity = 0;
@@ -93,7 +95,7 @@ public class FlywheelSubsystem {
     }
 
     //When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
-    //Operator is gonna have one button, and they don't even have to hold it down :sob:
+    //Operator is going to have one button, and they don't even have to hold it down :sob:
     public boolean targetReached() {
         double tolerance = 50.0;
         return Math.abs(m_topEncoder.getVelocity() - topTargetFlywheelVelocity / 2 / Math.PI * 60) < tolerance && Math.abs(m_bottomEncoder.getVelocity() - bottomTargetFlywheelVelocity / 2 / Math.PI * 60) < tolerance;

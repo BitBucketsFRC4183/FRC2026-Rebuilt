@@ -20,7 +20,7 @@ public final class ShooterConstants extends SubsystemBase {
     public final static double gravity = 9.81;
     public final static double maxRPM = 5000;
 
-    //Might change with the adjustable hood
+    //Assuming constant hood angle
     public final static double shooterAngle = 45;
 
     //Allowed Error for (actual distance away vs distance from launching)
