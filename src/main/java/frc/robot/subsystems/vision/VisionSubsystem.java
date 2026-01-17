@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj.DataLogManager;
 
 public class VisionSubsystem extends SubsystemBase {
   private final VisionIO visionio;

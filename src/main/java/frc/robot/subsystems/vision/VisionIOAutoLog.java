@@ -1,4 +1,3 @@
 package frc.robot.subsystems.vision;
 
-public class VisionIOAutoLog {
-}
+public class VisionIOAutoLog {}
