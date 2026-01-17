@@ -30,9 +30,12 @@ public final class ShooterConstants extends SubsystemBase {
     public final static double kP = 0.00001;
     public final static double kI = 0;
     public final static double kD = 0;
-
-    //FF
-    public final static double kFF = 0.00075;
     public final static double kMaxOutput = 1.0;
     public final static double kMinOutput = -1.0;
+
+    //FF
+    public final static double kS = 0;
+    public final static double kV = 0;
+    public final static double kA = 0;
+    public final static double cosRatio = 0;
 }

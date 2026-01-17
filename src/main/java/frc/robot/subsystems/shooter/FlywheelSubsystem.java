@@ -1,11 +1,15 @@
 package frc.robot.subsystems.shooter;
 
+import com.revrobotics.REVLibError;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
+
+//Deprecated
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkRelativeEncoder;
@@ -17,8 +21,8 @@ public class FlywheelSubsystem {
     private final SparkMax m_topFlywheel = new SparkMax(ShooterConstants.topFlywheelID, MotorType.kBrushless);
     private final SparkMax m_bottomFlywheel = new SparkMax(ShooterConstants.bottomFlywheelID, MotorType.kBrushless);
 
-    private final SparkRelativeEncoder m_topEncoder = m_topFlywheel.getEncoder();
-    private final SparkRelativeEncoder m_bottomEncoder = m_bottomFlywheel.getEncoder();
+    private final SparkRelativeEncoder m_topEncoder = (SparkRelativeEncoder) m_topFlywheel.getEncoder();
+    private final SparkRelativeEncoder m_bottomEncoder = (SparkRelativeEncoder) m_bottomFlywheel.getEncoder();
 
     private final SparkClosedLoopController m_topPID = m_topFlywheel.getClosedLoopController();
     private final SparkClosedLoopController m_bottomPID = m_bottomFlywheel.getClosedLoopController();
@@ -38,8 +42,12 @@ public class FlywheelSubsystem {
                 .p(ShooterConstants.kP)
                 .i(ShooterConstants.kI)
                 .d(ShooterConstants.kD)
-                .velocityFF(ShooterConstants.kFF)
                 .outputRange(ShooterConstants.kMinOutput, ShooterConstants.kMaxOutput);
+        config.closedLoop.feedForward
+                .kS(ShooterConstants.kS)
+                .kV(ShooterConstants.kV)
+                .kA(ShooterConstants.kA)
+                .kCosRatio(ShooterConstants.cosRatio);
 
         //Convert all American Units to Metric
         hubHeight = ShooterConstants.hubHeight / 39.37;
@@ -71,10 +79,10 @@ public class FlywheelSubsystem {
             if(topTargetFlywheelVelocity > ShooterConstants.maxRPM / 2 / Math.PI * 60) {break;}
         }
 
-        m_topPID.setReference(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
+        m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
         //Makes both Flywheels have same tangential velocity
         bottomTargetFlywheelVelocity = topTargetFlywheelVelocity * bottomFlywheelRadius / topFlywheelRadius;
-        m_bottomPID.setReference(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
+        m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
         //TODO: implement adjustable hood
     }
 
@@ -88,6 +96,6 @@ public class FlywheelSubsystem {
     //Operator is gonna have one button, and they don't even have to hold it down :sob:
     public boolean targetReached() {
         double tolerance = 50.0;
-        return Math.abs(m_topEncoder.getVelocity() - topTargetRPM) < tolerance && Math.abs(m_bottomEncoder.getVelocity() - bottomTargetRPM) < tolerance;
+        return Math.abs(m_topEncoder.getVelocity() - topTargetFlywheelVelocity / 2 / Math.PI * 60) < tolerance && Math.abs(m_bottomEncoder.getVelocity() - bottomTargetFlywheelVelocity / 2 / Math.PI * 60) < tolerance;
     }
 }
