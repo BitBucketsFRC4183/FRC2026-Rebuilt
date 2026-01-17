@@ -31,6 +31,8 @@ public class VisionIOSim implements VisionIO {
   // offset,Roll,Pitch,Yaw)
 
   public void updateInputs(VisionIOInputs inputs) {
+
+    // Connection need rewrite, bad!
     inputs.cameraConnected =
         LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera", "CameraIsConnected").exists();
     inputs.tx = LimelightHelpers.getTX("BitBucketsCamera");
@@ -38,7 +40,6 @@ public class VisionIOSim implements VisionIO {
     inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
 
     inputs.fiducialID = LimelightHelpers.getFiducialID("BitBucketsCamera");
-    inputs.hasAprilTag = inputs.fiducialID != -1;
 
     inputs.hasTarget = LimelightHelpers.getTV("BitBucketsCamera");
     inputs.robotPose = LimelightHelpers.getBotPose2d("BitBucketsCamera");

@@ -2,22 +2,32 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 public class VisionSubsystem extends SubsystemBase {
-  private final VisionIO io;
+  private final VisionIO visionio;
   private final VisionIOInputs inputs = new VisionIOInputs();
 
   public VisionSubsystem(VisionIO io) {
-    this.io = io;
+    this.visionio = io;
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    //        Logger.processInputs("Vision", inputs);
+    visionio.updateInputs(inputs);
+
     Logger.recordOutput("Camera Connected", inputs.cameraConnected);
     Logger.recordOutput("There is Target!", inputs.hasTarget);
-    Logger.recordOutput("jokover", inputs.hasAprilTag);
+    Logger.recordOutput("There is AprilTag", inputs.fiducialID);
+
+    Logger.recordOutput("Horizon Offset", inputs.tx);
+    Logger.recordOutput("Vertical Offset", inputs.ty);
+    Logger.recordOutput("Area of Taget", inputs.ta); // how big AprilTag is in the camera frame
+    // basically, 3%-> far;
+    // 80%-> takes big portion of the frame, AprilTag is near
+
+    Logger.recordOutput("Latency", inputs.latency);
+    //    Logger.recordOutput("
   }
 }
 
