@@ -4,10 +4,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
+  private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
   private final VisionIOInputs inputs = new VisionIOInputs();
 
-  public VisionSubsystem(VisionIO io) {
+  public VisionSubsystem(VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io) {
+    this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
     this.visionio = io;
   }
 
@@ -27,6 +29,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Latency", inputs.latency);
     //    Logger.recordOutput("
+    Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
   }
 }
 
