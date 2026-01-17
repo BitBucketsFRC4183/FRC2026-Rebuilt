@@ -68,24 +68,34 @@ public class FlywheelSubsystem {
         //Method for setting flywheel speeds assuming constant hood angle
         //Distance from April-Tag + Distance away from center of the Hub
         distance += hubDistance;
-        topTargetFlywheelVelocity = 0;
+        double radius;
+        if(topFlywheelRadius > bottomTargetFlywheelVelocity) {radius = bottomFlywheelRadius;}
+        else {radius = topFlywheelRadius;}
+        double targetFlywheelVelocity = 0;
         //Computationally heavy, TODO: Use a different method to find RPM
-        for(double distanceAchieved = 0; distanceAchieved <= distance + ShooterConstants.error && distanceAchieved >= distance - ShooterConstants.error; topTargetFlywheelVelocity+= 2) {
+        for(double distanceAchieved = 0; distanceAchieved >= distance; targetFlywheelVelocity += 2) {
             //Calculating tangential velocity
-            double yVelocity = topTargetFlywheelVelocity * topFlywheelRadius * Math.tan(ShooterConstants.shooterAngle);
+            double yVelocity = targetFlywheelVelocity * radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
             //Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is negligible lol
             double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
             double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / 2 / h;
-            distanceAchieved = airTime * topTargetFlywheelVelocity * topFlywheelRadius * Math.tan(ShooterConstants.shooterAngle);
+            distanceAchieved = airTime * targetFlywheelVelocity * radius * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
             //If it reaches this statement, the bot is too far from the hub to make it in
-            if(topTargetFlywheelVelocity > ShooterConstants.maxRPM / 2 / Math.PI * 60) {break;}
+            if(targetFlywheelVelocity > ShooterConstants.maxRPM * 2 * Math.PI / 60) {break;}
         }
 
-        m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-        //Makes both Flywheels have same tangential velocity
-        bottomTargetFlywheelVelocity = topTargetFlywheelVelocity * bottomFlywheelRadius / topFlywheelRadius;
-        m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
-        //TODO: implement adjustable hood
+        if(topFlywheelRadius > bottomTargetFlywheelVelocity) {
+            bottomTargetFlywheelVelocity = targetFlywheelVelocity;
+            m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
+            topTargetFlywheelVelocity = bottomTargetFlywheelVelocity * bottomFlywheelRadius / topFlywheelRadius;
+            m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
+        }
+        else {
+            topFlywheelRadius = targetFlywheelVelocity;
+            m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
+            bottomTargetFlywheelVelocity = topTargetFlywheelVelocity * topFlywheelRadius / bottomFlywheelRadius;
+            m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
+        }
     }
 
     //Emergency Stop?
