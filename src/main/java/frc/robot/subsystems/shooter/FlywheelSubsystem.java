@@ -69,6 +69,7 @@ public class FlywheelSubsystem {
         //Distance from April-Tag + Distance away from center of the Hub
         distance += hubDistance;
         double radius;
+        //Uses the radius of the smallest fly wheel (so that we do not go over the RPM limit)
         if(topFlywheelRadius > bottomTargetFlywheelVelocity) {radius = bottomFlywheelRadius;}
         else {radius = topFlywheelRadius;}
         double targetFlywheelVelocity = 0;
@@ -78,9 +79,9 @@ public class FlywheelSubsystem {
             double yVelocity = targetFlywheelVelocity * radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
             //Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is negligible lol
             double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-            double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / 2 / h;
+            double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / ShooterConstants.gravity;
             distanceAchieved = airTime * targetFlywheelVelocity * radius * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
-            //If it reaches this statement, the bot is too far from the hub to make it in
+            //If it reaches this statement, the bot is too far from the hub to make it in or the shooterAngle is not appropriate
             if(targetFlywheelVelocity > ShooterConstants.maxRPM * 2 * Math.PI / 60) {break;}
         }
 
