@@ -68,7 +68,7 @@ public class FlywheelSubsystem {
             double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / 2 / h;
             distanceAchieved = airTime * topTargetFlywheelVelocity * topFlywheelRadius * Math.tan(ShooterConstants.shooterAngle);
             //If it reaches this statement, the bot is too far from the hub to make it in
-            if(topTargetFlywheelVelocity > ShooterConstants.maxRPM) {break;}
+            if(topTargetFlywheelVelocity > ShooterConstants.maxRPM / 2 / Math.PI * 60) {break;}
         }
 
         m_topPID.setReference(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
