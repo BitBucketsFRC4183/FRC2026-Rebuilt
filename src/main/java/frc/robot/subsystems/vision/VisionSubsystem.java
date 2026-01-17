@@ -17,18 +17,11 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     visionio.updateInputs(inputs);
 
-    Logger.recordOutput("Camera Connected", inputs.cameraConnected);
-    Logger.recordOutput("There is Target!", inputs.hasTarget);
-    Logger.recordOutput("There is AprilTag", inputs.fiducialID);
-
-    Logger.recordOutput("Horizon Offset", inputs.tx);
-    Logger.recordOutput("Vertical Offset", inputs.ty);
-    Logger.recordOutput("Area of Taget", inputs.ta); // how big AprilTag is in the camera frame
+    //    Logger.recordOutput("Area of Taget", inputs.ta); // how big AprilTag is in the camera
+    // frame
     // basically, 3%-> far;
     // 80%-> takes big portion of the frame, AprilTag is near
 
-    Logger.recordOutput("Latency", inputs.latency);
-    //    Logger.recordOutput("
     Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
   }
 }
