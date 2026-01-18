@@ -13,8 +13,7 @@ public final class ForearmConstants {
   public static final double GEAR_RATIO = 100.0;
   public static final double DEGREES_PER_ROTATION = 360.0;
 
-  public static final double POSITION_CONVERSION_FACTOR =
-          DEGREES_PER_ROTATION / GEAR_RATIO;
+  public static final double POSITION_CONVERSION_FACTOR = DEGREES_PER_ROTATION / GEAR_RATIO;
 
   public static final double kP = 0.12;
   public static final double kI = 0.0;
