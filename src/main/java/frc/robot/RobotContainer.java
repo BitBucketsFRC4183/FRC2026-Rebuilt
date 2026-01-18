@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
@@ -44,7 +42,6 @@ public class RobotContainer {
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
-
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -172,17 +169,18 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     controller
-            .leftBumper()
-            .onTrue(
-                    Commands.runOnce(() -> {
-                      if (forearmExtended) {
-                        forearm.runManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
-                      } else {
-                        forearm.runManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
-                      }
-                      forearmExtended = !forearmExtended;
-                    }, forearm)
-            );
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (forearmExtended) {
+                    forearm.runManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                  } else {
+                    forearm.runManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                  }
+                  forearmExtended = !forearmExtended;
+                },
+                forearm));
   }
 
   /**
