@@ -20,7 +20,7 @@ public class ForearmIOSparkMax implements ForearmIO {
 
   public ForearmIOSparkMax() {
 
-    /* ===================== Forearm Motor ===================== */
+    //Forearm
 
     forearmMotor =
             new SparkMax(ForearmConstants.FOREARM_MOTOR_CAN_ID, MotorType.kBrushless);
@@ -51,7 +51,7 @@ public class ForearmIOSparkMax implements ForearmIO {
     forearmEncoder = (SparkRelativeEncoder) forearmMotor.getEncoder();
     forearmClosedLoop = forearmMotor.getClosedLoopController();
 
-    /* ===================== Intake Motor ===================== */
+    //Intake
 
     intakeMotor =
             new SparkMax(ForearmConstants.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
@@ -75,7 +75,7 @@ public class ForearmIOSparkMax implements ForearmIO {
     inputs.intakeAppliedOutput = intakeMotor.getAppliedOutput();
   }
 
-  /* ===================== Forearm ===================== */
+  //Forearm
 
   @Override
   public void setForearmPercent(double percent) {
@@ -92,7 +92,7 @@ public class ForearmIOSparkMax implements ForearmIO {
     forearmMotor.stopMotor();
   }
 
-  /* ===================== Intake ===================== */
+  //Intake
 
   @Override
   public void setIntakePercent(double percent) {

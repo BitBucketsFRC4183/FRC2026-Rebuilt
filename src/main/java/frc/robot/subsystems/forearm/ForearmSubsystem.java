@@ -29,7 +29,7 @@ public class ForearmSubsystem extends SubsystemBase {
     }
   }
 
-  /* ===================== Forearm Control ===================== */
+  //ForearmConst
 
   /** Closed-loop position control */
   public void setAngle(double degrees) {
@@ -55,7 +55,7 @@ public class ForearmSubsystem extends SubsystemBase {
     return inputs.forearmPositionDeg;
   }
 
-  /* ===================== Intake Control ===================== */
+  //Intake
 
   /** Run intake wheels */
   public void runIntake(double percent) {
