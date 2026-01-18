@@ -21,8 +21,8 @@ public final class ForearmConstants {
     public static final double kD = 0.001;
     public static final double kFF = 0.0;
 
-    public static final double MAX_OUTPUT = 0.8;
-    public static final double MIN_OUTPUT = -0.8;
+    public static final double MAX_OUTPUT = 0.1;
+    public static final double MIN_OUTPUT = -0.1;
     /* Manual control toggle */
     public static final double MANUAL_EXTEND_PERCENT = 0.4;
     public static final double MANUAL_RETRACT_PERCENT = -0.4;

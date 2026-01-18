@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.constants.ForearmConstants;
@@ -22,7 +22,7 @@ public class ForearmIOSparkMax implements ForearmIO {
                 MotorType.kBrushless
         );
 
-        // Motor
+        // Motor configuration
         SparkMaxConfig config = new SparkMaxConfig();
 
         config
@@ -31,7 +31,9 @@ public class ForearmIOSparkMax implements ForearmIO {
 
         // Position conversion
         config.encoder
-                .positionConversionFactor(ForearmConstants.POSITION_CONVERSION_FACTOR);
+                .positionConversionFactor(
+                        ForearmConstants.POSITION_CONVERSION_FACTOR
+                );
 
         // PID
         config.closedLoop
@@ -44,13 +46,9 @@ public class ForearmIOSparkMax implements ForearmIO {
                         ForearmConstants.MIN_OUTPUT,
                         ForearmConstants.MAX_OUTPUT
                 );
-
-        // Apply the config
-        SparkFlexConfig config = new SparkFlexConfig();
         motor.configure(config);
-
-        //Encoder
-        encoder = (SparkRelativeEncoder) motor.getEncoder();
+        // Encoder & closed-loop controller
+        encoder = motor.getEncoder();
         closedLoop = motor.getClosedLoopController();
     }
 
@@ -67,10 +65,9 @@ public class ForearmIOSparkMax implements ForearmIO {
 
     @Override
     public void setPosition(double degrees) {
-        // Set the closed-loop target
         closedLoop.setSetpoint(
                 degrees,
-                com.revrobotics.spark.SparkBase.ControlType.kPosition
+                SparkBase.ControlType.kPosition
         );
     }
 
