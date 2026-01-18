@@ -4,6 +4,7 @@ import frc.robot.LimelightHelpers;
 
 public class VisionIOSim implements VisionIO {
   public final String BitBucketsCamera = "limelight";
+
   //  public VisionIO visionIO;
   //  public VisionIOInputs visionIOInputs;
 
@@ -50,6 +51,33 @@ public class VisionIOSim implements VisionIO {
     //    Logger.recordOutput("VisionSim/ta", visionIOInputs.ta);
     //    Logger.recordOutput("VisionSim/hasTarget", visionIOInputs.hasTarget);
     //    Logger.recordOutput("VisionSim/aprilTagID", visionIOInputs.aprilTagID);
+    if (!inputs.hasTarget) {
+      inputs.hasMegaTag2 = false;
+      return;
+    }
+    // in here, visionPose is calculated from
+    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("BitBucketsCamera");
+    if (megaTag2Results.tagCount >= 2) {
+      inputs.hasMegaTag2 = true;
+      inputs.megaTagPose = megaTag2Results.pose;
+      inputs.tagCount = megaTag2Results.tagCount;
+      inputs.timestamp = megaTag2Results.timestampSeconds;
+      inputs.latency = megaTag2Results.latency;
+      return;
+    }
+
+    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue("BitBucketsCamera");
+    if (megaTag1Results.tagCount >= 1) {
+      inputs.hasMegaTag2 = false;
+      inputs.megaTagPose = megaTag1Results.pose;
+      inputs.tagCount = megaTag1Results.tagCount;
+      inputs.timestamp = megaTag1Results.timestampSeconds;
+      inputs.latency = megaTag1Results.latency;
+      return;
+    }
+    inputs.hasMegaTag2 = false;
+    return;
+  }
   }
   // 99% sure the code above doesn't belong here. Probably need to move it somewhere else (like
   // command)

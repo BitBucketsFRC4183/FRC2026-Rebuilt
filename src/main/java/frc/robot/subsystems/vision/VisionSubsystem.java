@@ -1,16 +1,21 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
   private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
   private final VisionIOInputs inputs = new VisionIOInputs();
+  private final Drive drive;
 
-  public VisionSubsystem(VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io) {
+  public VisionSubsystem(
+      VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io, Drive drive) {
     this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
     this.visionio = io;
+    this.drive = drive;
   }
 
   @Override
@@ -23,6 +28,9 @@ public class VisionSubsystem extends SubsystemBase {
     // 80%-> takes big portion of the frame, AprilTag is near
 
     Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
+    drive.addVisionMeasurement(inputs.megaTagPose, inputs.timestamp);
+
+    Pose2d currentPose = drive.getPose();
   }
 }
 

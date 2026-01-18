@@ -79,7 +79,8 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        vision = new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOLimelight());
+        vision =
+            new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOLimelight(), drive);
         break;
 
       case SIM:
@@ -91,7 +92,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        vision = new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim());
+        vision = new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), drive);
         break;
 
       default:

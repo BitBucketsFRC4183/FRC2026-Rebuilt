@@ -47,9 +47,36 @@ public class VisionIOLimelight implements VisionIO {
     inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
 
     inputs.fiducialID = LimelightHelpers.getFiducialID("BitBucketsCamera");
-    inputs.hasAprilTag = inputs.fiducialID != -1;
 
     inputs.hasTarget = LimelightHelpers.getTV("BitBucketsCamera");
     inputs.robotPose = LimelightHelpers.getBotPose2d("BitBucketsCamera");
+
+    // if there is no target, then don't continue other inputs
+    if (!inputs.hasTarget) {
+      inputs.hasMegaTag2 = false;
+      return;
+    }
+    // in here, visionPose is calculated from
+    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("BitBucketsCamera");
+    if (megaTag2Results.tagCount >= 2) {
+      inputs.hasMegaTag2 = true;
+      inputs.megaTagPose = megaTag2Results.pose;
+      inputs.tagCount = megaTag2Results.tagCount;
+      inputs.timestamp = megaTag2Results.timestampSeconds;
+      inputs.latency = megaTag2Results.latency;
+      return;
+    }
+
+    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue("BitBucketsCamera");
+    if (megaTag1Results.tagCount >= 1) {
+      inputs.hasMegaTag2 = false;
+      inputs.megaTagPose = megaTag1Results.pose;
+      inputs.tagCount = megaTag1Results.tagCount;
+      inputs.timestamp = megaTag1Results.timestampSeconds;
+      inputs.latency = megaTag1Results.latency;
+      return;
+    }
+    inputs.hasMegaTag2 = false;
+    return;
   }
 }
