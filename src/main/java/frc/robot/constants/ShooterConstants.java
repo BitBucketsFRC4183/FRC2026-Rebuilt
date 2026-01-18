@@ -29,4 +29,11 @@ public final class ShooterConstants extends SubsystemBase {
     public final static double kFF = 0.00015;
     public final static double kMaxOutput = 1.0;
     public final static double kMinOutput = -1.0;
+
+    //hood constants
+    public final static double minHoodAngle = 10.0;
+    public final static double maxHoodAngle = 80.0;
+    //change accuracy later
+
+
 }

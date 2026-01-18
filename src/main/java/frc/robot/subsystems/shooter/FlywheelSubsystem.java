@@ -55,21 +55,47 @@ public class FlywheelSubsystem {
     }
 
     //The Distance inputted should be the distance of the bot from the "center" of the hub
-    public void setTargetFlywheelVelocity(double distance) {
-        topTargetFlywheelVelocity = 0;
-        for(double distanceAchieved = 0; distanceAchieved <= distance + ShooterConstants.error && distanceAchieved >= distance - ShooterConstants.error; topTargetFlywheelVelocity++) {
-            double yVelocity = topTargetFlywheelVelocity * topFlywheelRadius;
-            double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-            double airTime = -yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)) / 2 / h;
-            distanceAchieved = airTime * topTargetFlywheelVelocity * topFlywheelRadius * Math.tan(ShooterConstants.shooterAngle);
-            if(topTargetFlywheelVelocity > ShooterConstants.maxRPM) {break;}
-        }
-        m_topPID.setReference(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
 
-        //Makes both Flywheels have same tangential velocity
-        bottomTargetFlywheelVelocity = topFlywheelRadius * bottomFlywheelRadius / topFlywheelRadius;
-        m_bottomPID.setReference(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
+public void setTargetHoodAngle(double distance) {
+    double targetFlywheelRPM = 3000;
+    //ill change later i j chose a value for now
+    double launchVelocity = (targetFlywheelRPM * 2 * Math.PI / 60) * topFlywheelRadius;
+    double verticalDistance = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
+    //initialize velocity squared - physics variables
+    double v0squared = Math.pow(v0, 2);
+    double v0fourth = Math.pow(v0,4);
+
+    double targetHoodAngle = ShooterConstants.minHoodAngle;
+    //change accuracy for min and max hood angle later
+    for ( double angle = ShooterConstants.minHoodAngle; angle <= ShooterConstants.maxHoodAngle; angle += 0.01){
+        double launchVelX = launchVelocity * Math.cos(angle);
+        double launchVelY = launchVelocity * Math.sin(angle);
+
+        double discriminant = Math.pow(launchVelY, 2) + 2 * ShooterConstants.gravity * verticalDistance;
+//discriminant = launch energy - energy needed for dist + height - theory
+        if (discriminant >=0){
+            double airtime = (launchVelY + Math.sqrt(discriminant))/ShooterConstants.gravity;
+
+            double distanceAchieved = launchVelX * airtime;
+
+            if(Math.abs(distnaceAchieved - distance) <= ShooterConstants.error){
+                targetHoodAngle = angle;
+            }
+        }
+setFlywheelSpeed(targetFlywheelRPM);
     }
+//insert code for setting hood angle stuff
+private void setHoodAngle (double angle){
+        angle = Math.max((ShooterConstants.minHoodAngle, Math.min(ShooterConstants.maxHoodAngle, angle)));
+//finish it after figuring out how to
+    }
+private void setFlywheelSpeed (double rpm){
+        double controllerUnits = rpm /2/Math.PI * 60
+                //check the math again
+        m_topPID.setReference(controllerUnits, ControlType.kVelocity);
+        m_bottomPID.setReference(controllerUnits, ControlType.kVelocity);
+    }
+}
 
     public boolean targetReached() {
         double tolerance = 50.0;
