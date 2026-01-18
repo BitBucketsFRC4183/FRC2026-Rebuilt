@@ -6,10 +6,13 @@ public interface ForearmIO {
 
   /* Forearm */
   void setForearmPercent(double percent);
+
   void setForearmPosition(double degrees);
+
   void stopForearm();
 
   /* Intake */
   void setIntakePercent(double percent);
+
   void stopIntake();
 }

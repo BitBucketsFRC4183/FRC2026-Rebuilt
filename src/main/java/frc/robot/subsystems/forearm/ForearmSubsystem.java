@@ -19,24 +19,22 @@ public class ForearmSubsystem extends SubsystemBase {
 
     // Soft limits for forearm rotation
     if (inputs.forearmPositionDeg <= ForearmConstants.MIN_ANGLE_DEG
-            && targetAngleDeg < inputs.forearmPositionDeg) {
+        && targetAngleDeg < inputs.forearmPositionDeg) {
       io.stopForearm();
     }
 
     if (inputs.forearmPositionDeg >= ForearmConstants.MAX_ANGLE_DEG
-            && targetAngleDeg > inputs.forearmPositionDeg) {
+        && targetAngleDeg > inputs.forearmPositionDeg) {
       io.stopForearm();
     }
   }
 
-  //ForearmConst
+  // ForearmConst
 
   /** Closed-loop position control */
   public void setAngle(double degrees) {
     targetAngleDeg =
-            Math.max(
-                    ForearmConstants.MIN_ANGLE_DEG,
-                    Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
+        Math.max(ForearmConstants.MIN_ANGLE_DEG, Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
     io.setForearmPosition(targetAngleDeg);
   }
 
@@ -55,7 +53,7 @@ public class ForearmSubsystem extends SubsystemBase {
     return inputs.forearmPositionDeg;
   }
 
-  //Intake
+  // Intake
 
   /** Run intake wheels */
   public void runIntake(double percent) {

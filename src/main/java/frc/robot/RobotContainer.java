@@ -170,23 +170,24 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     controller
-            .leftBumper()
-            .onTrue(
-                    Commands.runOnce(
-                            () -> {
-                              if (forearmExtended) {
-                                forearm.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
-                              } else {
-                                forearm.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
-                              }
-                              forearmExtended = !forearmExtended;
-                            },
-                            forearm));
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (forearmExtended) {
+                    forearm.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                  } else {
+                    forearm.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                  }
+                  forearmExtended = !forearmExtended;
+                },
+                forearm));
 
     // Left trigger: run intake while held
     new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-            .whileTrue(Commands.run(() -> forearm.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearm))
-            .onFalse(Commands.runOnce(forearm::stopIntake, forearm));
+        .whileTrue(
+            Commands.run(() -> forearm.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearm))
+        .onFalse(Commands.runOnce(forearm::stopIntake, forearm));
   }
 
   /**
