@@ -30,7 +30,7 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
     drive.addVisionMeasurement(inputs.megaTagPose, inputs.timestamp);
 
-    Pose2d currentPose = drive.getPose();
+//    Pose2d currentPose = drive.getPose();
   }
 }
 

@@ -85,4 +85,3 @@ public class VisionIOSim implements VisionIO {
   // poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
   // above code needs Drive System for robot orientation.
 
-}
