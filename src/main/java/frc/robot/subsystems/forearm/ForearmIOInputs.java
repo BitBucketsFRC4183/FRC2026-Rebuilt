@@ -1,6 +1,7 @@
 package frc.robot.subsystems.forearm;
 
 public class ForearmIOInputs {
-  public double positionDeg;
-  public double appliedOutput;
+  public double forearmPositionDeg;
+  public double forearmAppliedOutput;
+  public double intakeAppliedOutput;
 }

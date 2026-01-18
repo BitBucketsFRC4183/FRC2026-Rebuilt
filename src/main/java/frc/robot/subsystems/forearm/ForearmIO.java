@@ -1,11 +1,15 @@
 package frc.robot.subsystems.forearm;
 
 public interface ForearmIO {
+
   void updateInputs(ForearmIOInputs inputs);
 
-  void setPercent(double percent);
+  /* Forearm */
+  void setForearmPercent(double percent);
+  void setForearmPosition(double degrees);
+  void stopForearm();
 
-  void setPosition(double degrees);
-
-  void stop();
+  /* Intake */
+  void setIntakePercent(double percent);
+  void stopIntake();
 }

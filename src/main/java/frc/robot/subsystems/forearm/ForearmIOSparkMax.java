@@ -12,58 +12,95 @@ import frc.robot.constants.ForearmConstants;
 
 public class ForearmIOSparkMax implements ForearmIO {
 
-  private final SparkMax motor;
-  private final SparkRelativeEncoder encoder;
-  private final SparkClosedLoopController closedLoop;
+  private final SparkMax forearmMotor;
+  private final SparkMax intakeMotor;
+
+  private final SparkRelativeEncoder forearmEncoder;
+  private final SparkClosedLoopController forearmClosedLoop;
 
   public ForearmIOSparkMax() {
 
-    motor = new SparkMax(ForearmConstants.FOREARM_MOTOR_CAN_ID, MotorType.kBrushless);
+    /* ===================== Forearm Motor ===================== */
 
-    // Motor configuration
-    SparkMaxConfig config = new SparkMaxConfig();
+    forearmMotor =
+            new SparkMax(ForearmConstants.FOREARM_MOTOR_CAN_ID, MotorType.kBrushless);
 
-    config
-        .inverted(ForearmConstants.FOREARM_MOTOR_INVERTED)
-        .idleMode(SparkMaxConfig.IdleMode.kBrake);
+    SparkMaxConfig forearmConfig = new SparkMaxConfig();
 
-    // Position conversion
-    config.encoder.positionConversionFactor(ForearmConstants.POSITION_CONVERSION_FACTOR);
+    forearmConfig
+            .inverted(ForearmConstants.FOREARM_MOTOR_INVERTED)
+            .idleMode(SparkMaxConfig.IdleMode.kBrake);
 
-    // PID
-    config
-        .closedLoop
-        .pid(ForearmConstants.kP, ForearmConstants.kI, ForearmConstants.kD)
-        .outputRange(ForearmConstants.MIN_OUTPUT, ForearmConstants.MAX_OUTPUT);
-    motor.configure(
-            config,
+    forearmConfig.encoder.positionConversionFactor(
+            ForearmConstants.POSITION_CONVERSION_FACTOR);
+
+    forearmConfig.closedLoop
+            .pid(
+                    ForearmConstants.kP,
+                    ForearmConstants.kI,
+                    ForearmConstants.kD)
+            .outputRange(
+                    ForearmConstants.MIN_OUTPUT,
+                    ForearmConstants.MAX_OUTPUT);
+
+    forearmMotor.configure(
+            forearmConfig,
             ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters
-    );
+            PersistMode.kPersistParameters);
 
-    // Encoder & closed-loop controller
-    encoder = (SparkRelativeEncoder) motor.getEncoder();
-    closedLoop = motor.getClosedLoopController();
+    forearmEncoder = (SparkRelativeEncoder) forearmMotor.getEncoder();
+    forearmClosedLoop = forearmMotor.getClosedLoopController();
+
+    /* ===================== Intake Motor ===================== */
+
+    intakeMotor =
+            new SparkMax(ForearmConstants.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
+
+    SparkMaxConfig intakeConfig = new SparkMaxConfig();
+
+    intakeConfig
+            .inverted(ForearmConstants.INTAKE_MOTOR_INVERTED)
+            .idleMode(SparkMaxConfig.IdleMode.kBrake);
+
+    intakeMotor.configure(
+            intakeConfig,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
   }
 
   @Override
   public void updateInputs(ForearmIOInputs inputs) {
-    inputs.positionDeg = encoder.getPosition();
-    inputs.appliedOutput = motor.getAppliedOutput();
+    inputs.forearmPositionDeg = forearmEncoder.getPosition();
+    inputs.forearmAppliedOutput = forearmMotor.getAppliedOutput();
+    inputs.intakeAppliedOutput = intakeMotor.getAppliedOutput();
+  }
+
+  /* ===================== Forearm ===================== */
+
+  @Override
+  public void setForearmPercent(double percent) {
+    forearmMotor.set(percent);
   }
 
   @Override
-  public void setPercent(double percent) {
-    motor.set(percent);
+  public void setForearmPosition(double degrees) {
+    forearmClosedLoop.setSetpoint(degrees, SparkBase.ControlType.kPosition);
   }
 
   @Override
-  public void setPosition(double degrees) {
-    closedLoop.setSetpoint(degrees, SparkBase.ControlType.kPosition);
+  public void stopForearm() {
+    forearmMotor.stopMotor();
+  }
+
+  /* ===================== Intake ===================== */
+
+  @Override
+  public void setIntakePercent(double percent) {
+    intakeMotor.set(percent);
   }
 
   @Override
-  public void stop() {
-    motor.stopMotor();
+  public void stopIntake() {
+    intakeMotor.stopMotor();
   }
 }

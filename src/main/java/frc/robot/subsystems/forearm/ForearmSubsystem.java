@@ -17,36 +17,58 @@ public class ForearmSubsystem extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
 
-    // Soft limits: stop at min/max
-    if (inputs.positionDeg <= ForearmConstants.MIN_ANGLE_DEG
-        && targetAngleDeg < inputs.positionDeg) {
-      io.stop();
+    // Soft limits for forearm rotation
+    if (inputs.forearmPositionDeg <= ForearmConstants.MIN_ANGLE_DEG
+            && targetAngleDeg < inputs.forearmPositionDeg) {
+      io.stopForearm();
     }
-    if (inputs.positionDeg >= ForearmConstants.MAX_ANGLE_DEG
-        && targetAngleDeg > inputs.positionDeg) {
-      io.stop();
+
+    if (inputs.forearmPositionDeg >= ForearmConstants.MAX_ANGLE_DEG
+            && targetAngleDeg > inputs.forearmPositionDeg) {
+      io.stopForearm();
     }
   }
+
+  /* ===================== Forearm Control ===================== */
 
   /** Closed-loop position control */
   public void setAngle(double degrees) {
     targetAngleDeg =
-        Math.max(ForearmConstants.MIN_ANGLE_DEG, Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
-    io.setPosition(targetAngleDeg);
+            Math.max(
+                    ForearmConstants.MIN_ANGLE_DEG,
+                    Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
+    io.setForearmPosition(targetAngleDeg);
   }
 
-  /** Manual percent output control */
-  public void runManual(double percent) {
-    io.setPercent(percent);
+  /** Manual percent output for forearm */
+  public void runForearmManual(double percent) {
+    io.setForearmPercent(percent);
   }
 
-  /** Stop motor */
-  public void stop() {
-    io.stop();
+  /** Stop forearm motor */
+  public void stopForearm() {
+    io.stopForearm();
   }
 
-  /** Get current angle */
+  /** Current forearm angle */
   public double getAngle() {
-    return inputs.positionDeg;
+    return inputs.forearmPositionDeg;
+  }
+
+  /* ===================== Intake Control ===================== */
+
+  /** Run intake wheels */
+  public void runIntake(double percent) {
+    io.setIntakePercent(percent);
+  }
+
+  /** Stop intake wheels */
+  public void stopIntake() {
+    io.stopIntake();
+  }
+
+  /** Intake applied output (telemetry) */
+  public double getIntakeOutput() {
+    return inputs.intakeAppliedOutput;
   }
 }

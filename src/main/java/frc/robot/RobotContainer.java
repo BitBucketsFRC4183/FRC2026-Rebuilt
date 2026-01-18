@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
@@ -169,18 +170,23 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     controller
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (forearmExtended) {
-                    forearm.runManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
-                  } else {
-                    forearm.runManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
-                  }
-                  forearmExtended = !forearmExtended;
-                },
-                forearm));
+            .leftBumper()
+            .onTrue(
+                    Commands.runOnce(
+                            () -> {
+                              if (forearmExtended) {
+                                forearm.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                              } else {
+                                forearm.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                              }
+                              forearmExtended = !forearmExtended;
+                            },
+                            forearm));
+
+    // Left trigger: run intake while held
+    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+            .whileTrue(Commands.run(() -> forearm.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearm))
+            .onFalse(Commands.runOnce(forearm::stopIntake, forearm));
   }
 
   /**
