@@ -15,11 +15,22 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.ForearmConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.forearm.ForearmIOSparkMax;
+import frc.robot.subsystems.forearm.ForearmSubsystem;
+import frc.robot.subsystems.hopper.HopperIOSparkMax;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -32,6 +43,11 @@ public class RobotContainer {
   // Subsystems
   private final DriveSubsystem driveSubsystem;
   private final AutoSubsystem autoSubsystem;
+  private final HopperSubsystem hopper = new HopperSubsystem(new HopperIOSparkMax());
+  private final ForearmSubsystem forearm = new ForearmSubsystem(new ForearmIOSparkMax());
+
+  // Toggle state for left bumper
+  private boolean forearmExtended = false;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -159,6 +175,27 @@ public class RobotContainer {
                             new Pose2d(driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
                             driveSubsystem)
                 .ignoringDisable(true));
+
+    controller
+            //Left Bumper Triggers Intake extended mode and Intake retract mode
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (forearmExtended) {
+                    forearm.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                  } else {
+                    forearm.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                  }
+                  forearmExtended = !forearmExtended;
+                },
+                forearm));
+
+    // Left trigger: run intake while held
+    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+        .whileTrue(
+            Commands.run(() -> forearm.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearm))
+        .onFalse(Commands.runOnce(forearm::stopIntake, forearm));
   }
 
   /**
