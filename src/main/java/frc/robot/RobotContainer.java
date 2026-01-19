@@ -11,14 +11,17 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.drive.*;
@@ -31,6 +34,7 @@ import frc.robot.subsystems.forearm.ForearmIOSparkMax;
 import frc.robot.subsystems.forearm.ForearmSubsystem;
 import frc.robot.subsystems.hopper.HopperIOSparkMax;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -42,9 +46,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final DriveSubsystem driveSubsystem;
-  private final AutoSubsystem autoSubsystem;
-  private final HopperSubsystem hopper = new HopperSubsystem(new HopperIOSparkMax());
-  private final ForearmSubsystem forearm = new ForearmSubsystem(new ForearmIOSparkMax());
+  // private final AutoSubsystem autoSubsystem;
+  private final HopperSubsystem hopperSubsystem;
+  private final ForearmSubsystem forearmSubsystem;
+  private final ShooterSubsystem shooterSubsystem;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -70,23 +75,7 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // driveSubsystem =
-        // new DriveSubsystem(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+
         break;
 
       case SIM:
@@ -113,8 +102,12 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber, ShooterSubystem shooter);
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
+    this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
+    this.shooterSubsystem = new ShooterSubsystem();
+    // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber, ShooterSubystem shooter);
+
+      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
 
     // Set up SysId routines
@@ -140,8 +133,8 @@ public class RobotContainer {
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Joystick} or {@link XboxController}), and then passing it to a {@link
+   * JoystickButton}.
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
@@ -183,19 +176,19 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   if (forearmExtended) {
-                    forearm.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
                   } else {
-                    forearm.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
                   }
                   forearmExtended = !forearmExtended;
                 },
-                forearm));
+                forearmSubsystem));
 
     // Left trigger: run intake while held
     new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
         .whileTrue(
-            Commands.run(() -> forearm.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearm))
-        .onFalse(Commands.runOnce(forearm::stopIntake, forearm));
+            Commands.run(() -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearmSubsystem))
+        .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
   }
 
   /**
