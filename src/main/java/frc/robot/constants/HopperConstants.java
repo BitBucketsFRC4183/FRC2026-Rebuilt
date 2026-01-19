@@ -5,9 +5,9 @@ public final class HopperConstants {
   private HopperConstants() {}
 
   // CAN IDs
-  public static final int HOPPER_CONVEYOR_MOTOR_CAN_ID = 9;
-  public static final int HOPPER_OUTTAKE_LEFT_MOTOR_CAN_ID = 10;
-  public static final int HOPPER_OUTTAKE_RIGHT_MOTOR_CAN_ID = 11;
+  public static final int HOPPER_CONVEYOR_MOTOR_CAN_ID = 99;
+  public static final int HOPPER_OUTTAKE_LEFT_MOTOR_CAN_ID = 88;
+  public static final int HOPPER_OUTTAKE_RIGHT_MOTOR_CAN_ID = 77;
 
   // Motor inversion
   public static final boolean HOPPER_CONVEYOR_MOTOR_INVERTED = false;
