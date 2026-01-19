@@ -35,6 +35,10 @@ import frc.robot.subsystems.forearm.ForearmSubsystem;
 import frc.robot.subsystems.hopper.HopperIOSparkMax;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -50,6 +54,7 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private VisionSubsystem vision;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -75,7 +80,25 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
-
+        // The ModuleIOTalonFXS implementation provides an example implementation for
+        // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        // implementations
+        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
+        // swerve
+        // template) can be freely intermixed to support alternative hardware
+        // arrangements.
+        // Please see the AdvantageKit template documentation for more information:
+        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
+        //
+        // drive =
+        // new Drive(
+        // new GyroIOPigeon2(),
+        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
+        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
+        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
+        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        vision =
+            new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOLimelight(), drive);
         break;
 
       case SIM:
@@ -87,6 +110,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        vision = new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), drive);
         break;
 
       default:
