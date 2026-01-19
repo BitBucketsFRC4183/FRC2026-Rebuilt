@@ -21,7 +21,7 @@ deploy {
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
+            team = 4183
             debug = project.frc.getDebugOrDefault(false)
 
             artifacts {
@@ -106,7 +106,7 @@ test {
 // The sim GUI is *disabled* by default to support running
 // AdvantageKit log replay, which requires that all HAL
 // sim extensions be disabled.
-wpi.sim.addGui().defaultEnabled = false
+wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
