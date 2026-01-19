@@ -48,24 +48,24 @@ public class ForearmSubsystem extends SubsystemBase {
     io.stopForearm();
   }
 
-  //Current angle
+  // Current angle
   public double getAngle() {
     return inputs.forearmPositionDeg;
   }
 
   // Intake
 
-  //Run Intake
+  // Run Intake
   public void runIntake(double percent) {
     io.setIntakePercent(percent);
   }
 
-  //Intake
+  // Intake
   public void stopIntake() {
     io.stopIntake();
   }
 
-  //telemetry for output
+  // telemetry for output
   public double getIntakeOutput() {
     return inputs.intakeAppliedOutput;
   }

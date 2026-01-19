@@ -1,4 +1,3 @@
 package frc.robot.subsystems.shooter;
 
-public interface FlywheelIO {
-}
+public interface FlywheelIO {}

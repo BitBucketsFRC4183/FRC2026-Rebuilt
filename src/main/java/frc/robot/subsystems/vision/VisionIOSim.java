@@ -8,9 +8,7 @@ import frc.robot.LimelightHelpers;
 public class VisionIOSim implements VisionIO {
   public final String BitBucketsCamera = "limelight";
   public final String limelightName = "BitBucketsCamera";
-  NetworkTable limelight =
-          NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
-
+  NetworkTable limelight = NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
 
   //  public VisionIO visionIO;
   //  public VisionIOInputs visionIOInputs;

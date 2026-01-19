@@ -9,8 +9,7 @@ public class VisionIOLimelight implements VisionIO {
 
   public final String BitBucketsCamera = "limelight";
   public final String limelightName = "BitBucketsCamera";
-  NetworkTable limelight =
-          NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
+  NetworkTable limelight = NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
 
   // Start of inputs
   //    @AutoLog
@@ -50,7 +49,7 @@ public class VisionIOLimelight implements VisionIO {
   NetworkTableEntry taEntry = limelight.getEntry("ta");
   NetworkTableEntry fiducialIDEntry = limelight.getEntry("fiducialID");
   NetworkTableEntry robotPoseEntry = limelight.getEntry("Pose2d");
-  
+
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.cameraConnected =

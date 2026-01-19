@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.DriveSubsystem;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -59,7 +58,8 @@ public class DriveCommands {
   }
 
   /**
-   * Field relative driveSubsystem command using two joysticks (controlling linear and angular velocities).
+   * Field relative driveSubsystem command using two joysticks (controlling linear and angular
+   * velocities).
    */
   public static Command joystickDrive(
       DriveSubsystem driveSubsystem,
@@ -94,13 +94,13 @@ public class DriveCommands {
                       ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
                       : driveSubsystem.getRotation()));
         },
-            driveSubsystem);
+        driveSubsystem);
   }
 
   /**
-   * Field relative driveSubsystem command using joystick for linear control and PID for angular control.
-   * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
-   * absolute rotation with a joystick.
+   * Field relative driveSubsystem command using joystick for linear control and PID for angular
+   * control. Possible use cases include snapping to an angle, aiming at a vision target, or
+   * controlling absolute rotation with a joystick.
    */
   public static Command joystickDriveAtAngle(
       DriveSubsystem driveSubsystem,
@@ -127,7 +127,8 @@ public class DriveCommands {
               // Calculate angular speed
               double omega =
                   angleController.calculate(
-                      driveSubsystem.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                      driveSubsystem.getRotation().getRadians(),
+                      rotationSupplier.get().getRadians());
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -145,7 +146,7 @@ public class DriveCommands {
                           ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
                           : driveSubsystem.getRotation()));
             },
-                    driveSubsystem)
+            driveSubsystem)
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(driveSubsystem.getRotation().getRadians()));
@@ -174,7 +175,7 @@ public class DriveCommands {
                 () -> {
                   driveSubsystem.runCharacterization(0.0);
                 },
-                        driveSubsystem)
+                driveSubsystem)
             .withTimeout(FF_START_DELAY),
 
         // Start timer
@@ -188,7 +189,7 @@ public class DriveCommands {
                   velocitySamples.add(driveSubsystem.getFFCharacterizationVelocity());
                   voltageSamples.add(voltage);
                 },
-                        driveSubsystem)
+                driveSubsystem)
 
             // When cancelled, calculate and print results
             .finallyDo(
@@ -208,7 +209,8 @@ public class DriveCommands {
                   double kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
                   NumberFormat formatter = new DecimalFormat("#0.00000");
-                  System.out.println("********** DriveSubsystem FF Characterization Results **********");
+                  System.out.println(
+                      "********** DriveSubsystem FF Characterization Results **********");
                   System.out.println("\tkS: " + formatter.format(kS));
                   System.out.println("\tkV: " + formatter.format(kV));
                 }));
@@ -234,7 +236,7 @@ public class DriveCommands {
                   double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
                   driveSubsystem.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
                 },
-                    driveSubsystem)),
+                driveSubsystem)),
 
         // Measurement sequence
         Commands.sequence(
@@ -265,7 +267,8 @@ public class DriveCommands {
                       for (int i = 0; i < 4; i++) {
                         wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                       }
-                      double wheelRadius = (state.gyroDelta * DriveSubsystem.DRIVE_BASE_RADIUS) / wheelDelta;
+                      double wheelRadius =
+                          (state.gyroDelta * DriveSubsystem.DRIVE_BASE_RADIUS) / wheelDelta;
 
                       NumberFormat formatter = new DecimalFormat("#0.000");
                       System.out.println(

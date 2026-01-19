@@ -255,7 +255,10 @@ public class TunerConstants {
   // DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
   // }
 
-  /** Swerve DriveSubsystem class utilizing CTR Electronics' Phoenix 6 API with the selected device types. */
+  /**
+   * Swerve DriveSubsystem class utilizing CTR Electronics' Phoenix 6 API with the selected device
+   * types.
+   */
   public static class TunerSwerveDrivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> {
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.

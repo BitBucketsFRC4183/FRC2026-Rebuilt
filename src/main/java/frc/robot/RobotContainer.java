@@ -21,15 +21,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.forearm.ForearmIOSparkMax;
 import frc.robot.subsystems.forearm.ForearmSubsystem;
 import frc.robot.subsystems.hopper.HopperIOSparkMax;
@@ -98,7 +95,8 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
         vision =
-            new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOLimelight(), drive);
+            new VisionSubsystem(
+                new VisionIOInputsAutoLogged(), new VisionIOLimelight(), driveSubsystem);
         break;
 
       case SIM:
@@ -110,7 +108,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        vision = new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), drive);
+        vision =
+            new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), driveSubsystem);
         break;
 
       default:
@@ -129,16 +128,18 @@ public class RobotContainer {
     this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
     this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
     this.shooterSubsystem = new ShooterSubsystem();
-    // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber, ShooterSubystem shooter);
+    // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
+    // ShooterSubystem shooter);
 
-      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
-        "DriveSubsystem Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+        "DriveSubsystem Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
     autoChooser.addOption(
-        "DriveSubsystem Simple FF Characterization", DriveCommands.feedforwardCharacterization(driveSubsystem));
+        "DriveSubsystem Simple FF Characterization",
+        DriveCommands.feedforwardCharacterization(driveSubsystem));
     autoChooser.addOption(
         "DriveSubsystem SysId (Quasistatic Forward)",
         driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -146,9 +147,11 @@ public class RobotContainer {
         "DriveSubsystem SysId (Quasistatic Reverse)",
         driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Forward)", driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "DriveSubsystem SysId (Dynamic Forward)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Reverse)", driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "DriveSubsystem SysId (Dynamic Reverse)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -156,15 +159,14 @@ public class RobotContainer {
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * Joystick} or {@link XboxController}), and then passing it to a {@link
-   * JoystickButton}.
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
+   * XboxController}), and then passing it to a {@link JoystickButton}.
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
-                driveSubsystem,
+            driveSubsystem,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
@@ -174,7 +176,7 @@ public class RobotContainer {
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                    driveSubsystem,
+                driveSubsystem,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
@@ -189,12 +191,13 @@ public class RobotContainer {
             Commands.runOnce(
                     () ->
                         driveSubsystem.setPose(
-                            new Pose2d(driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
-                            driveSubsystem)
+                            new Pose2d(
+                                driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
+                    driveSubsystem)
                 .ignoringDisable(true));
 
     controller
-            //Left Bumper Triggers Intake extended mode and Intake retract mode
+        // Left Bumper Triggers Intake extended mode and Intake retract mode
         .leftBumper()
         .onTrue(
             Commands.runOnce(
@@ -211,7 +214,9 @@ public class RobotContainer {
     // Left trigger: run intake while held
     new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
         .whileTrue(
-            Commands.run(() -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT), forearmSubsystem))
+            Commands.run(
+                () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
+                forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
   }
 

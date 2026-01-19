@@ -1,48 +1,48 @@
 package frc.robot.constants;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public final class ShooterConstants extends SubsystemBase {
 
-    //Motor IDs
-    public final static int topFlywheelID = 6;
-    public final static int bottomFlywheelID = 7;
+  // Motor IDs
+  public static final int topFlywheelID = 6;
+  public static final int bottomFlywheelID = 7;
 
-    //In Inches por favor, to calculate tangential velocity
-    public final static double topFlywheelRadius = 1;
-    public final static double bottomFlywheelRadius = 2;
+  // In Inches por favor, to calculate tangential velocity
+  public static final double topFlywheelRadius = 1;
+  public static final double bottomFlywheelRadius = 2;
 
-    //Arena Constants (Inches)
-    public final static double hubHeight = 72;
-    public final static double shooterHeight = 21.5;
-    public final static double distanceFromCenter = 23;
+  // Arena Constants (Inches)
+  public static final double hubHeight = 72;
+  public static final double shooterHeight = 21.5;
+  public static final double distanceFromCenter = 23;
 
-    //Other Physics Stuff
-    public final static double gravity = 9.81;
-    public final static double maxRPM = 5000;
+  // Other Physics Stuff
+  public static final double gravity = 9.81;
+  public static final double maxRPM = 5000;
 
-    //Assuming constant hood angle
-    public final static double shooterAngle = 45;
+  // Assuming constant hood angle
+  public static final double shooterAngle = 45;
 
-    //Allowed Error for (actual distance away vs distance from launching)
-    public final static double error = 5;
+  // Allowed Error for (actual distance away vs distance from launching)
+  public static final double error = 5;
 
-    //PID Constants
-    public final static double kP = 0.00001;
-    public final static double kI = 0;
-    public final static double kD = 0;
-    public final static double kMaxOutput = 1.0;
-    public final static double kMinOutput = -1.0;
+  // PID Constants
+  public static final double kP = 0.00001;
+  public static final double kI = 0;
+  public static final double kD = 0;
+  public static final double kMaxOutput = 1.0;
+  public static final double kMinOutput = -1.0;
 
-    //FF
-    public final static double kS = 0;
-    public final static double kV = 0;
-    public final static double kA = 0;
-    public final static double cosRatio = 0;
+  // FF
+  public static final double kS = 0;
+  public static final double kV = 0;
+  public static final double kA = 0;
+  public static final double cosRatio = 0;
 
-    //hood constants
-    public final static double minHoodAngle = 10.0;
-    public final static double maxHoodAngle = 80.0;
-    //change accuracy later
-
+  // hood constants
+  public static final double minHoodAngle = 10.0;
+  public static final double maxHoodAngle = 80.0;
+  // change accuracy later
 
 }

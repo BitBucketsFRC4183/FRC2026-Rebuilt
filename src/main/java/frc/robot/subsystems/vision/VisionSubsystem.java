@@ -1,17 +1,17 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
   private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
   private final VisionIOInputs inputs = new VisionIOInputs();
-  private final Drive drive;
+  private final DriveSubsystem drive;
 
   public VisionSubsystem(
-      VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io, Drive drive) {
+      VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io, DriveSubsystem drive) {
     this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
     this.visionio = io;
     this.drive = drive;
