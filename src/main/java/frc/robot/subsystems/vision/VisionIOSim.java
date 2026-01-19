@@ -78,10 +78,9 @@ public class VisionIOSim implements VisionIO {
     inputs.hasMegaTag2 = false;
     return;
   }
-  }
+}
   // 99% sure the code above doesn't belong here. Probably need to move it somewhere else (like
   // command)
   // Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight",
   // poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
   // above code needs Drive System for robot orientation.
-
