@@ -22,19 +22,15 @@ public class ActuatorIOSparkMax implements ActuatorIO {
                 .inverted(ActuatorConstants.ACTUATOR_MOTOR_INVERTED)
                 .idleMode(SparkMaxConfig.IdleMode.kBrake);
         actuatorMotor.configure(actuatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
     }
-
     @Override
     public void updateInputs(ActuatorIOInputs inputs) {
         inputs.actuatorAppliedOutput = actuatorMotor.getAppliedOutput();
     }
-
     @Override
     public void setActuatorPercent(double percent) {
 
     }
-
     @Override
     public void stopActuator() {
         actuatorMotor.stopMotor();

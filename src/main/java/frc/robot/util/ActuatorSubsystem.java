@@ -32,7 +32,6 @@ public class ActuatorSubsystem extends SubsystemBase {
     }
 
     //Telemetry
-
     public double getActuatorOutput() {
         return inputs.actuatorAppliedOutput;
     }
