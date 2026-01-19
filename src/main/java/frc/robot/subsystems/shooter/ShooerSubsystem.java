@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
 
@@ -17,7 +16,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 
 import frc.robot.constants.ShooterConstants;
 
-public class FlywheelSubsystem {
+public class ShooerSubsystem {
     private final SparkMax m_topFlywheel = new SparkMax(ShooterConstants.topFlywheelID, MotorType.kBrushless);
     private final SparkMax m_bottomFlywheel = new SparkMax(ShooterConstants.bottomFlywheelID, MotorType.kBrushless);
 
@@ -31,7 +30,7 @@ public class FlywheelSubsystem {
     //In meters
     double hubHeight, shooterHeight, hubDistance, topFlywheelRadius, bottomFlywheelRadius;
 
-    public FlywheelSubsystem() {
+    public ShooerSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit(40)
                 .idleMode(IdleMode.kCoast);

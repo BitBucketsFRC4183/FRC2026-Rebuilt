@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file
 // at the root directory of this project.
 
-package frc.robot.subsystems.DriveSubsystem;
+package frc.robot.subsystems.drive;
 
 import static frc.robot.util.PhoenixUtil.tryUntilOk;
 
@@ -27,7 +27,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.AnalogEncoder;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 
@@ -38,7 +38,7 @@ import java.util.Queue;
  *
  * <p>Device configuration and other behaviors not exposed by TunerConstants can be customized here.
  */
-public class ModuleIOTalonFXPWM implements ModuleIO {
+public class ModuleIOTalonFXAnalog implements ModuleIO {
   private final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
       constants;
@@ -47,7 +47,10 @@ public class ModuleIOTalonFXPWM implements ModuleIO {
   private final TalonFX driveTalon;
   private final TalonFX turnTalon;
   //  private final CANcoder cancoder;
-  private final DutyCycleEncoder turnEncoder;
+  private final AnalogEncoder turnEncoder;
+
+  // init a starting value before getting a turn encoders value
+  private double turnEncoderLastValue = 6969;
 
   // Voltage control requests
   private final VoltageOut voltageRequest = new VoltageOut(0);
@@ -87,7 +90,7 @@ public class ModuleIOTalonFXPWM implements ModuleIO {
   private final Debouncer turnEncoderConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
-  public ModuleIOTalonFXPWM(
+  public ModuleIOTalonFXAnalog(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     this.constants = constants;
@@ -96,8 +99,8 @@ public class ModuleIOTalonFXPWM implements ModuleIO {
     // cancoder = new CANcoder(constants.EncoderId, TunerConstants.kCANBus);
 
     // 1.0 for full rotation, 0 halfway
-    turnEncoder = new DutyCycleEncoder(constants.EncoderId, 1.0, 0.0);
-    // Configure drive motor
+    turnEncoder = new AnalogEncoder(constants.EncoderId, 1.0, 0.0);
+    // Configure drive mo++tor
     var driveConfig = constants.DriveMotorInitialConfigs;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
@@ -205,7 +208,8 @@ public class ModuleIOTalonFXPWM implements ModuleIO {
 
     // Update turn inputs
     inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
-    inputs.turnEncoderConnected = turnEncoderConnectedDebounce.calculate(turnEncoder.isConnected());
+    inputs.turnEncoderConnected =
+        turnEncoderConnectedDebounce.calculate(turnEncoder.get() != turnEncoderLastValue);
     inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnEncoder.get());
     inputs.turnPosition = Rotation2d.fromRotations(turnPosition.getValueAsDouble());
     inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble());

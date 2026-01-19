@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.AutoSubsystem.AutoSubsystem;
-import frc.robot.subsystems.DriveSubsystem.*;
+import frc.robot.subsystems.auto.AutoSubsystem;
+import frc.robot.subsystems.drive.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**

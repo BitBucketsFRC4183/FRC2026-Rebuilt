@@ -1,8 +1,7 @@
-package frc.robot.subsystems.AutoSubsystem;
+package frc.robot.subsystems.auto;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.DriveSubsystem.DriveSubsystem;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
     private final DriveSubsystem drive;
