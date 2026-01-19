@@ -10,6 +10,7 @@ public class VisionIOInputs {
   public double tx;
   public double ty;
   public double ta;
+  public double tv;
 
   public double fiducialID;
   //  public boolean hasAprilTag = false;

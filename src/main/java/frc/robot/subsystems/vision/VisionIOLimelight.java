@@ -1,10 +1,16 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 
 public class VisionIOLimelight implements VisionIO {
 
   public final String BitBucketsCamera = "limelight";
+  public final String limelightName = "BitBucketsCamera";
+  NetworkTable limelight =
+          NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
 
   // Start of inputs
   //    @AutoLog
@@ -38,18 +44,26 @@ public class VisionIOLimelight implements VisionIO {
   //          // above code needs Drive System for robot orientation.
   //
   //     }
+  NetworkTableEntry txEntry = limelight.getEntry("tx");
+  NetworkTableEntry tyEntry = limelight.getEntry("ty");
+  NetworkTableEntry tvEntry = limelight.getEntry("tv");
+  NetworkTableEntry taEntry = limelight.getEntry("ta");
+  NetworkTableEntry fiducialIDEntry = limelight.getEntry("fiducialID");
+  NetworkTableEntry robotPoseEntry = limelight.getEntry("Pose2d");
+  
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.cameraConnected =
-        LimelightHelpers.getLimelightNTTableEntry("BitBucketsCamera", "CameraIsConnected").exists();
-    inputs.tx = LimelightHelpers.getTX("BitBucketsCamera");
-    inputs.ty = LimelightHelpers.getTY("BitBucketsCamera");
-    inputs.ta = LimelightHelpers.getTA("BitBucketsCamera");
+        LimelightHelpers.getLimelightNTTableEntry(BitBucketsCamera, "CameraIsConnected").exists();
+    inputs.tx = txEntry.getDouble(0.0);
+    inputs.ty = tyEntry.getDouble(0.0);
+    inputs.ta = taEntry.getDouble(0.0);
+    inputs.tv = tvEntry.getDouble(0.0);
 
-    inputs.fiducialID = LimelightHelpers.getFiducialID("BitBucketsCamera");
+    inputs.fiducialID = fiducialIDEntry.getDouble(0.0);
 
-    inputs.hasTarget = LimelightHelpers.getTV("BitBucketsCamera");
-    inputs.robotPose = LimelightHelpers.getBotPose2d("BitBucketsCamera");
+    inputs.hasTarget = LimelightHelpers.getTV(limelightName);
+    inputs.robotPose = LimelightHelpers.getBotPose2d(limelightName);
 
     // if there is no target, then don't continue other inputs
     if (!inputs.hasTarget) {
