@@ -28,6 +28,8 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.forearm.ForearmIOSparkMax;
 import frc.robot.subsystems.forearm.ForearmSubsystem;
+import frc.robot.subsystems.hopper.HopperIOSparkMax;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -40,6 +42,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final ForearmSubsystem forearm = new ForearmSubsystem(new ForearmIOSparkMax());
+  private final HopperSubsystem hopper = new HopperSubsystem(new HopperIOSparkMax());
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -170,6 +173,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     controller
+            //Left Bumper Triggers Intake extended mode and Intake retract mode
         .leftBumper()
         .onTrue(
             Commands.runOnce(

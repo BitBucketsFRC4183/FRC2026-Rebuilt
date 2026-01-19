@@ -31,41 +31,41 @@ public class ForearmSubsystem extends SubsystemBase {
 
   // ForearmConst
 
-  /** Closed-loop position control */
+  // Closed loop position
   public void setAngle(double degrees) {
     targetAngleDeg =
         Math.max(ForearmConstants.MIN_ANGLE_DEG, Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
     io.setForearmPosition(targetAngleDeg);
   }
 
-  /** Manual percent output for forearm */
+  // Manual Percent for Com and Bindings
   public void runForearmManual(double percent) {
     io.setForearmPercent(percent);
   }
 
-  /** Stop forearm motor */
+  // forearm motor
   public void stopForearm() {
     io.stopForearm();
   }
 
-  /** Current forearm angle */
+  //Current angle
   public double getAngle() {
     return inputs.forearmPositionDeg;
   }
 
   // Intake
 
-  /** Run intake wheels */
+  //Run Intake
   public void runIntake(double percent) {
     io.setIntakePercent(percent);
   }
 
-  /** Stop intake wheels */
+  //Intake
   public void stopIntake() {
     io.stopIntake();
   }
 
-  /** Intake applied output (telemetry) */
+  //telemetry for output
   public double getIntakeOutput() {
     return inputs.intakeAppliedOutput;
   }
