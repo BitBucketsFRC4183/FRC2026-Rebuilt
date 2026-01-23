@@ -7,7 +7,8 @@ import org.littletonrobotics.junction.Logger;
 public class VisionSubsystem extends SubsystemBase {
   private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
-  private final VisionIOInputs inputs = new VisionIOInputs();
+  private final VisionIOInputs frontCamInputs = new VisionIOInputs();
+  private final VisionIOInputs backCamInputs = new VisionIOInputs();
   private final DriveSubsystem drive;
 
   public VisionSubsystem(
@@ -19,17 +20,16 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    visionio.updateInputs(inputs);
+    visionio.updateInputs(frontCamInputs, backCamInputs);
 
-    //    Logger.recordOutput("Area of Taget", inputs.ta); // how big AprilTag is in the camera
-    // frame
+    //    Logger.recordOutput("Area of Taget", inputs.ta);
+    // how big AprilTag is in the camera frame
     // basically, 3%-> far;
     // 80%-> takes big portion of the frame, AprilTag is near
 
     Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
     // drive.addVisionMeasurement(inputs.megaTagPose, inputs.timestamp);
 
-    //    Pose2d currentPose = drive.getPose();
   }
 }
 
