@@ -64,13 +64,14 @@ public class VisionIOLimelight implements VisionIO {
     inputs.hasTarget = LimelightHelpers.getTV(limelightName);
     inputs.robotPose = LimelightHelpers.getBotPose2d(limelightName);
 
+    // it is a little redundant
     // if there is no target, then don't continue other inputs
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;
       return;
     }
     // in here, visionPose is calculated from
-    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("BitBucketsCamera");
+    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     if (megaTag2Results.tagCount >= 2) {
       inputs.hasMegaTag2 = true;
       inputs.megaTagPose = megaTag2Results.pose;
@@ -80,7 +81,7 @@ public class VisionIOLimelight implements VisionIO {
       return;
     }
 
-    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue("BitBucketsCamera");
+    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     if (megaTag1Results.tagCount >= 1) {
       inputs.hasMegaTag2 = false;
       inputs.megaTagPose = megaTag1Results.pose;
