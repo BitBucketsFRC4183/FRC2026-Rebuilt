@@ -51,7 +51,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         /* Intake */
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_CAN_ID);
 
-        TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
+        intakeConfig = new TalonFXConfiguration();
 
         intakeConfig.MotorOutput.Inverted =
                 IntakeConstants.INTAKE_MOTOR_INVERTED

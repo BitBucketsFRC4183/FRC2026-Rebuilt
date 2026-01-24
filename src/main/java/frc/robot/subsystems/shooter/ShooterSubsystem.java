@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 
 public class ShooterSubsystem {
   private final SparkMax m_topFlywheel =
@@ -25,10 +26,11 @@ public class ShooterSubsystem {
   private final SparkClosedLoopController m_bottomPID = m_bottomFlywheel.getClosedLoopController();
 
   double topTargetFlywheelVelocity, bottomTargetFlywheelVelocity;
-  // In meters
-  double hubHeight, shooterHeight, hubDistance, topFlywheelRadius, bottomFlywheelRadius;
 
-  public ShooterSubsystem() {
+  FlywheelIOTalonFX io;
+
+  public ShooterSubsystem(FlywheelIOTalonFX io) {
+    this.io = io;
     SparkMaxConfig config = new SparkMaxConfig();
     config.smartCurrentLimit(40).idleMode(IdleMode.kCoast);
 
@@ -47,14 +49,7 @@ public class ShooterSubsystem {
         .kV(ShooterConstants.kV)
         .kA(ShooterConstants.kA)
         .kCosRatio(ShooterConstants.cosRatio);
-
-    // Convert all American Units to Metric
-    hubHeight = ShooterConstants.hubHeight / 39.37;
-    shooterHeight = ShooterConstants.shooterHeight / 39.37;
-    topFlywheelRadius = ShooterConstants.topFlywheelRadius / 39.37;
-    bottomFlywheelRadius = ShooterConstants.bottomFlywheelRadius / 39.37;
-    hubDistance = ShooterConstants.distanceFromCenter / 39.37;
-
+    
     // Configures both Flywheels, inverts the bottom Flywheel
     // Deprecated again lol
     // m_topFlywheel.configure(config, ResetMode.kResetSafeParameters,
@@ -66,53 +61,30 @@ public class ShooterSubsystem {
   }
 
   public void setTargetFlywheelVelocity(double distance) {
-    // Method for setting flywheel speeds assuming constant hood angle
-    // Distance from April-Tag + Distance away from center of the Hub
-    distance += hubDistance;
-    double radius;
-    // Uses the radius of the smallest fly wheel (so that we do not go over the RPM limit)
-    if (topFlywheelRadius > bottomTargetFlywheelVelocity) {
-      radius = bottomFlywheelRadius;
-    } else {
-      radius = topFlywheelRadius;
-    }
     double targetFlywheelVelocity = 0;
     // Computationally heavy, TODO: Use a different method to find RPM
     for (double distanceAchieved = 0; distanceAchieved >= distance; targetFlywheelVelocity += 2) {
       // Calculating tangential velocity
       double yVelocity =
-          targetFlywheelVelocity * radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
+          targetFlywheelVelocity * ShooterConstants.radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
       // Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is
       // negligible lol
       double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
       double airTime =
-          -yVelocity
-              + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h))
+              (-yVelocity
+              + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)))
                   / ShooterConstants.gravity;
       distanceAchieved =
           airTime
               * targetFlywheelVelocity
-              * radius
+              * ShooterConstants.radius
               * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
       // If it reaches this statement, the bot is too far from the hub to make it in or the
       // shooterAngle is not appropriate
       if (targetFlywheelVelocity > ShooterConstants.maxRPM * 2 * Math.PI / 60) {
         break;
       }
-    }
-
-    if (topFlywheelRadius > bottomTargetFlywheelVelocity) {
-      bottomTargetFlywheelVelocity = targetFlywheelVelocity;
-      m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
-      topTargetFlywheelVelocity =
-          bottomTargetFlywheelVelocity * bottomFlywheelRadius / topFlywheelRadius;
-      m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-    } else {
-      topFlywheelRadius = targetFlywheelVelocity;
-      m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-      bottomTargetFlywheelVelocity =
-          topTargetFlywheelVelocity * topFlywheelRadius / bottomFlywheelRadius;
-      m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
+      io.setSpeed(targetFlywheelVelocity);
     }
   }
 
@@ -121,7 +93,7 @@ public class ShooterSubsystem {
   public void setTargetHoodAngle(double distance) {
     double targetFlywheelRPM = 3000;
     // ill change later i j chose a value for now
-    double launchVelocity = (targetFlywheelRPM * 2 * Math.PI / 60) * topFlywheelRadius;
+    double launchVelocity = (targetFlywheelRPM * 2 * Math.PI / 60) * ShooterConstants.radius;
     double verticalDistance = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
     // initialize velocity squared - physics variables
     // double v0squared = Math.pow(v0, 2);

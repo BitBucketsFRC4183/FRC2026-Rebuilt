@@ -8,14 +8,14 @@ public final class ShooterConstants extends SubsystemBase {
   public static final int topFlywheelID = 108;
   public static final int bottomFlywheelID = 55;
 
+  public static final boolean flywheelInverted = false;
+
   // In Inches por favor, to calculate tangential velocity
-  public static final double topFlywheelRadius = 1;
-  public static final double bottomFlywheelRadius = 2;
+  public static final double radius = 1;
 
   // Arena Constants (Inches)
-  public static final double hubHeight = 72;
-  public static final double shooterHeight = 21.5;
-  public static final double distanceFromCenter = 23;
+  public static final double hubHeight = 72 / 39.37;
+  public static final double shooterHeight = 21.5 / 39.37;
 
   // Other Physics Stuff
   public static final double gravity = 9.81;
