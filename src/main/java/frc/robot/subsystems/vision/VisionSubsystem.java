@@ -51,6 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
       driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
     }
 
+    //key: the path, distinguish where the data come from
     Logger.processInputs("Vision/frontCam", visionIOInputsAutoLogged);
     Logger.processInputs("Vision/backCam", visionIOInputsAutoLogged);
   }
