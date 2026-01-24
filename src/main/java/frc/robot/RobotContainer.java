@@ -27,7 +27,7 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.intake.ForearmIOTalonFX;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -126,7 +126,7 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+    this.forearmSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -184,40 +184,7 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        driveSubsystem.setPose(
-                            new Pose2d(
-                                driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
-                    driveSubsystem)
-                .ignoringDisable(true));
 
-    controller
-        // Left Bumper Triggers Intake extended mode and Intake retract mode
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (forearmExtended) {
-                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_RETRACT_PERCENT);
-                  } else {
-                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_EXTEND_PERCENT);
-                  }
-                  forearmExtended = !forearmExtended;
-                },
-                forearmSubsystem));
-
-    // Left trigger: run intake while held
-    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-        .whileTrue(
-            Commands.run(
-                () -> forearmSubsystem.runIntake(IntakeConstants.INTAKE_IN_PERCENT),
-                forearmSubsystem))
-        .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
   }
 
   /**

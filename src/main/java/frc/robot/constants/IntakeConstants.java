@@ -1,33 +1,27 @@
 package frc.robot.constants;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
 public final class IntakeConstants {
 
+  // Motor
+  public static final int INTAKE_MOTOR_ID = 31;
+  public static final boolean MOTOR_INVERTED = false;
+
+  public static final double INTAKE_SPEED = 1.0;
+  public static final double OUTTAKE_SPEED = -0.8;
+  public static final double HOLD_SPEED = 0.15;
+
+  // Current limiting
+  public static final double SUPPLY_CURRENT_LIMIT = 40.0;
+  public static final double STATOR_CURRENT_LIMIT = 60.0;
+
+  // Pneumatics
+  public static final PneumaticsModuleType PNEUMATICS_TYPE =
+          PneumaticsModuleType.REVPH;
+
+  public static final int PISTON_FORWARD_CHANNEL = 0;
+  public static final int PISTON_REVERSE_CHANNEL = 1;
+
   private IntakeConstants() {}
-
-  public static final int FOREARM_MOTOR_CAN_ID = 7;
-  public static final boolean FOREARM_MOTOR_INVERTED = false;
-
-  public static final double MIN_ANGLE_DEG = 0.0;
-  public static final double MAX_ANGLE_DEG = 160.0;
-
-  public static final double GEAR_RATIO = 100.0;
-  public static final double DEGREES_PER_ROTATION = 360.0;
-
-  public static final double POSITION_CONVERSION_FACTOR = DEGREES_PER_ROTATION / GEAR_RATIO;
-
-  public static final double kP = 0.12;
-  public static final double kI = 0.0;
-  public static final double kD = 0.001;
-
-  public static final double MAX_OUTPUT = 0.1;
-  public static final double MIN_OUTPUT = -0.1;
-
-  public static final double MANUAL_EXTEND_PERCENT = 0.4;
-  public static final double MANUAL_RETRACT_PERCENT = -0.4;
-
-  public static final int INTAKE_MOTOR_CAN_ID = 8;
-  public static final boolean INTAKE_MOTOR_INVERTED = false;
-
-  public static final double INTAKE_IN_PERCENT = 0.8;
-  public static final double INTAKE_OUT_PERCENT = -0.8;
 }
