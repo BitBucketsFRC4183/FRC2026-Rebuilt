@@ -5,8 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public final class ShooterConstants extends SubsystemBase {
 
   // Motor IDs
-  public static final int topFlywheelID = 108;
-  public static final int bottomFlywheelID = 55;
+  public static final int flywheelID = 108;
 
   public static final boolean flywheelInverted = false;
 

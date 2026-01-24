@@ -14,9 +14,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTargetFlywheelVelocity(double distance) {
     targetVelocity = 0;
-    // Computationally heavy, TODO: Use a different method to find RPM
     for (double distanceAchieved = 0; distanceAchieved >= distance; targetVelocity += 2) {
-      // Calculating tangential velocity
+      //Calculating tangential velocity
       double yVelocity =
               targetVelocity * ShooterConstants.radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
       // Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is

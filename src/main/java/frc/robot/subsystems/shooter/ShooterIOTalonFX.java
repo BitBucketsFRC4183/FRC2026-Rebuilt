@@ -6,11 +6,9 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.ShooterConstants;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    private final TalonFX topFlywheel = new TalonFX(ShooterConstants.topFlywheelID);
-    private final TalonFX bottomFlywheel = new TalonFX(ShooterConstants.bottomFlywheelID);
+    private final TalonFX flywheel = new TalonFX(ShooterConstants.flywheelID);
     private final VelocityVoltage target = new VelocityVoltage(0);
 
     public ShooterIOTalonFX() {
@@ -29,38 +27,25 @@ public class ShooterIOTalonFX implements ShooterIO {
         slot0.kV = ShooterConstants.kV;
         slot0.kS = ShooterConstants.kS;
 
-        topFlywheel.getConfigurator().apply(config);
-
-        config.MotorOutput.Inverted = !ShooterConstants.flywheelInverted
-                ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-
-        bottomFlywheel.getConfigurator().apply(config);
+        flywheel.getConfigurator().apply(config);
     }
 
-    @AutoLogOutput
     @Override
     public void setSpeed(double targetSpeed) {
         //Convert Radians / s to Rotations / s
         double targetRPS = targetSpeed / 2 / Math.PI;
         //Please be the same radius
-        topFlywheel.setControl(target.withVelocity(targetRPS));
-        bottomFlywheel.setControl(target.withVelocity(targetRPS));
+        flywheel.setControl(target.withVelocity(targetRPS));
     }
 
     @Override
     public void stopMotor() {
-        topFlywheel.stopMotor();
-        bottomFlywheel.stopMotor();
+        flywheel.stopMotor();
     }
 
     @Override
     public boolean speedReached(double targetSpeed) {
-        double currentTopFlywheelVelocity =  topFlywheel.getVelocity().getValueAsDouble();
-        double currentBottomFlywheelVelocity = bottomFlywheel.getVelocity().getValueAsDouble();
-        return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-                && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance
-                && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-                && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+        double currentTopFlywheelVelocity =  flywheel.getVelocity().getValueAsDouble();
+        return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
     }
 }
