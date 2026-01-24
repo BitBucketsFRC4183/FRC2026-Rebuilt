@@ -35,7 +35,6 @@ public class VisionSubsystem extends SubsystemBase {
     double visionFusedTimestamps = 0.0;
 
     if (frontCamInputs.hasTarget && backCamInputs.hasTarget) {
-      visionFusedPose = averagePose(frontCamInputs.megaTagPose, backCamInputs.megaTagPose);
       visionFusedTimestamps = Math.max(frontCamInputs.timestamp, backCamInputs.timestamp);
 
     } else if (frontCamInputs.hasTarget) {
@@ -53,17 +52,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     Logger.processInputs("Vision/frontCam", visionIOInputsAutoLogged);
     Logger.processInputs("Vision/backCam", visionIOInputsAutoLogged);
-  }
-
-  private Pose2d averagePose(Pose2d a, Pose2d b) {
-    double avgX = (a.getX() + b.getX()) / 2.0;
-    double avgY = (a.getY() + b.getY()) / 2.0;
-
-    var rotationA = a.getRotation();
-    var rotationB = b.getRotation();
-    var avgRotation = a.getRotation().interpolate(b.getRotation(), 0.5);
-
-    return new Pose2d(avgX, avgY, avgRotation);
   }
 }
 
