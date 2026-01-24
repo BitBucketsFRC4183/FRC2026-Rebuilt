@@ -56,7 +56,8 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     backCamSim.enableProcessedStream(true);
     backCamSim.enableDrawWireframe(true);
 
-    // add properties that's it yooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // add properties that's it
+    // yooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     visionSim.addCamera(frontCamSim, robotToFrontCam);
     visionSim.addCamera(backCamSim, robotToBackCam);
   }

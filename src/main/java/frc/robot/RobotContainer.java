@@ -109,7 +109,9 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOInputsAutoLogged(),
                 new VisionIOPhotonVisionSim(
-                    poseSupplier, VisionConstant.robotToBackCam, VisionConstant.robotToFrontCam),
+                    driveSubsystem.pose2dSupplier,
+                    VisionConstant.robotToBackCam,
+                    VisionConstant.robotToFrontCam),
                 driveSubsystem);
         break;
         // thinking to what
