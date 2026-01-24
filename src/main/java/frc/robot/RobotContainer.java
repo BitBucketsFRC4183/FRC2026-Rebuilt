@@ -28,11 +28,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.ForearmIOTalonFX;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -129,7 +128,7 @@ public class RobotContainer {
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
     this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
-    this.shooterSubsystem = new ShooterSubsystem(new FlywheelIOTalonFX());
+    this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 

@@ -19,13 +19,16 @@ public final class ShooterConstants extends SubsystemBase {
 
   // Other Physics Stuff
   public static final double gravity = 9.81;
-  public static final double maxRPM = 5000;
+  public static final int maxRPM = 5000;
 
   // Assuming constant hood angle
   public static final double shooterAngle = 45;
 
   // Allowed Error for (actual distance away vs distance from launching)
   public static final double error = 5;
+
+  //Allowed RPS offset before shooting
+  public static final double tolerance = 5.0;
 
   // PID Constants
   public static final double kP = 0.00001;

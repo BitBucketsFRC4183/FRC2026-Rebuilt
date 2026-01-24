@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
-public interface FlywheelIO {
+public interface ShooterIO {
     void setSpeed(double targetSpeed);
     void stopMotor();
+    boolean speedReached(double targetSpeed);
 }
