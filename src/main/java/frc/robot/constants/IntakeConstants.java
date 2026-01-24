@@ -1,8 +1,8 @@
 package frc.robot.constants;
 
-public final class ForearmConstants {
+public final class IntakeConstants {
 
-  private ForearmConstants() {}
+  private IntakeConstants() {}
 
   public static final int FOREARM_MOTOR_CAN_ID = 7;
   public static final boolean FOREARM_MOTOR_INVERTED = false;

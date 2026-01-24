@@ -20,16 +20,16 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.ForearmConstants;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.forearm.ForearmIOSparkMax;
-import frc.robot.subsystems.forearm.ForearmSubsystem;
-import frc.robot.subsystems.hopper.HopperIOSparkMax;
+import frc.robot.subsystems.intake.ForearmIOTalonFX;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
@@ -49,7 +49,7 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem;
   // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final ForearmSubsystem forearmSubsystem;
+  private final IntakeSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
 
@@ -125,8 +125,8 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
-    this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
+    this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+    this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -203,9 +203,9 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> {
                   if (forearmExtended) {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_RETRACT_PERCENT);
                   } else {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_EXTEND_PERCENT);
                   }
                   forearmExtended = !forearmExtended;
                 },
@@ -215,7 +215,7 @@ public class RobotContainer {
     new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
         .whileTrue(
             Commands.run(
-                () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
+                () -> forearmSubsystem.runIntake(IntakeConstants.INTAKE_IN_PERCENT),
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
   }
