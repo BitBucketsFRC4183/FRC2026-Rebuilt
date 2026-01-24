@@ -9,13 +9,15 @@ public class VisionSubsystem extends SubsystemBase {
   private final VisionIO visionio;
   private final VisionIOInputs frontCamInputs = new VisionIOInputs();
   private final VisionIOInputs backCamInputs = new VisionIOInputs();
-  private final DriveSubsystem drive;
+  private final DriveSubsystem driveSubsystem;
 
   public VisionSubsystem(
-      VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io, DriveSubsystem drive) {
+      VisionIOInputsAutoLogged visionIOInputsAutoLogged,
+      VisionIO io,
+      DriveSubsystem driveSubsystem) {
     this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
     this.visionio = io;
-    this.drive = drive;
+    this.driveSubsystem = driveSubsystem;
   }
 
   @Override
@@ -28,7 +30,8 @@ public class VisionSubsystem extends SubsystemBase {
     // 80%-> takes big portion of the frame, AprilTag is near
 
     Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
-    // drive.addVisionMeasurement(inputs.megaTagPose, inputs.timestamp);
+    //    driveSubsystem.addVisionMeasurement(frontCamInputs.megaTagPose, frontCamInputs.timestamp);
+    // need stdv
 
   }
 }

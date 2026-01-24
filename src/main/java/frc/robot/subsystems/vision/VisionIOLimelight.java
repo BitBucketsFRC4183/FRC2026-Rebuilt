@@ -35,7 +35,6 @@ public class VisionIOLimelight implements VisionIO {
 
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
   private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
-    /// Basically here: if we ever want to change the name, we just need to change this line of code
     // DON'T CHANGE ANY NAMING STUFF, AFTER THIS LINE OF CODE!!!!!!!!!!!!!!!!!!!!! SAYING YOU, AIDAN
 
     inputs.cameraConnected =

@@ -32,10 +32,7 @@ import frc.robot.subsystems.forearm.ForearmSubsystem;
 import frc.robot.subsystems.hopper.HopperIOSparkMax;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -51,7 +48,7 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
-  private VisionSubsystem vision;
+  private VisionSubsystem visionSubsystem;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -94,7 +91,7 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        vision =
+        visionSubsystem =
             new VisionSubsystem(
                 new VisionIOInputsAutoLogged(), new VisionIOLimelight(), driveSubsystem);
         break;
@@ -108,10 +105,14 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        vision =
+        visionSubsystem =
             new VisionSubsystem(
-                new VisionIOInputsAutoLogged(), new VisionIOPhotonVisionSim(), driveSubsystem);
+                new VisionIOInputsAutoLogged(),
+                new VisionIOPhotonVisionSim(
+                    poseSupplier, VisionConstant.robotToBackCam, VisionConstant.robotToFrontCam),
+                driveSubsystem);
         break;
+        // thinking to what
 
       default:
         // Replayed robot, disable IO implementations
