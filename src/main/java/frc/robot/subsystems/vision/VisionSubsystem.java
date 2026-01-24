@@ -51,8 +51,8 @@ public class VisionSubsystem extends SubsystemBase {
       driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
     }
 
-    Logger.processInputs("frontCamInputs", visionIOInputsAutoLogged);
-    Logger.processInputs("backCamInputs", visionIOInputsAutoLogged);
+    Logger.processInputs("Vision/frontCam", visionIOInputsAutoLogged);
+    Logger.processInputs("Vision/backCam", visionIOInputsAutoLogged);
   }
 
   private Pose2d averagePose(Pose2d a, Pose2d b) {
@@ -61,7 +61,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     var rotationA = a.getRotation();
     var rotationB = b.getRotation();
-    var avgRotation = rotationA.plus(rotationB).times(0.5);
+    var avgRotation = a.getRotation().interpolate(b.getRotation(), 0.5);
 
     return new Pose2d(avgX, avgY, avgRotation);
   }

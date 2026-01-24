@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.constants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation3d;

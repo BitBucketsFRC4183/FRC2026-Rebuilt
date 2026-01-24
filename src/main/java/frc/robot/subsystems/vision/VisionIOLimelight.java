@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
+import frc.robot.constants.VisionConstant;
 import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
