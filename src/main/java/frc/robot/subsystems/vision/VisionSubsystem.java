@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -29,10 +30,40 @@ public class VisionSubsystem extends SubsystemBase {
     // basically, 3%-> far;
     // 80%-> takes big portion of the frame, AprilTag is near
 
-    Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
-    //    driveSubsystem.addVisionMeasurement(frontCamInputs.megaTagPose, frontCamInputs.timestamp);
-    // need stdv
+    // fusion; add vision measurement
+    Pose2d visionFusedPose = null;
+    double visionFusedTimestamps = 0.0;
 
+    if (frontCamInputs.hasTarget && backCamInputs.hasTarget) {
+      visionFusedPose = averagePose(frontCamInputs.megaTagPose, backCamInputs.megaTagPose);
+      visionFusedTimestamps = Math.max(frontCamInputs.timestamp, backCamInputs.timestamp);
+
+    } else if (frontCamInputs.hasTarget) {
+      visionFusedPose = frontCamInputs.megaTagPose;
+      visionFusedTimestamps = frontCamInputs.timestamp;
+
+    } else if (backCamInputs.hasTarget) {
+      visionFusedPose = backCamInputs.megaTagPose;
+      visionFusedTimestamps = backCamInputs.timestamp;
+    }
+
+    if (visionFusedPose != null) {
+      driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
+    }
+
+    Logger.processInputs("frontCamInputs", visionIOInputsAutoLogged);
+    Logger.processInputs("backCamInputs", visionIOInputsAutoLogged);
+  }
+
+  private Pose2d averagePose(Pose2d a, Pose2d b) {
+    double avgX = (a.getX() + b.getX()) / 2.0;
+    double avgY = (a.getY() + b.getY()) / 2.0;
+
+    var rotationA = a.getRotation();
+    var rotationB = b.getRotation();
+    var avgRotation = rotationA.plus(rotationB).times(0.5);
+
+    return new Pose2d(avgX, avgY, avgRotation);
   }
 }
 

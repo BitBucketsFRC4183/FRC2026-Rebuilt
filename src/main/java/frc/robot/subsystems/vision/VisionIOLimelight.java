@@ -1,8 +1,10 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
+import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -14,6 +16,12 @@ public class VisionIOLimelight implements VisionIO {
       NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
   private final NetworkTable LimelightBackTable =
       NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
+  public final Supplier<Pose2d> poseSupplier;
+
+  // get that pose for me
+  public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
+    this.poseSupplier = poseSupplier;
+  }
 
   @Override
   // getting two inputs
@@ -44,7 +52,10 @@ public class VisionIOLimelight implements VisionIO {
     inputs.ta = LimelightHelpers.getTA(cameraName);
     inputs.fiducialID = LimelightHelpers.getFiducialID(cameraName);
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
-    inputs.robotPose = LimelightHelpers.getBotPose2d(cameraName);
+    inputs.estimatedRobotPose = poseSupplier.get();
+
+    LimelightHelpers.SetRobotOrientation(
+        "limelightFront", inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;

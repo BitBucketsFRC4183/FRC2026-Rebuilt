@@ -19,15 +19,13 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   private PhotonCameraSim frontCamSim;
   private PhotonCameraSim backCamSim;
 
-  private final Supplier<Pose2d> poseSupplier;
-
   public VisionIOPhotonVisionSim(
       Supplier<Pose2d> poseSupplier,
       Transform3d robotToFrontCam,
       Transform3d robotToBackCam) // the parameter
       {
     // now create the stage
-    this.poseSupplier = poseSupplier;
+    super(poseSupplier);
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");

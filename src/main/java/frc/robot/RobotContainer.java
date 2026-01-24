@@ -49,6 +49,7 @@ public class RobotContainer {
   private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem visionSubsystem;
+  private VisionIOLimelight visionIO;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -91,9 +92,9 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.FrontRight),
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem =
-            new VisionSubsystem(
-                new VisionIOInputsAutoLogged(), new VisionIOLimelight(), driveSubsystem);
+            new VisionSubsystem(new VisionIOInputsAutoLogged(), visionIO, driveSubsystem);
         break;
 
       case SIM:
@@ -109,7 +110,7 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOInputsAutoLogged(),
                 new VisionIOPhotonVisionSim(
-                    driveSubsystem.pose2dSupplier,
+                    driveSubsystem.poseSupplierForSim,
                     VisionConstant.robotToBackCam,
                     VisionConstant.robotToFrontCam),
                 driveSubsystem);
