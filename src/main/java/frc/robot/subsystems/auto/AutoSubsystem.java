@@ -1,82 +1,79 @@
 package frc.robot.subsystems.auto;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
+
   private final DriveSubsystem drive;
-  //  private final ShooterSubsystem shooter;
-  //  private final ClimberSubsystem climber;
 
   public AutoSubsystem(DriveSubsystem drive) {
     this.drive = drive;
-    // this.climber = climber;
-    // this.shooter = shooter;
-    // this.autoFactory = new AutoFactory(drive::getPose, drive::setPose,
-    // drive::followTrajectorySample, false, drive, trajectoryLogger());
 
+    configureAutoBuilder();
+    registerNamedCommands();
   }
 
-  // public Command stop() { }
+  //Setup PathPlanner
 
-  // public Command shoot() {}
+  private void configureAutoBuilder() {
+    AutoBuilder.configureHolonomic(
+            drive::getPose,
+            drive::resetPose,
+            drive::getRobotRelativeSpeeds,
+            drive::driveRobotRelative,
+            new PPHolonomicDriveController(
+                    new PIDConstants(5.0, 0.0, 0.0),
+                    new PIDConstants(5.0, 0.0, 0.0)
+            ),
+            RobotConfig.fromGUISettings(),
+            drive::shouldFlipPath,
+            drive
+    );
+  }
 
-  // public Command climb() {}
+  //Named Commands
 
-  //        public AutoRoutine MidShootTowerl1(){
-  //
-  //                AutoRoutine MidShootTowerL1 =
-  //                        autoFactory.newRoutine("MidShootTowerL1");
-  //        //midstarttomid is start at mid move back shoot and turn to climb
-  //              //initialize 1
-  //                AutoTrajectory MidStarttoMid =
-  //                        MidShoot6TowerL1.trajectory("MidStarttoMid");
-  //                //initialize 2
-  //                AutoTrajectory MidStarttoTower =
-  //                        MidShootTowerL1.trajectory("MidStarttoTower");
-  //
-  //                MidShootTowerL1.active().onTrue(
-  //                    Commands.sequence(
-  //                            Commands.print("Started" + "MidShootTowerL1" + "routine:)")
-  //                            MidStarttoMid().resetOdometry()
-  //                            MidStarttoMid.cmd()
-  //                    )
-  //            );
-  //
-  //                MidStarttoMid.active();
-  //                MidStarttoMid.done().onTrue(shoot()).andThen(MidStarttoTower.cmd());
-  //
-  //                MidStarttoTower.active().onTrue(climb());
-  //
-  //                return MidShootTowerL1;
-  //
-  //            }
-  //
-  //            public AutoRoutine TopShootTowerL1(){
-  //            //move from top to mid shoot then go mid to tower
-  //                    AutoRoutine TopShootTowerL1 =
-  //                            autoFactory.newRoutine("TopShootTowerL1");
-  //                    //intialize 1
-  //                    AutoTrajectory TopStartToMid=
-  //                            TopShootTowerL1.trajectory("TopStartToMid");
-  //                    //initialize 2
-  //                AutoTrajectory MidtoTower=
-  //                        TopShootTowerL1.trajectory("MidtoTower");
-  //
-  //                TopShootTowerL1.active().onTrue(
-  //
-  //                        Commands.sequence(
-  //                                Commands.print("Started" + "TopStartToMid" + "routine:)")
-  //                                TopStartToMid.resetOdometry()
-  //                                TopStartToMid.cmd();
-  //                        )
-  //
-  //                        TopStartToMid.active();
-  //                        TopStartToMid.done().onTrue(shoot().andThen(MidStarttoTower.cmd()));
-  //                        //note to navya - check the last sequential stuff and check which one is
-  // right
-  //                        MidStarttoTower.active().onTrue(climb());
-  //
-  //                return TopShootTowerL1;
-  //            }
+  private void registerNamedCommands() {
+
+    NamedCommands.registerCommand(
+            "Stop",
+            stop()
+    );
+
+    NamedCommands.registerCommand(
+            "Shoot",
+            shoot()
+    );
+
+    NamedCommands.registerCommand(
+            "Climb",
+            climb()
+    );
+  }
+
+  // Auto Actions
+
+  public Command stop() {
+    return Commands.runOnce(drive::stop, drive);
+  }
+
+  public Command shoot() {
+    return Commands.print("Shooting!");
+    // replace with real shooter command
+  }
+
+  public Command climb() {
+    return Commands.print("Climbing!");
+    // replace with real climb command
+  }
 }
