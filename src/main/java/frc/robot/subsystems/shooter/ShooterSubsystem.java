@@ -1,8 +1,9 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
 
-public class ShooterSubsystem {
+public class ShooterSubsystem extends SubsystemBase {
   ShooterIOTalonFX io;
 
   public int targetVelocity = 3000;

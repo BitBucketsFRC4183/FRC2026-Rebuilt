@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.ForearmIOTalonFX;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -127,7 +129,7 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+    this.forearmSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -219,6 +221,13 @@ public class RobotContainer {
                 () -> forearmSubsystem.runIntake(IntakeConstants.INTAKE_IN_PERCENT),
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+    double distance = 0;
+    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+            .whileTrue(
+                    Commands.run(
+                            () -> shooterSubsystem.setTargetFlywheelVelocity(distance),
+                            shooterSubsystem))
+            .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem));
   }
 
   /**
