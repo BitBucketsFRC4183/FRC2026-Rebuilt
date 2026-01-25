@@ -73,7 +73,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command shoot() {
-    return Commands.print("shooting!")
+    return Commands.print("shooting!");
   }
 
   public Command climb() {
