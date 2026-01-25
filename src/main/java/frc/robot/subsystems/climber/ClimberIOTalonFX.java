@@ -32,19 +32,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
         armMotor.getConfigurator().apply(armConfig);
 
-        //Hook Motor
-        hookMotor = new TalonFX(ClimberConstants.HOOK_MOTOR_CAN_ID);
 
-        TalonFXConfiguration hookConfig = new TalonFXConfiguration();
-        hookConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        hookConfig.MotorOutput.Inverted =
-                ClimberConstants.HOOK_MOTOR_INVERTED
-                        ? InvertedValue.Clockwise_Positive
-                        : InvertedValue.CounterClockwise_Positive;
-
-        hookConfig.Slot0.kP = ClimberConstants.HOOK_kP;
-
-        hookMotor.getConfigurator().apply(hookConfig);
     }
 
     @Override
@@ -52,8 +40,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         inputs.armAngleDeg =
                 (armMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO) * 360.0;
 
-        inputs.hookPositionRotations =
-                hookMotor.getPosition().getValueAsDouble() / ClimberConstants.HOOK_GEAR_RATIO;
+
     }
 
     //Arm
@@ -70,16 +57,5 @@ public class ClimberIOTalonFX implements ClimberIO {
         armMotor.stopMotor();
     }
 
-    //Hooks
 
-    @Override
-    public void setHookPositionRotations(double rotations) {
-        hookMotor.setControl(
-                hookRequest.withPosition(rotations * ClimberConstants.HOOK_GEAR_RATIO));
-    }
-
-    @Override
-    public void stopHooks() {
-        hookMotor.stopMotor();
-    }
 }

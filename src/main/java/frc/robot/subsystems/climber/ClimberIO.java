@@ -8,7 +8,5 @@ public interface ClimberIO {
     void setArmAngleDeg(double degrees);
     void stopArm();
 
-    // Hooks
-    void setHookPositionRotations(double rotations);
-    void stopHooks();
+
 }

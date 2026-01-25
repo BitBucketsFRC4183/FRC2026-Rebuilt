@@ -31,27 +31,12 @@ public class ClimberSubsystem extends SubsystemBase {
         io.stopArm();
     }
 
-    /* ================= HOOK CONTROL ================= */
 
-    public void extendHooks() {
-        io.setHookPositionRotations(ClimberConstants.HOOK_MAX_ROTATIONS);
-    }
 
-    public void retractHooks() {
-        io.setHookPositionRotations(ClimberConstants.HOOK_MIN_ROTATIONS);
-    }
-
-    public void stopHooks() {
-        io.stopHooks();
-    }
-
-    /* ================= TELEMETRY ================= */
+    //Telemetry
 
     public double getArmAngleDeg() {
         return inputs.armAngleDeg;
     }
 
-    public double getHookPositionRotations() {
-        return inputs.hookPositionRotations;
-    }
 }
