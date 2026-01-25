@@ -10,10 +10,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double storedDistance = 0;
 
-  public ShooterSubsystem(ShooterIOTalonFX io) {
-    this.io = io;
-  }
+  public ShooterSubsystem(ShooterIOTalonFX io) {this.io = io;}
 
+  //Changes only the Flywheel Velocity, using storedDistance
   public void setTargetFlywheelVelocity() {
     targetVelocity = 0;
     for (double distanceAchieved = 0; distanceAchieved >= storedDistance; targetVelocity += 2) {
@@ -80,14 +79,12 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  //Stores a distance to be used setTargetFlywheelVelocity()
   public void setStoredDistance(double distance) {storedDistance = distance;}
-
-  public boolean distanceStored() {
-    return storedDistance > 0;
-  }
-
+  public boolean distanceStored() {return storedDistance > 0;}
   public void resetStoredDistance() {storedDistance = 0;}
 
+  //Stops both Intermediate and Flywheel Motors
   public void stop() {io.stopMotor();}
 
   public void startIntermediateMotors() {io.startIntermediateMotors();}

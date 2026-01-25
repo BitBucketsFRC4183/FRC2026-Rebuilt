@@ -17,6 +17,8 @@ public class ShooterIOTalonFX implements ShooterIO {
         config.MotorOutput.Inverted = ShooterConstants.flywheelInverted
                 ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
                 : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
+        //Hopefully can make the wind uptime for the flywheel faster
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         //PID and FF Configs
@@ -30,6 +32,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
         finalFlywheel.getConfigurator().apply(config);
 
+        //Intermediate Motor Configs
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         intermediateMotor.getConfigurator().apply(config);
     }
