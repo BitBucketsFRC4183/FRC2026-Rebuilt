@@ -1,4 +1,4 @@
 package frc.robot.subsystems.Arm;
 
-public class ClawSubsystem {
+public class EndEffectorSubsystem {
 }

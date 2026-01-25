@@ -53,7 +53,11 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         elevatorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         elevatorConfig.CurrentLimits.StatorCurrentLimit = 60;
         elevatorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        elevatorConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        elevatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         //Configures the motors to have limits.
+
+        elevatorTalon.getConfigurator().apply(elevatorConfig);
 
         elevatorPosition = elevatorTalon.getPosition();
         elevatorVelocity = elevatorTalon.getVelocity();
@@ -82,7 +86,7 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         @Override
         public void setElevatorMotorVoltage(double volts) {
             double appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-            elevatorTalon.set(appliedVolts);
+            elevatorTalon.setControl(voltageRequest.withOutput(appliedVolts));
         }
 
         @Override
