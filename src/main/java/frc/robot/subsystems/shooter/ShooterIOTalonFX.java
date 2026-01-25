@@ -29,6 +29,9 @@ public class ShooterIOTalonFX implements ShooterIO {
         slot0.kS = ShooterConstants.kS;
 
         finalFlywheel.getConfigurator().apply(config);
+
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        intermediateMotor.getConfigurator().apply(config);
     }
 
     @Override
