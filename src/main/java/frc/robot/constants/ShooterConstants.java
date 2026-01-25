@@ -8,6 +8,9 @@ public final class ShooterConstants extends SubsystemBase {
   public static final int flywheelID = 108;
   public static final int intermediateID = 52;
 
+  //IntermediateMotorSpeed
+  public static final int intermediateSpeed = 20;
+
   public static final boolean flywheelInverted = false;
 
   // In Inches por favor, to calculate tangential velocity

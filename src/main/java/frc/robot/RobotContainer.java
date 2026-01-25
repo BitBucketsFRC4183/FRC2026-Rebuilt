@@ -221,16 +221,30 @@ public class RobotContainer {
                 () -> forearmSubsystem.runIntake(IntakeConstants.INTAKE_IN_PERCENT),
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
-    double distance = 0;
-    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-            .whileTrue(
-                    Commands.run(
-                            () -> shooterSubsystem.setTargetFlywheelVelocity(distance),
-                            shooterSubsystem).until(shooterSubsystem::targetReached)
-                            .andThen()
 
+    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+            //Insert method to store distance from vision
+//            .onTrue(Commands.runOnce(
+//                    () -> {
+//                      double currentDistance = vision. ;
+//                      shooterSubsystem.setStoredDistance(currentDistance);
+//                    }
+//                    )
+//            )
+            .whileTrue(
+                    Commands.sequence(
+                            //Waits for the distance from vision
+                            Commands.waitUntil(shooterSubsystem::distanceStored),
+                            Commands.run(
+                                    shooterSubsystem::setTargetFlywheelVelocity,
+                                    shooterSubsystem
+                            ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
+                            shooterSubsystem::startIntermediateMotors, shooterSubsystem)
+                    )
             )
-            .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem));
+            //resets the speed of the flywheels, and the stored distances
+            .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
+            .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }
 
   /**

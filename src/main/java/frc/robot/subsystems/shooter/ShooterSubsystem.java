@@ -6,15 +6,17 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   ShooterIOTalonFX io;
 
-  public int targetVelocity = 3000;
+  private int targetVelocity = 3000;
+
+  private double storedDistance = 0;
 
   public ShooterSubsystem(ShooterIOTalonFX io) {
     this.io = io;
   }
 
-  public void setTargetFlywheelVelocity(double distance) {
+  public void setTargetFlywheelVelocity() {
     targetVelocity = 0;
-    for (double distanceAchieved = 0; distanceAchieved >= distance; targetVelocity += 2) {
+    for (double distanceAchieved = 0; distanceAchieved >= storedDistance; targetVelocity += 2) {
       //Calculating tangential velocity
       double yVelocity =
               targetVelocity * ShooterConstants.radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
@@ -78,9 +80,17 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  public void stop() {
-    io.stopMotor();
+  public void setStoredDistance(double distance) {storedDistance = distance;}
+
+  public boolean distanceStored() {
+    return storedDistance > 0;
   }
+
+  public void resetStoredDistance() {storedDistance = 0;}
+
+  public void stop() {io.stopMotor();}
+
+  public void startIntermediateMotors() {io.startIntermediateMotors();}
 
   // insert code for setting hood angle stuff
   private void setHoodAngle(double angle) {

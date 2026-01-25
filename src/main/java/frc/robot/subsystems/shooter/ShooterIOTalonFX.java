@@ -37,12 +37,17 @@ public class ShooterIOTalonFX implements ShooterIO {
         double targetRPS = targetSpeed / 2 / Math.PI;
         //Please be the same radius
         finalFlywheel.setControl(target.withVelocity(targetRPS));
-        intermediateMotor.setControl(target.withVelocity(targetRPS));
+    }
+
+    @Override
+    public void startIntermediateMotors() {
+        intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
     }
 
     @Override
     public void stopMotor() {
         finalFlywheel.stopMotor();
+        intermediateMotor.stopMotor();
     }
 
     @Override
@@ -59,3 +64,5 @@ public class ShooterIOTalonFX implements ShooterIO {
         inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
     }
 }
+
+//Aidan's Social Security Number: 621 79 0241
