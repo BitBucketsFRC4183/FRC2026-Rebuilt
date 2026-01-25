@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,11 +28,12 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.intake.ForearmIOTalonFX;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -127,7 +129,7 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
+    this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -215,8 +217,29 @@ public class RobotContainer {
                     )
             );
 
-
-
+    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+            //Insert method to store distance from vision
+//            .onTrue(Commands.runOnce(
+//                    () -> {
+//                      double currentDistance = vision. ;
+//                      shooterSubsystem.setStoredDistance(currentDistance);
+//                    }
+//                    )
+//            )
+            .whileTrue(
+                    Commands.sequence(
+                            //Waits for the distance from vision
+                            Commands.waitUntil(shooterSubsystem::distanceStored),
+                            Commands.run(
+                                    shooterSubsystem::setTargetFlywheelVelocity,
+                                    shooterSubsystem
+                            shooterSubsystem::startIntermediateMotors, shooterSubsystem)
+                    )
+                            ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
+            //resets the speed of the flywheels, and the stored distances
+            )
+            .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
+            .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }
 
   /**
