@@ -1,4 +1,3 @@
 package frc.robot.subsystems.climber;
 
-public class ElevatorSubsystem {
-}
+public class ElevatorSubsystem {}
