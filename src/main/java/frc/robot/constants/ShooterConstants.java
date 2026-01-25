@@ -8,7 +8,7 @@ public final class ShooterConstants extends SubsystemBase {
   public static final int flywheelID = 108;
   public static final int intermediateID = 52;
 
-  //IntermediateMotorSpeed
+  // IntermediateMotorSpeed
   public static final int intermediateSpeed = 20;
 
   public static final boolean flywheelInverted = false;
@@ -30,18 +30,18 @@ public final class ShooterConstants extends SubsystemBase {
   // Allowed Error for (actual distance away vs distance from launching)
   public static final double error = 5;
 
-  //Allowed RPS offset before shooting
+  // Allowed RPS offset before shooting
   public static final double tolerance = 5.0;
 
   // PID Constants
-  public static final double kP = 0.00001;
+  public static final double kP = 0.0025;
   public static final double kI = 0;
   public static final double kD = 0;
 
   // FF
   public static final double kS = 0;
   public static final double kV = 0;
-  public static final double kA = 0;
+  public static final double kA = 0.1;
   public static final double cosRatio = 0;
 
   // hood constants

@@ -8,31 +8,27 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.IntakeConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.hopper.HopperIOTalonFX;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.hopper.HopperIOTalonFX;
-import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
@@ -57,7 +53,6 @@ public class RobotContainer {
   private VisionSubsystem vision;
 
   // Toggle state for left bumper
-
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -186,58 +181,48 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    //Intake controller
+    // Intake controller
     // LEFT BUMPER: toggle forearm extend / retract
-    controller.leftBumper().onTrue(
+    controller
+        .leftBumper()
+        .onTrue(
             Commands.runOnce(
-                    () -> {
-                      if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                        intakeSubsystem.deploy();
-                      } else {
-                        intakeSubsystem.stow();
-                      }
-                    },
-                    intakeSubsystem
-            )
-    );
+                () -> {
+                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                    intakeSubsystem.deploy();
+                  } else {
+                    intakeSubsystem.stow();
+                  }
+                },
+                intakeSubsystem));
 
     // LEFT TRIGGER: hold to intake
     controller
-            .leftTrigger(0.1)
-            .whileTrue(
-                    Commands.run(
-                            intakeSubsystem::intake,
-                            intakeSubsystem
-                    )
-            )
-            .onFalse(
-                    Commands.runOnce(
-                            intakeSubsystem::hold,
-                            intakeSubsystem
-                    )
-            );
+        .leftTrigger(0.1)
+        .whileTrue(Commands.run(intakeSubsystem::intake, intakeSubsystem))
+        .onFalse(Commands.runOnce(intakeSubsystem::hold, intakeSubsystem));
 
-    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-            //Insert method to store distance from vision
-//            .onTrue(Commands.runOnce(
-//                    () -> {
-//                      double currentDistance = vision. ;
-//                      shooterSubsystem.setStoredDistance(currentDistance);
-//                    }
-//                    )
-//            )
-            .whileTrue(
-                    Commands.sequence(
-                            //Waits for the distance from vision
-                            Commands.waitUntil(shooterSubsystem::distanceStored),
-                            Commands.run(
-                                    shooterSubsystem::setTargetFlywheelVelocity,
-                                    shooterSubsystem
-                    )
-                            ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
-                            shooterSubsystem::startIntermediateMotors, shooterSubsystem))
-            .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
-            .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
+    controller
+        .rightTrigger(0.1)
+        // Insert method to store distance from vision
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  double currentDistance = 50; // (In meters from the hub)
+                  shooterSubsystem.setStoredDistance(currentDistance);
+                }))
+        .whileTrue(
+            Commands.sequence(
+                    // Waits for the distance from vision
+                    Commands.print("Storing Distance..."),
+                    Commands.waitUntil(shooterSubsystem::distanceStored),
+                    Commands.print("Distance Stored!"),
+                    Commands.run(shooterSubsystem::setTargetVelocity, shooterSubsystem))
+                .until(shooterSubsystem::targetReached)
+                .andThen( // Robot Explodes/balls launched
+                    shooterSubsystem::startIntermediateMotors, shooterSubsystem))
+        .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
+        .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }
 
   /**

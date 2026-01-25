@@ -10,22 +10,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double storedDistance = 0;
 
-  public ShooterSubsystem(ShooterIOTalonFX io) {this.io = io;}
+  public ShooterSubsystem(ShooterIOTalonFX io) {
+    this.io = io;
+  }
 
-  //Changes only the Flywheel Velocity, using storedDistance
-  public void setTargetFlywheelVelocity() {
+  // Changes only the Flywheel Velocity, using storedDistance
+  public void setTargetVelocity() {
     targetVelocity = 0;
     for (double distanceAchieved = 0; distanceAchieved >= storedDistance; targetVelocity += 2) {
-      //Calculating tangential velocity
+      // Calculating tangential velocity
       double yVelocity =
-              targetVelocity * ShooterConstants.radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
+          targetVelocity
+              * ShooterConstants.radius
+              * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
       // Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is
       // negligible lol
       double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
       double airTime =
-              (-yVelocity
-              + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)))
-                  / ShooterConstants.gravity;
+          (-yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)))
+              / ShooterConstants.gravity;
       distanceAchieved =
           airTime
               * targetVelocity
@@ -71,23 +74,36 @@ public class ShooterSubsystem extends SubsystemBase {
           targetHoodAngle = angle;
         }
       }
-      //Commented this out for now, this method is for a given distance, not for a Flywheel Velocity
-      //setTargetFlywheelVelocity(targetFlywheelRPM);
+      // Commented this out for now, this method is for a given distance, not for a Flywheel
+      // Velocity
+      // calculateTargetVelocity(targetFlywheelRPM);
 
-      //Instead use this:
+      // Instead use this:
       io.setSpeed(targetVelocity);
     }
   }
 
-  //Stores a distance to be used setTargetFlywheelVelocity()
-  public void setStoredDistance(double distance) {storedDistance = distance;}
-  public boolean distanceStored() {return storedDistance > 0;}
-  public void resetStoredDistance() {storedDistance = 0;}
+  // Stores a distance to be used calculateTargetVelocity()
+  public void setStoredDistance(double distance) {
+    storedDistance = distance;
+  }
 
-  //Stops both Intermediate and Flywheel Motors
-  public void stop() {io.stopMotor();}
+  public boolean distanceStored() {
+    return storedDistance > 0;
+  }
 
-  public void startIntermediateMotors() {io.startIntermediateMotors();}
+  public void resetStoredDistance() {
+    storedDistance = 0;
+  }
+
+  // Stops both Intermediate and Flywheel Motors
+  public void stop() {
+    io.stopMotor();
+  }
+
+  public void startIntermediateMotors() {
+    io.startIntermediateMotors();
+  }
 
   // insert code for setting hood angle stuff
   private void setHoodAngle(double angle) {
