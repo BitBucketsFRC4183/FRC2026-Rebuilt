@@ -233,11 +233,9 @@ public class RobotContainer {
                             Commands.run(
                                     shooterSubsystem::setTargetFlywheelVelocity,
                                     shooterSubsystem
-                            shooterSubsystem::startIntermediateMotors, shooterSubsystem)
                     )
                             ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
-            //resets the speed of the flywheels, and the stored distances
-            )
+                            shooterSubsystem::startIntermediateMotors, shooterSubsystem))
             .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
             .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }
