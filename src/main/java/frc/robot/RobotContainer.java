@@ -23,6 +23,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -51,6 +53,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem visionSubsystem;
   private VisionIOLimelight visionIO;
+  private ClimberSubsystem climberSubsystem;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -135,6 +138,7 @@ public class RobotContainer {
     this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
     this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
     this.shooterSubsystem = new ShooterSubsystem();
+    this.climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
