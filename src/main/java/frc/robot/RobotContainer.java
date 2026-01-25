@@ -28,6 +28,7 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -49,12 +50,12 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem;
   // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final IntakeSubsystem forearmSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
 
   // Toggle state for left bumper
-  private boolean forearmExtended = false;
+
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -126,7 +127,7 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.forearmSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
+    this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -183,6 +184,37 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    //Intake controller
+    // LEFT BUMPER: toggle forearm extend / retract
+    controller.leftBumper().onTrue(
+            Commands.runOnce(
+                    () -> {
+                      if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                        intakeSubsystem.deploy();
+                      } else {
+                        intakeSubsystem.stow();
+                      }
+                    },
+                    intakeSubsystem
+            )
+    );
+
+    // LEFT TRIGGER: hold to intake
+    controller
+            .leftTrigger(0.1)
+            .whileTrue(
+                    Commands.run(
+                            intakeSubsystem::intake,
+                            intakeSubsystem
+                    )
+            )
+            .onFalse(
+                    Commands.runOnce(
+                            intakeSubsystem::hold,
+                            intakeSubsystem
+                    )
+            );
+
 
 
   }

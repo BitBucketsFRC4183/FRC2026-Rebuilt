@@ -1,13 +1,15 @@
 package frc.robot.subsystems.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -20,60 +22,39 @@ public class AutoSubsystem extends SubsystemBase {
     this.drive = drive;
 
     configureAutoBuilder();
-    registerNamedCommands();
   }
-
-  //Setup PathPlanner
 
   private void configureAutoBuilder() {
-    AutoBuilder.configureHolonomic(
-            drive::getPose,
-            drive::resetPose,
-            drive::getRobotRelativeSpeeds,
-            drive::driveRobotRelative,
-            new PPHolonomicDriveController(
-                    new PIDConstants(5.0, 0.0, 0.0),
-                    new PIDConstants(5.0, 0.0, 0.0)
-            ),
-            RobotConfig.fromGUISettings(),
-            drive::shouldFlipPath,
-            drive
-    );
+    try {
+      RobotConfig config = RobotConfig.fromGUISettings();
+
+      AutoBuilder.configureHolonomic(
+              drive::getPose,
+              drive::resetPose,
+              drive::getChassisSpeeds,
+              drive::drive,
+              new HolonomicPathFollowerConfig(
+                      config.getMaxLinearVelocity(),
+                      config.getDriveBaseRadius(),
+                      new ReplanningConfig()
+              ),
+              () -> DriverStation.getAlliance()
+                      .map(alliance -> alliance == DriverStation.Alliance.Red)
+                      .orElse(false),
+              drive
+      );
+    } catch (Exception e) {
+      DriverStation.reportError("Failed to configure AutoBuilder", e.getStackTrace());
+    }
   }
 
-  //Named Commands
-
-  private void registerNamedCommands() {
-
-    NamedCommands.registerCommand(
-            "Stop",
-            stop()
-    );
-
-    NamedCommands.registerCommand(
-            "Shoot",
-            shoot()
-    );
-
-    NamedCommands.registerCommand(
-            "Climb",
-            climb()
-    );
-  }
-
-  // Auto Actions
-
+  /** Stops drivetrain */
   public Command stop() {
-    return Commands.runOnce(drive::stop, drive);
+    return drive.run(() -> drive.drive(new edu.wpi.first.math.kinematics.ChassisSpeeds()));
   }
 
-  public Command shoot() {
-    return Commands.print("Shooting!");
-    // replace with real shooter command
-  }
-
-  public Command climb() {
-    return Commands.print("Climbing!");
-    // replace with real climb command
+  /** Example Choreo-based routine */
+  public Command midShootAuto() {
+    return new PathPlannerAuto("MidShootExample");
   }
 }
