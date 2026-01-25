@@ -1,10 +1,12 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -13,16 +15,16 @@ public class ShooterIOTalonFX implements ShooterIO {
     private final VelocityVoltage target = new VelocityVoltage(0);
 
     public ShooterIOTalonFX() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.Inverted = ShooterConstants.flywheelInverted
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration();
+        motorConfig.MotorOutput.Inverted = ShooterConstants.flywheelInverted
                 ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
                 : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
         //Hopefully can make the wind uptime for the flywheel faster
-        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         //PID and FF Configs
-        Slot0Configs slot0 = config.Slot0;
+        Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = ShooterConstants.kP;
         slot0.kI = ShooterConstants.kI;
         slot0.kD = ShooterConstants.kD;
@@ -30,11 +32,20 @@ public class ShooterIOTalonFX implements ShooterIO {
         slot0.kV = ShooterConstants.kV;
         slot0.kS = ShooterConstants.kS;
 
-        finalFlywheel.getConfigurator().apply(config);
+        //Current Limits
+        CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
+        currentConfig.SupplyCurrentLimitEnable = true;
+        currentConfig.SupplyCurrentLimit = 40;
+        currentConfig.StatorCurrentLimitEnable = true;
+        currentConfig.StatorCurrentLimit = 40;
+
+        finalFlywheel.getConfigurator().apply(motorConfig);
+        finalFlywheel.getConfigurator().apply(currentConfig);
 
         //Intermediate Motor Configs
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        intermediateMotor.getConfigurator().apply(config);
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        intermediateMotor.getConfigurator().apply(motorConfig);
+        intermediateMotor.getConfigurator().apply(currentConfig);
     }
 
     @Override
