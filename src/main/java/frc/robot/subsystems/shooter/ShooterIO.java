@@ -4,4 +4,5 @@ public interface ShooterIO {
     void setSpeed(double targetSpeed);
     void stopMotor();
     boolean speedReached(double targetSpeed);
+    void updateInputs(ShooterIOInputs inputs);
 }

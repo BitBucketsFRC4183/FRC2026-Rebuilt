@@ -8,7 +8,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-    private final TalonFX flywheel = new TalonFX(ShooterConstants.flywheelID);
+    private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
+    private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
     private final VelocityVoltage target = new VelocityVoltage(0);
 
     public ShooterIOTalonFX() {
@@ -27,7 +28,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         slot0.kV = ShooterConstants.kV;
         slot0.kS = ShooterConstants.kS;
 
-        flywheel.getConfigurator().apply(config);
+        finalFlywheel.getConfigurator().apply(config);
     }
 
     @Override
@@ -35,17 +36,26 @@ public class ShooterIOTalonFX implements ShooterIO {
         //Convert Radians / s to Rotations / s
         double targetRPS = targetSpeed / 2 / Math.PI;
         //Please be the same radius
-        flywheel.setControl(target.withVelocity(targetRPS));
+        finalFlywheel.setControl(target.withVelocity(targetRPS));
+        intermediateMotor.setControl(target.withVelocity(targetRPS));
     }
 
     @Override
     public void stopMotor() {
-        flywheel.stopMotor();
+        finalFlywheel.stopMotor();
     }
 
     @Override
     public boolean speedReached(double targetSpeed) {
-        double currentTopFlywheelVelocity =  flywheel.getVelocity().getValueAsDouble();
+        double currentTopFlywheelVelocity =  finalFlywheel.getVelocity().getValueAsDouble();
         return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+    }
+
+    @Override
+    public void updateInputs(ShooterIOInputs inputs) {
+        inputs.appliedFlywheelOutput = finalFlywheel.getDutyCycle().getValueAsDouble();
+        inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
+        inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
+        inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
     }
 }

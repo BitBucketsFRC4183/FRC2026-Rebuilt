@@ -226,7 +226,10 @@ public class RobotContainer {
             .whileTrue(
                     Commands.run(
                             () -> shooterSubsystem.setTargetFlywheelVelocity(distance),
-                            shooterSubsystem))
+                            shooterSubsystem).until(shooterSubsystem::targetReached)
+                            .andThen()
+
+            )
             .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem));
   }
 

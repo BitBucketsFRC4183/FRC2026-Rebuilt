@@ -6,6 +6,7 @@ public final class ShooterConstants extends SubsystemBase {
 
   // Motor IDs
   public static final int flywheelID = 108;
+  public static final int intermediateID = 52;
 
   public static final boolean flywheelInverted = false;
 
@@ -33,8 +34,6 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double kP = 0.00001;
   public static final double kI = 0;
   public static final double kD = 0;
-  public static final double kMaxOutput = 1.0;
-  public static final double kMinOutput = -1.0;
 
   // FF
   public static final double kS = 0;
