@@ -1,106 +1,72 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.constants.IntakeConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
-    private final TalonFX forearmMotor;
-    private final TalonFX intakeMotor;
+    private final TalonFX motor;
+    private final DoubleSolenoid piston;
 
-    private final PositionDutyCycle positionRequest = new PositionDutyCycle(0);
-    private final DutyCycleOut percentRequest = new DutyCycleOut(0);
+    private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
 
     public IntakeIOTalonFX() {
+        motor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 
-        // Forearm
-        forearmMotor = new TalonFX(IntakeConstants.FOREARM_MOTOR_CAN_ID);
+        // Motor output config
+        MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
+        outputConfigs.Inverted =
+                IntakeConstants.MOTOR_INVERTED
+                        ? InvertedValue.Clockwise_Positive
+                        : InvertedValue.CounterClockwise_Positive;
 
-        TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
+        // Current limits
+        CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
+        currentConfigs.SupplyCurrentLimitEnable = true;
+        currentConfigs.SupplyCurrentLimit =
+                IntakeConstants.SUPPLY_CURRENT_LIMIT;
+        currentConfigs.StatorCurrentLimitEnable = true;
+        currentConfigs.StatorCurrentLimit =
+                IntakeConstants.STATOR_CURRENT_LIMIT;
 
-        // Motor output
-        intakeConfig.MotorOutput.Inverted =
-                IntakeConstants.FOREARM_MOTOR_INVERTED
-                        ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                        : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        motor.getConfigurator().apply(outputConfigs);
+        motor.getConfigurator().apply(currentConfigs);
 
-        intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        // Sensor → degrees conversion
-        intakeConfig.Feedback.SensorToMechanismRatio =
-                IntakeConstants.POSITION_CONVERSION_FACTOR;
-
-        // PID
-        Slot0Configs slot0 = intakeConfig.Slot0;
-        slot0.kP = IntakeConstants.kP;
-        slot0.kI = IntakeConstants.kI;
-        slot0.kD = IntakeConstants.kD;
-
-        // Output limits
-        intakeConfig.Voltage.PeakForwardVoltage = IntakeConstants.MAX_OUTPUT * 12.0;
-        intakeConfig.Voltage.PeakReverseVoltage = IntakeConstants.MIN_OUTPUT * 12.0;
-
-        forearmMotor.getConfigurator().apply(intakeConfig);
-
-        /* Intake */
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_CAN_ID);
-
-        intakeConfig = new TalonFXConfiguration();
-
-        intakeConfig.MotorOutput.Inverted =
-                IntakeConstants.INTAKE_MOTOR_INVERTED
-                        ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                        : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-
-        intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        intakeMotor.getConfigurator().apply(intakeConfig);
+        piston =
+                new DoubleSolenoid(
+                        IntakeConstants.PNEUMATICS_TYPE,
+                        IntakeConstants.PISTON_FORWARD_CHANNEL,
+                        IntakeConstants.PISTON_REVERSE_CHANNEL);
     }
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.forearmPositionDeg =
-                forearmMotor.getPosition().getValueAsDouble();
-
-        inputs.forearmAppliedOutput =
-                forearmMotor.getDutyCycle().getValueAsDouble();
-
-        inputs.intakeAppliedOutput =
-                intakeMotor.getDutyCycle().getValueAsDouble();
-    }
-
-    //Forearm
-
-    @Override
-    public void setForearmPercent(double percent) {
-        forearmMotor.setControl(percentRequest.withOutput(percent));
+        inputs.motorVelocityRPM =
+                motor.getVelocity().getValueAsDouble() * 60.0;
+        inputs.motorCurrentAmps =
+                motor.getSupplyCurrent().getValueAsDouble();
+        inputs.pistonExtended =
+                piston.get() == DoubleSolenoid.Value.kForward;
     }
 
     @Override
-    public void setForearmPosition(double degrees) {
-        forearmMotor.setControl(positionRequest.withPosition(degrees));
+    public void setMotorOutput(double percent) {
+        motor.setControl(dutyCycleRequest.withOutput(percent));
     }
 
     @Override
-    public void stopForearm() {
-        forearmMotor.stopMotor();
-    }
-
-    // Intake
-
-    @Override
-    public void setIntakePercent(double percent) {
-        intakeMotor.setControl(percentRequest.withOutput(percent));
+    public void extend() {
+        piston.set(DoubleSolenoid.Value.kForward);
     }
 
     @Override
-    public void stopIntake() {
-        intakeMotor.stopMotor();
+    public void retract() {
+        piston.set(DoubleSolenoid.Value.kReverse);
     }
 }

@@ -52,12 +52,12 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem;
   // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final IntakeSubsystem forearmSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
 
   // Toggle state for left bumper
-  private boolean forearmExtended = false;
+
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -129,8 +129,8 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.forearmSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
-    this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+    this.forearmSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+    this.shooterSubsystem = new ShooterSubsystem();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
@@ -186,41 +186,36 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
+    //Intake controller
+    // LEFT BUMPER: toggle forearm extend / retract
+    controller.leftBumper().onTrue(
             Commands.runOnce(
-                    () ->
-                        driveSubsystem.setPose(
-                            new Pose2d(
-                                driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
-                    driveSubsystem)
-                .ignoringDisable(true));
+                    () -> {
+                      if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                        intakeSubsystem.deploy();
+                      } else {
+                        intakeSubsystem.stow();
+                      }
+                    },
+                    intakeSubsystem
+            )
+    );
 
+    // LEFT TRIGGER: hold to intake
     controller
-        // Left Bumper Triggers Intake extended mode and Intake retract mode
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (forearmExtended) {
-                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_RETRACT_PERCENT);
-                  } else {
-                    forearmSubsystem.runForearmManual(IntakeConstants.MANUAL_EXTEND_PERCENT);
-                  }
-                  forearmExtended = !forearmExtended;
-                },
-                forearmSubsystem));
-
-    // Left trigger: run intake while held
-    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-        .whileTrue(
-            Commands.run(
-                () -> forearmSubsystem.runIntake(IntakeConstants.INTAKE_IN_PERCENT),
-                forearmSubsystem))
-        .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+            .leftTrigger(0.1)
+            .whileTrue(
+                    Commands.run(
+                            intakeSubsystem::intake,
+                            intakeSubsystem
+                    )
+            )
+            .onFalse(
+                    Commands.runOnce(
+                            intakeSubsystem::hold,
+                            intakeSubsystem
+                    )
+            );
 
     new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
             //Insert method to store distance from vision
@@ -238,11 +233,11 @@ public class RobotContainer {
                             Commands.run(
                                     shooterSubsystem::setTargetFlywheelVelocity,
                                     shooterSubsystem
-                            ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
                             shooterSubsystem::startIntermediateMotors, shooterSubsystem)
                     )
-            )
+                            ).until(shooterSubsystem::targetReached).andThen(//Robot Explodes/balls launched
             //resets the speed of the flywheels, and the stored distances
+            )
             .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
             .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }

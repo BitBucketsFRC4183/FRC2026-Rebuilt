@@ -1,82 +1,60 @@
 package frc.robot.subsystems.auto;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
+
   private final DriveSubsystem drive;
-  //  private final ShooterSubsystem shooter;
-  //  private final ClimberSubsystem climber;
 
   public AutoSubsystem(DriveSubsystem drive) {
     this.drive = drive;
-    // this.climber = climber;
-    // this.shooter = shooter;
-    // this.autoFactory = new AutoFactory(drive::getPose, drive::setPose,
-    // drive::followTrajectorySample, false, drive, trajectoryLogger());
 
+    configureAutoBuilder();
   }
 
-  // public Command stop() { }
+  private void configureAutoBuilder() {
+    try {
+      RobotConfig config = RobotConfig.fromGUISettings();
 
-  // public Command shoot() {}
+      AutoBuilder.configureHolonomic(
+              drive::getPose,
+              drive::resetPose,
+              drive::getChassisSpeeds,
+              drive::drive,
+              new HolonomicPathFollowerConfig(
+                      config.getMaxLinearVelocity(),
+                      config.getDriveBaseRadius(),
+                      new ReplanningConfig()
+              ),
+              () -> DriverStation.getAlliance()
+                      .map(alliance -> alliance == DriverStation.Alliance.Red)
+                      .orElse(false),
+              drive
+      );
+    } catch (Exception e) {
+      DriverStation.reportError("Failed to configure AutoBuilder", e.getStackTrace());
+    }
+  }
 
-  // public Command climb() {}
+  /** Stops drivetrain */
+  public Command stop() {
+    return drive.run(() -> drive.drive(new edu.wpi.first.math.kinematics.ChassisSpeeds()));
+  }
 
-  //        public AutoRoutine MidShootTowerl1(){
-  //
-  //                AutoRoutine MidShootTowerL1 =
-  //                        autoFactory.newRoutine("MidShootTowerL1");
-  //        //midstarttomid is start at mid move back shoot and turn to climb
-  //              //initialize 1
-  //                AutoTrajectory MidStarttoMid =
-  //                        MidShoot6TowerL1.trajectory("MidStarttoMid");
-  //                //initialize 2
-  //                AutoTrajectory MidStarttoTower =
-  //                        MidShootTowerL1.trajectory("MidStarttoTower");
-  //
-  //                MidShootTowerL1.active().onTrue(
-  //                    Commands.sequence(
-  //                            Commands.print("Started" + "MidShootTowerL1" + "routine:)")
-  //                            MidStarttoMid().resetOdometry()
-  //                            MidStarttoMid.cmd()
-  //                    )
-  //            );
-  //
-  //                MidStarttoMid.active();
-  //                MidStarttoMid.done().onTrue(shoot()).andThen(MidStarttoTower.cmd());
-  //
-  //                MidStarttoTower.active().onTrue(climb());
-  //
-  //                return MidShootTowerL1;
-  //
-  //            }
-  //
-  //            public AutoRoutine TopShootTowerL1(){
-  //            //move from top to mid shoot then go mid to tower
-  //                    AutoRoutine TopShootTowerL1 =
-  //                            autoFactory.newRoutine("TopShootTowerL1");
-  //                    //intialize 1
-  //                    AutoTrajectory TopStartToMid=
-  //                            TopShootTowerL1.trajectory("TopStartToMid");
-  //                    //initialize 2
-  //                AutoTrajectory MidtoTower=
-  //                        TopShootTowerL1.trajectory("MidtoTower");
-  //
-  //                TopShootTowerL1.active().onTrue(
-  //
-  //                        Commands.sequence(
-  //                                Commands.print("Started" + "TopStartToMid" + "routine:)")
-  //                                TopStartToMid.resetOdometry()
-  //                                TopStartToMid.cmd();
-  //                        )
-  //
-  //                        TopStartToMid.active();
-  //                        TopStartToMid.done().onTrue(shoot().andThen(MidStarttoTower.cmd()));
-  //                        //note to navya - check the last sequential stuff and check which one is
-  // right
-  //                        MidStarttoTower.active().onTrue(climb());
-  //
-  //                return TopShootTowerL1;
-  //            }
+  /** Example Choreo-based routine */
+  public Command midShootAuto() {
+    return new PathPlannerAuto("MidShootExample");
+  }
 }
