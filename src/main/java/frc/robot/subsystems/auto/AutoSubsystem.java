@@ -132,15 +132,15 @@ public class AutoSubsystem extends SubsystemBase {
             goDepotToMid(),
             goMidToTower(),
             climb(),
-            stop()
-            new InstantCommand(()-> System.out.println("routine 1 complete"));
+            stop(),
+            new InstantCommand(()-> System.out.println("routine 1 complete"))
 
-    )
+    );
   }
 
   public Command StartMidShootIntakeTower(){
     return Commands.sequence(
-            new InstantCommand(()->System.out.println("Moving to Shooter position"));
+            new InstantCommand(()->System.out.println("Moving to Shooter position")),
             goMidToMid(),
             shoot(),
             goMidtoDepot(),
@@ -148,14 +148,23 @@ public class AutoSubsystem extends SubsystemBase {
             goDepotToMid(),
             goMidToTower(),
             climb(),
-            stop()
-            new InstantCommand(()->System.out.println("complete routine"));
-            )
+            stop(),
+            new InstantCommand(()->System.out.println("complete routine"))
+            );
   }
 
   public Command StartTopShootIntakeTower(){
     return Commands.sequence(
-            new InstantCommand(()-> System.out.print)
-    )
+            new InstantCommand(()-> System.out.println("Moving from top to mid shooting position"))
+            goToptoMid(),
+            shoot(),
+            goMidtoDepot(),
+            new WaitCommand(3),
+            goDepotToMid(),
+            goMidToTower(),
+            climb(),
+            stop(),
+             new InstantCommand(()->System.out.println("complete routine"))
+    );
   }
 }
