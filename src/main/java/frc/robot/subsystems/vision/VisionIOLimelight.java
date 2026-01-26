@@ -28,7 +28,7 @@ public class VisionIOLimelight implements VisionIO {
   // getting two inputs
   public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
     // we use the method, give it the variable of its wanted type
-    readCameraData(LimelightFrontTable, frontCamInputs, VisionConstant.LIMELIGHT_FRONT);
+    readCameraData(LimelightFrontTable, frontCamInputs, "limelight-front");
     readCameraData(LimelightBackTable, backCamInputs, VisionConstant.LIMELIGHT_BACK);
   }
 
@@ -46,8 +46,7 @@ public class VisionIOLimelight implements VisionIO {
   private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
     // DON'T CHANGE ANY NAMING STUFF, AFTER THIS LINE OF CODE!!!!!!!!!!!!!!!!!!!!! SAYING YOU, AIDAN
 
-    inputs.cameraConnected =
-        LimelightHelpers.getLimelightNTTableEntry(cameraName, "CameraIsConnected").exists();
+    inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry(cameraName, "tv").exists();
     inputs.tx = LimelightHelpers.getTX(cameraName);
     inputs.ty = LimelightHelpers.getTY(cameraName);
     inputs.ta = LimelightHelpers.getTA(cameraName);
@@ -56,7 +55,7 @@ public class VisionIOLimelight implements VisionIO {
     inputs.estimatedRobotPose = poseSupplier.get();
 
     LimelightHelpers.SetRobotOrientation(
-        "limelightFront", inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;

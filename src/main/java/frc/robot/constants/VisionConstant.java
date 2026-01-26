@@ -9,8 +9,9 @@ public final class VisionConstant {
   // They are all capitalized in case you didn't realize it is a constant
 
   // We need to change that in the settings
-  public static final String LIMELIGHT_FRONT = "limelightFront";
-  public static final String LIMELIGHT_BACK = "limelightBack";
+  // not pipeline name!!!!!
+  public static final String LIMELIGHT_FRONT = "limelight-front";
+  public static final String LIMELIGHT_BACK = "limelight-back";
 
   public static AprilTagFieldLayout aprilTagFieldLayout;
 
