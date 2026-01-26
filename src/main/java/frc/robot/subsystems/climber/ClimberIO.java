@@ -4,11 +4,6 @@ public interface ClimberIO {
 
     void updateInputs(ClimberIOInputs inputs);
 
-    // Arms
-    void setArmAngleDeg(double degrees);
-    void stopArm();
-
-    // Hooks
-    void setHookPositionRotations(double rotations);
-    void stopHooks();
+    void setTargetHeight(double height);
+    void stopClimb();
 }

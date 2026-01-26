@@ -19,39 +19,21 @@ public class ClimberSubsystem extends SubsystemBase {
 
     /* ================= ARM CONTROL ================= */
 
-    public void moveArmsToStowed() {
-        io.setArmAngleDeg(ClimberConstants.ARM_STOWED_DEG);
+    public void moveClimbToGround() {
+        io.setTargetHeight(0);
     }
 
-    public void moveArmsToExtended() {
-        io.setArmAngleDeg(ClimberConstants.ARM_EXTENDED_DEG);
+    public void moveClimbToLevel1() {
+        io.setTargetHeight(ClimberConstants.rung1Position);
     }
 
     public void stopArms() {
-        io.stopArm();
+        io.stopClimb();
     }
-
-    /* ================= HOOK CONTROL ================= */
-
-    public void extendHooks() {
-        io.setHookPositionRotations(ClimberConstants.HOOK_MAX_ROTATIONS);
-    }
-
-    public void retractHooks() {
-        io.setHookPositionRotations(ClimberConstants.HOOK_MIN_ROTATIONS);
-    }
-
-    public void stopHooks() {
-        io.stopHooks();
-    }
-
     /* ================= TELEMETRY ================= */
 
-    public double getArmAngleDeg() {
-        return inputs.armAngleDeg;
+    public double getClimbHeight() {
+        return inputs.climberHeight;
     }
 
-    public double getHookPositionRotations() {
-        return inputs.hookPositionRotations;
-    }
 }
