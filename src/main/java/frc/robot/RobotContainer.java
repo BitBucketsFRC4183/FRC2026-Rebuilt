@@ -59,7 +59,8 @@ public class RobotContainer {
   private boolean forearmExtended = false;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -178,25 +179,25 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 driveSubsystem,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driver.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driver
         .b()
         .onTrue(
             Commands.runOnce(
@@ -207,7 +208,7 @@ public class RobotContainer {
                     driveSubsystem)
                 .ignoringDisable(true));
 
-    controller
+    driver
         // Left Bumper Triggers Intake extended mode and Intake retract mode
         .leftBumper()
         .onTrue(
@@ -223,12 +224,15 @@ public class RobotContainer {
                 forearmSubsystem));
 
     // Left trigger: run intake while held
-    new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+    new Trigger(() -> driver.getLeftTriggerAxis() > 0.1)
         .whileTrue(
             Commands.run(
                 () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+
+    operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+    operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
   }
 
   /**

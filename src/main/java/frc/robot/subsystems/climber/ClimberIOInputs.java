@@ -1,6 +1,8 @@
 package frc.robot.subsystems.climber;
 
-public class ClimberIOInputs {
-    public double climberHeight;
+import org.littletonrobotics.junction.AutoLog;
 
+@AutoLog
+public class ClimberIOInputs {
+  public double climberHeight = 0.0;
 }
