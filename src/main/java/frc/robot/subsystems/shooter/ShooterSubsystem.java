@@ -30,19 +30,14 @@ public class ShooterSubsystem extends SubsystemBase {
       double omega = testRPS * 2 * Math.PI;
       double vExit = omega * ShooterConstants.radius;
 
-      // 2. Split into X and Y components based on shooter mounting angle
       double vX = vExit * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
       double vY = vExit * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
 
-      // 3. Projectile Motion: solve for time at the target height (y)
-      // dy = vY*t + 0.5*g*t^2 -> 0.5gt^2 + vYt - dy = 0
       double dy = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-      double g = -9.81; // Use -32.2 if using feet
-
+      double g = -9.81;
       double discriminant = Math.pow(vY, 2) + 2 * g * dy;
 
       if (discriminant >= 0) {
-        // We only care about the further time point (the ball falling into the hub)
         double t = (-vY - Math.sqrt(discriminant)) / g;
         double distanceX = vX * t;
 

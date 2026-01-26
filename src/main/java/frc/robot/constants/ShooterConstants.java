@@ -22,14 +22,8 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double hubHeight = 72 / 39.37;
   public static final double shooterHeight = 21.5 / 39.37;
 
-  // Other Physics Stuff
-  public static final double gravity = -9.81;
-
   // Assuming constant hood angle
   public static final double shooterAngle = 67;
-
-  // Allowed Error for (actual distance away vs distance from launching)
-  public static final double error = 5;
 
   // Allowed RPS offset before shooting
   public static final double tolerance = 5.0;
