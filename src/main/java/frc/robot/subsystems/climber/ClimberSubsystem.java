@@ -8,7 +8,7 @@ public class ClimberSubsystem extends SubsystemBase {
     private final ClimberIO io;
     private final ClimberIOInputs inputs = new ClimberIOInputs();
 
-    public ClimberSubsystem(ClimberIO io) {
+    public ClimberSubsystem(ClimberIOTalonFX io) {
         this.io = io;
     }
 

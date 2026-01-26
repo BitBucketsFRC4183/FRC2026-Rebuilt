@@ -2,6 +2,8 @@ package frc.robot.constants;
 
 public final class ClimberConstants {
 
+    public static final double ARM_RETRACTED_DEG = ;
+
     private ClimberConstants() {}
 
     // CAN IDs
