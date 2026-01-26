@@ -57,4 +57,14 @@ public class ClimberIOTalonFX implements ClimberIO {
   public void stopClimb() {
     climbMotor.stopMotor();
   }
+
+  @Override
+  public double getCurrentHeight(){
+     double climberHeight =
+            (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
+                    * ClimberConstants.motorRadius
+                    * 2
+                    * Math.PI;
+     return climberHeight;
+  }
 }

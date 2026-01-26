@@ -40,6 +40,7 @@ public class ClimberSubsystem extends SubsystemBase {
     servo2.set(0);
     servo3.set(0);
     servo4.set(0);
+    inputs.climberHeight = io.getCurrentHeight();
   }
 
   public void moveClimbToLevel1() {
@@ -48,6 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
     servo2.set(.7);
     servo3.set(.7);
     servo4.set(.7);
+    inputs.climberHeight = io.getCurrentHeight();
   }
 
   public void stopRise() {

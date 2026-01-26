@@ -7,4 +7,6 @@ public interface ClimberIO {
   void setTargetHeight(double height);
 
   void stopClimb();
+
+  double getCurrentHeight();
 }
