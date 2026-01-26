@@ -6,17 +6,13 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
-  private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
-  private final VisionIOInputs frontCamInputs = new VisionIOInputs();
-  private final VisionIOInputs backCamInputs = new VisionIOInputs();
+  private final VisionIOInputsAutoLogged frontCamInputs = new VisionIOInputsAutoLogged();
+  private final VisionIOInputsAutoLogged backCamInputs = new VisionIOInputsAutoLogged();
+  // loggable data
   private final DriveSubsystem driveSubsystem;
 
-  public VisionSubsystem(
-      VisionIOInputsAutoLogged visionIOInputsAutoLogged,
-      VisionIO io,
-      DriveSubsystem driveSubsystem) {
-    this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
+  public VisionSubsystem(VisionIO io, DriveSubsystem driveSubsystem) {
     this.visionio = io;
     this.driveSubsystem = driveSubsystem;
   }
@@ -51,9 +47,9 @@ public class VisionSubsystem extends SubsystemBase {
       driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
     }
 
-    //key: the path, distinguish where the data come from
-    Logger.processInputs("Vision/frontCam", visionIOInputsAutoLogged);
-    Logger.processInputs("Vision/backCam", visionIOInputsAutoLogged);
+    // Stringkey: the path, distinguish where the data wants to go to; custom naming
+    Logger.processInputs("Vision/front", frontCamInputs);
+    Logger.processInputs("Vision/back", backCamInputs);
   }
 
   private Pose2d averagePose(Pose2d a, Pose2d b) {
