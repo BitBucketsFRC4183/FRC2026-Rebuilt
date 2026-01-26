@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -52,6 +54,8 @@ public class RobotContainer {
   private final IntakeSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
+  private final AutoSubsystem autoSubystem = new AutoSubsystem();
+
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -76,6 +80,16 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+
+
+
+        //register named commands
+        NamedCommands.registerCommand("MoveRandomCircle", autoSubystem.MoveRandomCircle());
+        NamedCommands.registerCommand("StartBottomShootEndTower", autoSubystem.StartBottomShootEndTower());
+        NamedCommands.registerCommand("StartMidShootIntakeTower", autoSubystem.StartMidShootIntakeTower());
+        NamedCommands.registerCommand("StartTopShootIntakeTower", autoSubystem.StartTopShootIntakeTower());
+
+
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The

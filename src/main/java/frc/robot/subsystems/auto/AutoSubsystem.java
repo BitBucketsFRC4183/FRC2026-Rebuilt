@@ -111,17 +111,22 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command goMidToMid(){
     PathPlannerPath path7 = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
+      return null;
   }
-  public Command bottomToMidAuto(){
+
+
+  public Command goRandomPath() {
+      PathPlannerPath pathRandom  = PathPlannerPath.fromChoreoTrajectory("randomPath");
+  }
+
+  public Command bottomToMidAuto() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Bottom to Mid starting")),
             goBottomToMid(),
-            new InstantCommand(()-> System.out.println("Reached mid position")),
+            new InstantCommand(() -> System.out.println("Reached mid position")),
 
-    );
-
+            );
   }
-
   public Command StartBottomShootEndTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Routine 1 starting")),
@@ -134,7 +139,6 @@ public class AutoSubsystem extends SubsystemBase {
             climb(),
             stop(),
             new InstantCommand(()-> System.out.println("routine 1 complete"))
-
     );
   }
 
@@ -155,7 +159,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopShootIntakeTower(){
     return Commands.sequence(
-            new InstantCommand(()-> System.out.println("Moving from top to mid shooting position"))
+            new InstantCommand(()-> System.out.println("Moving from top to mid shooting position")),
             goToptoMid(),
             shoot(),
             goMidtoDepot(),
@@ -165,6 +169,16 @@ public class AutoSubsystem extends SubsystemBase {
             climb(),
             stop(),
              new InstantCommand(()->System.out.println("complete routine"))
+    );
+  }
+
+  public Command MoveRandomCircle(){
+    return Commands.sequence(
+            new InstantCommand(()->System.out.println("We will be moving in a random circle now!")),
+            goRandomPath(),
+            new InstantCommand(()->System.out.println("We are done moving in a random circle"))
+
+
     );
   }
 }
