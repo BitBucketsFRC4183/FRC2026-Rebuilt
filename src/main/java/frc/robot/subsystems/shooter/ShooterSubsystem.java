@@ -6,7 +6,7 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   ShooterIOTalonFX io;
 
-  private int targetVelocity = 3000;
+  private static double targetVelocity = 0;
 
   private double storedDistance = 0;
 
@@ -14,73 +14,55 @@ public class ShooterSubsystem extends SubsystemBase {
     this.io = io;
   }
 
+  public static double getTargetVelocity() {
+    return targetVelocity;
+  }
+
   // Changes only the Flywheel Velocity, using storedDistance
-  public void setTargetVelocity() {
-    targetVelocity = 0;
-    for (double distanceAchieved = 0; distanceAchieved >= storedDistance; targetVelocity += 2) {
-      // Calculating tangential velocity
-      double yVelocity =
-          targetVelocity
-              * ShooterConstants.radius
-              * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
-      // Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is
-      // negligible lol
-      double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-      double airTime =
-          (-yVelocity + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h)))
-              / ShooterConstants.gravity;
-      distanceAchieved =
-          airTime
-              * targetVelocity
-              * ShooterConstants.radius
-              * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
-      // If it reaches this statement, the bot is too far from the hub to make it in or the
-      // shooterAngle is not appropriate
-      if (targetVelocity > ShooterConstants.maxRPM * 2 * Math.PI / 60) {
-        break;
+  public void calculateVelocity() {
+    double bestRPS = 0;
+    boolean solutionFound = false;
+
+    // Iterate through possible motor speeds (RPS)
+    for (double testRPS = 0; testRPS <= ShooterConstants.maxRPS; testRPS += 0.5) {
+
+      // 1. Convert RPS to Tangential Velocity (v = r * omega)
+      double omega = testRPS * 2 * Math.PI;
+      double vExit = omega * ShooterConstants.radius;
+
+      // 2. Split into X and Y components based on shooter mounting angle
+      double vX = vExit * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
+      double vY = vExit * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
+
+      // 3. Projectile Motion: solve for time at the target height (y)
+      // dy = vY*t + 0.5*g*t^2 -> 0.5gt^2 + vYt - dy = 0
+      double dy = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
+      double g = -9.81; // Use -32.2 if using feet
+
+      double discriminant = Math.pow(vY, 2) + 2 * g * dy;
+
+      if (discriminant >= 0) {
+        // We only care about the further time point (the ball falling into the hub)
+        double t = (-vY - Math.sqrt(discriminant)) / g;
+        double distanceX = vX * t;
+
+        if (distanceX >= storedDistance) {
+          bestRPS = testRPS;
+          solutionFound = true;
+          break; // Found the minimum speed needed to reach the distance
+        }
       }
-      io.setSpeed(targetVelocity);
+    }
+
+    if (!solutionFound) {
+      System.out.println("Range Error: Target out of reach!");
+    } else {
+      targetVelocity = bestRPS;
     }
   }
 
-  // The Distance inputted should be the distance of the bot from the "center" of the hub
-
-  public void setTargetHoodAngle(double distance) {
-    double targetFlywheelRPM = 3000;
-    // ill change later i j chose a value for now
-    double launchVelocity = (targetFlywheelRPM * 2 * Math.PI / 60) * ShooterConstants.radius;
-    double verticalDistance = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-    // initialize velocity squared - physics variables
-    // double v0squared = Math.pow(v0, 2);
-    // 6double v0fourth = Math.pow(v0, 4);
-
-    double targetHoodAngle = ShooterConstants.minHoodAngle;
-    // change accuracy for min and max hood angle later
-    for (double angle = ShooterConstants.minHoodAngle;
-        angle <= ShooterConstants.maxHoodAngle;
-        angle += 0.01) {
-      double launchVelX = launchVelocity * Math.cos(angle);
-      double launchVelY = launchVelocity * Math.sin(angle);
-
-      double discriminant =
-          Math.pow(launchVelY, 2) + 2 * ShooterConstants.gravity * verticalDistance;
-      // discriminant = launch energy - energy needed for dist + height - theory
-      if (discriminant >= 0) {
-        double airtime = (launchVelY + Math.sqrt(discriminant)) / ShooterConstants.gravity;
-
-        double distanceAchieved = launchVelX * airtime;
-
-        if (Math.abs(distanceAchieved - distance) <= ShooterConstants.error) {
-          targetHoodAngle = angle;
-        }
-      }
-      // Commented this out for now, this method is for a given distance, not for a Flywheel
-      // Velocity
-      // calculateTargetVelocity(targetFlywheelRPM);
-
-      // Instead use this:
-      io.setSpeed(targetVelocity);
-    }
+  public void setTargetVelocity() {
+    io.setSpeed(targetVelocity);
   }
 
   // Stores a distance to be used calculateTargetVelocity()
@@ -103,6 +85,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startIntermediateMotors() {
     io.startIntermediateMotors();
+  }
+
+  public boolean finishedCalculations() {
+    return targetVelocity != 0;
   }
 
   // insert code for setting hood angle stuff

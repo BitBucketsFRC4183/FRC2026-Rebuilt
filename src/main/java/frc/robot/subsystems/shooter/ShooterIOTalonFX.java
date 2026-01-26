@@ -6,33 +6,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
   private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
-
-  private final FlywheelSim flySim =
-      new FlywheelSim(
-          LinearSystemId.identifyVelocitySystem(ShooterConstants.kV, ShooterConstants.kA),
-          DCMotor.getKrakenX60(1),
-          3.0);
-
-  private final Mechanism2d mechCanvas = new Mechanism2d(3, 3);
-  private final MechanismRoot2d root = mechCanvas.getRoot("pivot", 1.5, 1.5);
-  MechanismLigament2d flywheelVis = root.append(new MechanismLigament2d("flywheel", 1, 0));
+  private final ShooterSim shooterSim = new ShooterSim();
 
   public ShooterIOTalonFX() {
-    SmartDashboard.putData("Flywheel", mechCanvas);
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     motorConfig.MotorOutput.Inverted =
         ShooterConstants.flywheelInverted
@@ -69,10 +51,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setSpeed(double targetSpeed) {
-    // Convert Radians / s to Rotations / s
-    double targetRPS = targetSpeed / 2 / Math.PI;
     // Please be the same radius
-    finalFlywheel.setControl(target.withVelocity(targetRPS));
+    finalFlywheel.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
@@ -99,36 +79,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
     inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
     inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // --- CTRE PHOENIX 6 SIMULATION LOGIC ---
-
-    // A. Get the simulation state of the TalonFX
-    var talonSimState = finalFlywheel.getSimState();
-
-    // B. Set the Supply Voltage (important so the Talon knows it has power)
-    talonSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    // C. Update Physics Engine
-    // Get the voltage the Talon WANTS to output and feed it to the physics sim
-    flySim.setInput(talonSimState.getMotorVoltage());
-    flySim.update(0.02); // 20ms loop time
-    flySim.setAngularVelocity(50);
-
-    // D. "Close the Loop"
-    // We must tell the TalonFX how fast the sim thinks it is spinning.
-    // WPILib uses Radians/Sec, Phoenix 6 uses Rotations/Sec.
-    // Formula: Rad/s / 2Pi = Rotations/Sec
-    double simRPS = flySim.getAngularVelocityRadPerSec() / (2 * Math.PI);
-    talonSimState.setRotorVelocity(simRPS);
-
-    // E. Update Visualization (Mechanism2d)
-    // Convert Rad/s to Deg/s for the visual rotation
-    flywheelVis.setAngle(
-        flywheelVis.getAngle() + flySim.getAngularVelocityRadPerSec() * 0.02 * (180 / Math.PI));
-    SmartDashboard.putNumber("Flywheel RPM", flySim.getAngularVelocityRPM());
   }
 }
 

@@ -30,6 +30,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -51,6 +52,8 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
+
+  private ShooterSim shooterSim = new ShooterSim();
 
   // Toggle state for left bumper
 
@@ -108,6 +111,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         vision =
             new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), driveSubsystem);
+        shooterSim = new ShooterSim();
         break;
 
       default:
@@ -208,19 +212,22 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  double currentDistance = 50; // (In meters from the hub)
+                  double currentDistance = 10; // (In meters from the hub)
                   shooterSubsystem.setStoredDistance(currentDistance);
+                  shooterSubsystem.calculateVelocity();
                 }))
         .whileTrue(
             Commands.sequence(
-                    // Waits for the distance from vision
-                    Commands.print("Storing Distance..."),
-                    Commands.waitUntil(shooterSubsystem::distanceStored),
-                    Commands.print("Distance Stored!"),
-                    Commands.run(shooterSubsystem::setTargetVelocity, shooterSubsystem))
-                .until(shooterSubsystem::targetReached)
-                .andThen( // Robot Explodes/balls launched
-                    shooterSubsystem::startIntermediateMotors, shooterSubsystem))
+                // Waits for the distance from vision
+                Commands.waitUntil(shooterSubsystem::distanceStored),
+                Commands.print("Distance Stored!"),
+                Commands.run(() -> System.out.println(ShooterSubsystem.getTargetVelocity())),
+                Commands.run(shooterSubsystem::setTargetVelocity, shooterSubsystem)
+                    .until(shooterSubsystem::targetReached)
+                    .andThen(
+                        Commands.parallel(
+                            Commands.run(shooterSubsystem::setTargetVelocity),
+                            Commands.run(shooterSubsystem::startIntermediateMotors)))))
         .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
         .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
   }

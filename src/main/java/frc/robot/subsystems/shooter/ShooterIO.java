@@ -10,6 +10,4 @@ public interface ShooterIO {
   boolean speedReached(double targetSpeed);
 
   void updateInputs(ShooterIOInputs inputs);
-
-  void simulationPeriodic();
 }
