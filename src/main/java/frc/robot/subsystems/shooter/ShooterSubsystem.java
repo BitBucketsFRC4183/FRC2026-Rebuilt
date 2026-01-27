@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Iterate through possible motor speeds (RPS)
     for (double testRPS = 0; testRPS <= ShooterConstants.maxRPS; testRPS += 0.5) {
 
-      // 1. Convert RPS to Tangential Velocity (v = r * omega)
+      //Conversion to Rad/Sec
       double omega = testRPS * 2 * Math.PI;
       double vExit = omega * ShooterConstants.radius;
 

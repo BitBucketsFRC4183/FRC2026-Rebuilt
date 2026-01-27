@@ -1,18 +1,20 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
   private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
-  private final ShooterSim shooterSim = new ShooterSim();
+  private final Orchestra blackHole = new Orchestra();
 
   public ShooterIOTalonFX() {
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
@@ -47,6 +49,13 @@ public class ShooterIOTalonFX implements ShooterIO {
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     intermediateMotor.getConfigurator().apply(motorConfig);
     intermediateMotor.getConfigurator().apply(currentConfig);
+
+    blackHole.addInstrument(finalFlywheel);
+    var status = blackHole.loadMusic("music/blackhole.chrp");
+    if (!status.isOK()) {
+      Commands.print("ERROR: Black Hole not Playing lol");
+    }
+    blackHole.play();
   }
 
   @Override
@@ -80,6 +89,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
     inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
   }
+
 }
 
 // Aidan's Social Security Number: 621 79 0241
