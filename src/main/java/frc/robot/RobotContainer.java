@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
@@ -60,7 +61,8 @@ public class RobotContainer {
 
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController drivercontroller = new CommandXboxController(0);
+  private final CommandXboxController operatorcontroller = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -170,39 +172,44 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -drivercontroller.getLeftY(),
+            () -> -drivercontroller.getLeftX(),
+            () -> -drivercontroller.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    drivercontroller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 driveSubsystem,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -drivercontroller.getLeftY(),
+                () -> -drivercontroller.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    //Intake controller
-    // LEFT BUMPER: toggle forearm extend / retract
-    controller.leftBumper().onTrue(
-            Commands.runOnce(
-                    () -> {
-                      if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                        intakeSubsystem.deploy();
-                      } else {
-                        intakeSubsystem.stow();
-                      }
-                    },
-                    intakeSubsystem
-            )
+    drivercontroller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+
+    //Left bumper Intake deployed and stowed
+    operatorcontroller.leftBumper().onTrue(
+            Commands.runOnce(() -> {
+              if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                intakeSubsystem.deploy();
+              } else {
+                intakeSubsystem.stow();
+              }
+            }, intakeSubsystem)
     );
 
+    operatorcontroller
+            .leftTrigger()
+            .whileTrue(
+                    IntakeCommands.intake(intakeSubsystem)
+                            .onlyIf(() -> intakeSubsystem.isExtended())
+            );
+
+
     // LEFT TRIGGER: hold to intake
-    controller
+    operatorcontroller
             .leftTrigger(0.1)
             .whileTrue(
                     Commands.run(
@@ -217,7 +224,7 @@ public class RobotContainer {
                     )
             );
 
-    new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+    new Trigger(() -> operatorcontroller.getRightTriggerAxis() > 0.1)
             //Insert method to store distance from vision
 //            .onTrue(Commands.runOnce(
 //                    () -> {
