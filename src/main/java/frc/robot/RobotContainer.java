@@ -61,8 +61,8 @@ public class RobotContainer {
 
 
   // Controller
-  private final CommandXboxController drivercontroller = new CommandXboxController(0);
-  private final CommandXboxController operatorcontroller = new CommandXboxController(1);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -172,25 +172,25 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
-            () -> -drivercontroller.getLeftY(),
-            () -> -drivercontroller.getLeftX(),
-            () -> -drivercontroller.getRightX()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-    drivercontroller
+    driverController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 driveSubsystem,
-                () -> -drivercontroller.getLeftY(),
-                () -> -drivercontroller.getLeftX(),
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    drivercontroller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
     //Left bumper Intake deployed and stowed
-    operatorcontroller.leftBumper().onTrue(
+    operatorController.leftBumper().onTrue(
             Commands.runOnce(() -> {
               if (intakeSubsystem.getState() == IntakeState.STOWED) {
                 intakeSubsystem.deploy();
@@ -200,7 +200,7 @@ public class RobotContainer {
             }, intakeSubsystem)
     );
 
-    operatorcontroller
+    operatorController
             .leftTrigger()
             .whileTrue(
                     IntakeCommands.intake(intakeSubsystem)
@@ -209,7 +209,7 @@ public class RobotContainer {
 
 
     // LEFT TRIGGER: hold to intake
-    operatorcontroller
+    operatorController
             .leftTrigger(0.1)
             .whileTrue(
                     Commands.run(
@@ -224,7 +224,7 @@ public class RobotContainer {
                     )
             );
 
-    new Trigger(() -> operatorcontroller.getRightTriggerAxis() > 0.1)
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.1)
             //Insert method to store distance from vision
 //            .onTrue(Commands.runOnce(
 //                    () -> {
