@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,6 +30,7 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -53,8 +55,8 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem;
   // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
   private VisionSubsystem vision;
 
   // Toggle state for left bumper
@@ -102,7 +104,8 @@ public class RobotContainer {
         vision =
             new VisionSubsystem(
                 new VisionIOInputsAutoLogged(), new VisionIOLimelight(), driveSubsystem);
-        break;
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
+      break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -115,7 +118,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         vision =
             new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), driveSubsystem);
-        break;
+      intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
+      break;
+
 
       default:
         // Replayed robot, disable IO implementations
@@ -126,12 +131,12 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        break;
+      intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
+      break;
     }
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
