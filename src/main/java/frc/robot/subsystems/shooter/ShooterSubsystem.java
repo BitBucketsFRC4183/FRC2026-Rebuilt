@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Iterate through possible motor speeds (RPS)
     for (double testRPS = 0; testRPS <= ShooterConstants.maxRPS; testRPS += 0.5) {
 
-      //Conversion to Rad/Sec
+      // Conversion to Rad/Sec
       double omega = testRPS * 2 * Math.PI;
       double vExit = omega * ShooterConstants.radius;
 
@@ -80,10 +80,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void startIntermediateMotors() {
     io.startIntermediateMotors();
-  }
-
-  public boolean finishedCalculations() {
-    return targetVelocity != 0;
   }
 
   // insert code for setting hood angle stuff

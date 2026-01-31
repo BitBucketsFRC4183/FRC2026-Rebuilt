@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final ShooterSim shooterSim;
   private VisionSubsystem vision;
   // Toggle state for left bumper
 
@@ -127,6 +129,7 @@ public class RobotContainer {
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
     this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
     this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+    this.shooterSim = new ShooterSim();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
@@ -208,7 +211,9 @@ public class RobotContainer {
         .rightTrigger(0.1)
         // Insert method to store distance from vision, in meters pls
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem))
+        .whileTrue(
+            Commands.parallel(
+                ShooterCommands.revFlywheels(shooterSubsystem), Commands.run(shooterSim::periodic)))
         .onFalse(ShooterCommands.reset(shooterSubsystem));
   }
 

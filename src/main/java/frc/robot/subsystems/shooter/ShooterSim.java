@@ -1,7 +1,13 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -13,6 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterSim {
+
+  private final DutyCycleOut m_request = new DutyCycleOut(0);
+
   private final FlywheelSim flySim =
       new FlywheelSim(
           LinearSystemId.identifyVelocitySystem(ShooterConstants.kV, ShooterConstants.kA),
@@ -25,6 +34,7 @@ public class ShooterSim {
 
   private final TalonFX m_motor = new TalonFX(1);
   private final TalonFXSimState m_motorSim = m_motor.getSimState();
+  private final PIDController pidController = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
 
   public ShooterSim() {
     SmartDashboard.putData("Flywheel Stuff", mechCanvas);
@@ -33,7 +43,6 @@ public class ShooterSim {
   public void periodic() {
     // 1. Tell the TalonFX what the battery voltage is
     m_motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-
     // 2. GET the voltage the TalonFX is trying to send to the motor
     double motorVoltage = m_motorSim.getMotorVoltage();
 
@@ -41,13 +50,14 @@ public class ShooterSim {
     flySim.setInputVoltage(motorVoltage);
 
     // 4. STEP the physics model forward by 20ms
-    flySim.update(0.02);
+    flySim.update(0.00001);
 
     // 5. UPDATE the TalonFX with the new simulated physics
     // Note: FlywheelSim returns mechanism velocity, but TalonFX wants ROTOR velocity.
     // Multiply by your gear ratio (e.g., if 1:1, use 1.0).
-    double rotorVelocityRPS = flySim.getAngularVelocityRadPerSec() / (2 * Math.PI) * 3;
-    m_motorSim.setRotorVelocity(rotorVelocityRPS);
+    System.out.println("GO");
+
+    flySim.setAngularVelocity(2 * m_motor.getVelocity().getValueAsDouble() * Math.PI);
 
     // 6. UPDATE the visualizer
     double deltaAngle = Math.toDegrees(flySim.getAngularVelocityRadPerSec() * 0.02);

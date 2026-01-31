@@ -89,7 +89,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
     inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
   }
-
 }
 
 // Aidan's Social Security Number: 621 79 0241
