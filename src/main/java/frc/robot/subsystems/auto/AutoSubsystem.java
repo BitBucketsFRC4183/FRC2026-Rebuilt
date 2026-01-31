@@ -8,8 +8,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.config.RobotConfig;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.*;
+
 
 
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -82,12 +85,26 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   //autoroutines
-  public Command goBottomToMid(){
-    PathPlannerPath path1 = PathPlannerPath.fromChoreoTrajectory("BottomStartToMid");
+  /**TODO: NAVYA BELOW IS THE CORRECT WAY TO MAKE A PATHPLANNER COMMAND.
+   * YOU NEED TO CHANGE ALL OF YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING
+   * AND THEN YOU MUST TEST YOUR PATHS IN SIM!! PLEASSSEE!!!
+   */
+  public Command goBottomToMid() {
+    PathPlannerPath path1;
 
+    try {
+      // Load the path from the deploy/pathplanner folder by name
+      path1 = PathPlannerPath.fromPathFile("BottomStartToMid");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path1);
   }
-  public Command goMidtoTower(){
+
+    public Command goMidtoTower(){
     PathPlannerPath path2 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
 
     return AutoBuilder.followPath(path2);
