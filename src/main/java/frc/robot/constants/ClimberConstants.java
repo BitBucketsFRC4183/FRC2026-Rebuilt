@@ -17,8 +17,7 @@ public final class ClimberConstants {
   public static final double ARM_EXTENDED_DEG = 60.0;
 
   // Gear ratios (MEASURE THESE)
-  public static final double ARM_GEAR_RATIO = 100.0; // motor rotations per arm rotation
-  public static final double HOOK_GEAR_RATIO = 20.0;
+  public static final double ARM_GEAR_RATIO = 3.0; // motor rotations per arm rotation
   public static final double motorRadius = 2.0;
 
   // Motion limits (rotations)

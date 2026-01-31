@@ -50,8 +50,19 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setTargetHeight(double height) {
-    double motorRotations = height / (2 * Math.PI * ClimberConstants.motorRadius);
-    climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    double currentHeight =
+        (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
+            * ClimberConstants.motorRadius
+            * 2
+            * Math.PI;
+    if (height < currentHeight) {
+      double motorRotations =
+          -(climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO) - height;
+      climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    } else {
+      double motorRotations = height / (2 * Math.PI * ClimberConstants.motorRadius);
+      climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    }
   }
 
   @Override
