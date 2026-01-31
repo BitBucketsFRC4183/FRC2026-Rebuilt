@@ -201,6 +201,15 @@ public class RobotContainer {
 
   }
 
+  private final Command driverController(){
+
+  }
+
+  private final Command operatorController(){
+
+  }
+
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

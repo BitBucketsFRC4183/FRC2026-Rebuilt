@@ -27,7 +27,7 @@ public class AutoSubsystem extends SubsystemBase {
     registerNamedCommands();
   }
 
-  PathPlannerPath MidStarttoMid = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
+  //PathPlannerPath MidStarttoMid = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
   //Setup PathPlanner
 
   private void configureAutoBuilder() {
@@ -95,18 +95,26 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command goToptoMid(){
     PathPlannerPath path3 = PathPlannerPath.fromChoreoTrajectory("TopStarttoMid");
+
+    return AutoBuilder.followPath(path3);
   }
 
   public Command goMidtoDepot(){
     PathPlannerPath path4 = PathPlannerPath.fromChoreoTrajectory("MidtoDepot");
+
+    return AutoBuilder.followPath(path4);
   }
 
   public Command goDepotToMid(){
     PathPlannerPath path5 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
+
+    return AutoBuilder.followPath(path5);
   }
 
   public Command goMidToTower(){
     PathPlannerPath path6  = PathPlannerPath.fromChoreoTrajectory("MidStarttoTower");
+
+    return AutoBuilder.followPath(path6);
   }
 
   public Command goMidToMid(){
@@ -117,14 +125,15 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command goRandomPath() {
       PathPlannerPath pathRandom  = PathPlannerPath.fromChoreoTrajectory("randomPath");
+
+    return AutoBuilder.followPath(pathRandom);
   }
 
   public Command bottomToMidAuto() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Bottom to Mid starting")),
             goBottomToMid(),
-            new InstantCommand(() -> System.out.println("Reached mid position")),
-
+            new InstantCommand(() -> System.out.println("Reached mid position"))
             );
   }
   public Command StartBottomShootEndTower(){
