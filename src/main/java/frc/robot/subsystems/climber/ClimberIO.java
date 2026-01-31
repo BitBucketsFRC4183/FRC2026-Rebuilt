@@ -9,4 +9,6 @@ public interface ClimberIO {
   void stopClimb();
 
   double getCurrentHeight();
+
+  double getCurrentVoltage();
 }

@@ -26,7 +26,7 @@ public final class ClimberConstants {
   public static final double HOOK_MAX_ROTATIONS = 25.0;
 
   // PID (starting values)
-  public static final double ARM_kP = 40.0;
+  public static final double ARM_kP = 1.0;
   public static final double ARM_kD = 2.0;
   public static final double ARM_kI = 2.0;
 

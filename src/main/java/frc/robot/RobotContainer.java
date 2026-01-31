@@ -231,8 +231,8 @@ public class RobotContainer {
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
 
-    operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
+    operator.a().whileTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+    operator.b().whileTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
   }
 
   /**

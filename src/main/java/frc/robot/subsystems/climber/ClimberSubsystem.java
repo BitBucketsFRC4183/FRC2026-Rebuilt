@@ -41,6 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
     servo3.set(0);
     servo4.set(0);
     inputs.climberHeight = io.getCurrentHeight();
+    inputs.currentVoltage = io.getCurrentVoltage();
   }
 
   public void moveClimbToLevel1() {
@@ -50,6 +51,7 @@ public class ClimberSubsystem extends SubsystemBase {
     servo3.set(.7);
     servo4.set(.7);
     inputs.climberHeight = io.getCurrentHeight();
+    inputs.currentVoltage = io.getCurrentVoltage();
   }
 
   public void stopRise() {
