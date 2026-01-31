@@ -17,7 +17,7 @@ public class IntakeIOSim implements IntakeIO {
     private double motorVelocityRPM = 0.0;
     private double motorCurrentAmps = 0.0;
 
-    // Simple simulation constants
+    // Sim Constants
     private static final double FREE_SPEED_RPM = 6000.0;
     private static final double MAX_CURRENT_AMPS = 40.0;
     private static final double INTAKE_LOAD_CURRENT = 15.0;
@@ -34,11 +34,10 @@ public class IntakeIOSim implements IntakeIO {
         // Target velocity based on motor output
         double targetRPM = motorOutput * FREE_SPEED_RPM;
 
-        // First-order response
         motorVelocityRPM +=
                 (targetRPM - motorVelocityRPM) * MathUtil.clamp(dt * VELOCITY_RESPONSE, 0.0, 1.0);
 
-        // Current draw model
+        // Current draw
         motorCurrentAmps =
                 Math.abs(motorOutput) * MAX_CURRENT_AMPS;
 
@@ -47,7 +46,7 @@ public class IntakeIOSim implements IntakeIO {
             motorCurrentAmps += INTAKE_LOAD_CURRENT;
         }
 
-        // Populate inputs
+        //inputs
         inputs.motorVelocityRPM = motorVelocityRPM;
         inputs.motorCurrentAmps = motorCurrentAmps;
         inputs.pistonExtended = pistonExtended;
