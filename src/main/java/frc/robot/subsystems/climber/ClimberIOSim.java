@@ -6,26 +6,23 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.ClimberConstants;
 
 public class ClimberIOSim implements ClimberIO {
   CoreTalonFX coreTalonFX = new CoreTalonFX(1);
   public final TalonFXSimState climberSimMotor = coreTalonFX.getSimState();
 
-  private final Mechanism2d climerCanvas = new Mechanism2d(3, 3);
-  private final MechanismRoot2d climerRoot = climerCanvas.getRoot("pivot", 1.5, 1.5);
+  private final Mechanism2d climberCanvas = new Mechanism2d(3, 3);
+  private final MechanismRoot2d climberRoot = climberCanvas.getRoot("pivot", 1.5, 1.5);
   MechanismLigament2d climberModel =
-      climerRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
+      climberRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
 
   public ClimberIOSim() {
-    SmartDashboard.putData("Climber Data", climerCanvas);
+    SmartDashboard.putData("Climber Data", climberCanvas);
   }
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    climberSimMotor.setRawRotorPosition(
-        ClimberConstants.rung1Position / (ClimberConstants.motorRadius * 2 * Math.PI));
-    inputs.climberHeight = climberSimMotor.getTorqueCurrent() / 10;
+    inputs.climberHeight = climberSimMotor.getTorqueCurrent() / 5;
     inputs.currentVoltage = climberSimMotor.getMotorVoltage();
   }
 
