@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.GyroIO;
@@ -30,7 +31,6 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.shooter.ShooterSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -52,13 +52,11 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem vision;
-
-  private ShooterSim shooterSim = new ShooterSim();
-
   // Toggle state for left bumper
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -79,7 +77,7 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        // TalonFXS driverController connected to a CANdi with a PWM encoder. The
         // implementations
         // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
         // swerve
@@ -111,7 +109,6 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         vision =
             new VisionSubsystem(new VisionIOInputsAutoLogged(), new VisionIOSim(), driveSubsystem);
-        shooterSim = new ShooterSim();
         break;
 
       default:
@@ -169,25 +166,25 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driverController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 driveSubsystem,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    // Intake controller
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    // Intake driverController
     // LEFT BUMPER: toggle forearm extend / retract
-    controller
+    driverController
         .leftBumper()
         .onTrue(
             Commands.runOnce(
@@ -201,35 +198,18 @@ public class RobotContainer {
                 intakeSubsystem));
 
     // LEFT TRIGGER: hold to intake
-    controller
+    driverController
         .leftTrigger(0.1)
         .whileTrue(Commands.run(intakeSubsystem::intake, intakeSubsystem))
         .onFalse(Commands.runOnce(intakeSubsystem::hold, intakeSubsystem));
 
-    controller
+    double distance = 10;
+    operatorController
         .rightTrigger(0.1)
-        // Insert method to store distance from vision
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  double currentDistance = 10; // (In meters from the hub)
-                  shooterSubsystem.setStoredDistance(currentDistance);
-                  shooterSubsystem.calculateVelocity();
-                }))
-        .whileTrue(
-            Commands.sequence(
-                // Waits for the distance from vision
-                Commands.waitUntil(shooterSubsystem::distanceStored),
-                Commands.print("Distance Stored!"),
-                Commands.run(() -> System.out.println(ShooterSubsystem.getTargetVelocity())),
-                Commands.run(shooterSubsystem::setTargetVelocity, shooterSubsystem)
-                    .until(shooterSubsystem::targetReached)
-                    .andThen(
-                        Commands.parallel(
-                            Commands.run(shooterSubsystem::setTargetVelocity),
-                            Commands.run(shooterSubsystem::startIntermediateMotors)))))
-        .onFalse(Commands.runOnce(shooterSubsystem::stop, shooterSubsystem))
-        .onFalse(Commands.runOnce(shooterSubsystem::resetStoredDistance));
+        // Insert method to store distance from vision, in meters pls
+        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem));
   }
 
   /**
