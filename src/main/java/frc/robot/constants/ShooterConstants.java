@@ -11,7 +11,7 @@ public final class ShooterConstants extends SubsystemBase {
   // IntermediateMotorSpeed
   public static final int intermediateSpeed = 20;
 
-  public static final int maxRPS = 100;
+  public static final int maxRPS = 60;
 
   public static final boolean flywheelInverted = false;
 
