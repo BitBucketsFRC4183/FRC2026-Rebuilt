@@ -104,47 +104,127 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path1);
   }
 
-    public Command goMidtoTower(){
-    PathPlannerPath path2 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
+  public Command goMidtoTower(){
+    PathPlannerPath path2;
+
+    try{
+      path2= PathPlannerPath.fromPathFile("MidtoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(path2);
   }
+   // public Command goMidtoTower(){
+   // PathPlannerPath path2 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
+
+   // return AutoBuilder.followPath(path2);
+  //}
 
   public Command goToptoMid(){
-    PathPlannerPath path3 = PathPlannerPath.fromChoreoTrajectory("TopStarttoMid");
+    PathPlannerPath path3;
+
+    try{
+      path3= PathPlannerPath.fromPathFile("TopStarttoMid");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(path3);
   }
+  /*public Command goToptoMid(){
+    PathPlannerPath path3 = PathPlannerPath.fromChoreoTrajectory("TopStarttoMid");
+
+    return AutoBuilder.followPath(path3);
+  }*/
 
   public Command goMidtoDepot(){
-    PathPlannerPath path4 = PathPlannerPath.fromChoreoTrajectory("MidtoDepot");
+    PathPlannerPath path4;
+
+    try{
+      path4= PathPlannerPath.fromPathFile("MidtoDepot");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(path4);
   }
+  /*public Command goMidtoDepot(){
+    PathPlannerPath path4 = PathPlannerPath.fromChoreoTrajectory("MidtoDepot");
 
+    return AutoBuilder.followPath(path4);
+  }*/
   public Command goDepotToMid(){
-    PathPlannerPath path5 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
+    PathPlannerPath path5;
+
+    try{
+      path5= PathPlannerPath.fromPathFile("DepotToMid");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(path5);
   }
+  /*public Command goDepotToMid(){
+    PathPlannerPath path5 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
 
+    return AutoBuilder.followPath(path5);
+  }*/
   public Command goMidToTower(){
-    PathPlannerPath path6  = PathPlannerPath.fromChoreoTrajectory("MidStarttoTower");
+    PathPlannerPath path6;
+
+    try{
+      path6= PathPlannerPath.fromPathFile("MidStarttoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(path6);
   }
+  /*public Command goMidToTower(){
+    PathPlannerPath path6  = PathPlannerPath.fromChoreoTrajectory("MidStarttoTower");
 
+    return AutoBuilder.followPath(path6);
+  }*/
   public Command goMidToMid(){
+    PathPlannerPath path7;
+
+    try{
+      path7= PathPlannerPath.fromPathFile("MidStarttoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path7);
+  }
+  /*public Command goMidToMid(){
     PathPlannerPath path7 = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
       return null;
-  }
+  }*/
+  public Command goRandomPath(){
+    PathPlannerPath pathRandom;
 
-
-  public Command goRandomPath() {
-      PathPlannerPath pathRandom  = PathPlannerPath.fromChoreoTrajectory("randomPath");
+    try{
+      pathRandom= PathPlannerPath.fromPathFile("randomPath");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
 
     return AutoBuilder.followPath(pathRandom);
   }
+
+  /*public Command goRandomPath() {
+      PathPlannerPath pathRandom  = PathPlannerPath.fromChoreoTrajectory("randomPath");
+
+    return AutoBuilder.followPath(pathRandom);
+  }*/
 
   public Command bottomToMidAuto() {
     return Commands.sequence(
