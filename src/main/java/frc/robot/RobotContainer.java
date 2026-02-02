@@ -209,7 +209,8 @@ public class RobotContainer {
     double distance = 10;
     operatorController
         .rightTrigger(0.1)
-        // Insert method to store distance from vision, in meters pls, and stop robot in place to get rid of transitional motion
+        // Insert method to store distance from vision, in meters pls, and stop robot in place to
+        // get rid of transitional motion
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
         .whileTrue(
             Commands.parallel(

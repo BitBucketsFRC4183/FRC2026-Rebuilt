@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class ShooterCommands {
@@ -13,7 +14,7 @@ public class ShooterCommands {
         });
   }
 
-  public static Command revFlywheels(ShooterSubsystem shooterSubsystem) {
+  public static Command revFlywheels(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         // Waits for the distance from vision
         Commands.waitUntil(shooterSubsystem::distanceStored),
@@ -24,12 +25,15 @@ public class ShooterCommands {
             .andThen(
                 Commands.parallel(
                     Commands.run(shooterSubsystem::setTargetVelocity),
-                    Commands.run(shooterSubsystem::startIntermediateMotors))));
+                    Commands.run(shooterSubsystem::startIntermediateMotors),
+                        Commands.run(hopperSubsystem::runConveyorForward)
+                        )));
   }
 
-  public static Command reset(ShooterSubsystem shooterSubsystem) {
+  public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.parallel(
         Commands.runOnce(shooterSubsystem::resetStoredDistance),
-        Commands.runOnce(shooterSubsystem::stop));
+        Commands.runOnce(shooterSubsystem::stop),
+            Commands.runOnce(hopperSubsystem::stopConveyor));
   }
 }
