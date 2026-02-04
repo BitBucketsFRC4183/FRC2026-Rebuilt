@@ -23,6 +23,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final ClimberIOSim climberIOSim;
   private VisionSubsystem visionSubsystem;
   private VisionIOLimelight visionIO;
   private ClimberSubsystem climberSubsystem;
@@ -140,6 +142,7 @@ public class RobotContainer {
     this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
     this.shooterSubsystem = new ShooterSubsystem();
     this.climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
+    climberIOSim = new ClimberIOSim();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 

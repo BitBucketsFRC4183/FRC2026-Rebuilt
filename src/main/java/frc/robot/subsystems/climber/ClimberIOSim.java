@@ -22,6 +22,7 @@ public class ClimberIOSim implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
+    climberModel.setLength(67);
     inputs.climberHeight = climberSimMotor.getTorqueCurrent() / 5;
     inputs.currentVoltage = climberSimMotor.getMotorVoltage();
   }
