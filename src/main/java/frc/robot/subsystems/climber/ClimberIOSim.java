@@ -2,6 +2,8 @@ package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -10,6 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ClimberIOSim implements ClimberIO {
   CoreTalonFX coreTalonFX = new CoreTalonFX(1);
   public final TalonFXSimState climberSimMotor = coreTalonFX.getSimState();
+
+  private double simHeightMeters = 0.0;
+  private double simVelocity = 0.0;
+  private static final double MAX_HEIGHT = 1.5;
+  double appliedVoltage = 0.0;
+  private double targetHeightMeters = 0.0;
+  private final SlewRateLimiter voltageLimiter = new SlewRateLimiter(24.0);
 
   private final Mechanism2d climberCanvas = new Mechanism2d(3, 3);
   private final MechanismRoot2d climberRoot = climberCanvas.getRoot("pivot", 1.5, 1.5);
@@ -22,24 +31,37 @@ public class ClimberIOSim implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    climberModel.setLength(67);
-    inputs.climberHeight = climberSimMotor.getTorqueCurrent() / 5;
-    inputs.currentVoltage = climberSimMotor.getMotorVoltage();
+    double dt = 0.02;
+
+    simHeightMeters += simVelocity * dt;
+    simHeightMeters = Math.max(0, Math.min(MAX_HEIGHT, simHeightMeters));
+
+    climberModel.setLength(simHeightMeters + 0.2);
+
+    inputs.climberHeight = simHeightMeters;
+    double error = targetHeightMeters - simHeightMeters;
+    double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
+    appliedVoltage = voltageLimiter.calculate(commandedVoltage);
+    inputs.currentVoltage = appliedVoltage;
   }
 
   @Override
-  public void setTargetHeight(double height) {}
+  public void setTargetHeight(double height) {
+    targetHeightMeters = height;
+    double error = height - simHeightMeters;
+    simVelocity = error * 2.0;
+  }
 
   @Override
   public void stopClimb() {}
 
   @Override
   public double getCurrentHeight() {
-    return 0;
+    return simHeightMeters;
   }
 
   @Override
   public double getCurrentVoltage() {
-    return 0;
+    return appliedVoltage;
   }
 }

@@ -23,6 +23,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.climber.ClimberSubsystem;
@@ -52,10 +53,10 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
-  private final ClimberIOSim climberIOSim;
   private VisionSubsystem visionSubsystem;
   private VisionIOLimelight visionIO;
   private ClimberSubsystem climberSubsystem;
+  private ClimberIO climberIO;
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -82,6 +83,8 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
+        climberIO = new ClimberIOTalonFX();
+
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -102,6 +105,7 @@ public class RobotContainer {
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem =
             new VisionSubsystem(new VisionIOInputsAutoLogged(), visionIO, driveSubsystem);
+
         break;
 
       case SIM:
@@ -122,6 +126,7 @@ public class RobotContainer {
                     VisionConstant.robotToFrontCam,
                     driveSubsystem),
                 driveSubsystem);
+        climberIO = new ClimberIOSim();
         break;
         // thinking to what
 
@@ -141,8 +146,7 @@ public class RobotContainer {
     this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
     this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
     this.shooterSubsystem = new ShooterSubsystem();
-    this.climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
-    climberIOSim = new ClimberIOSim();
+    this.climberSubsystem = new ClimberSubsystem(climberIO);
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
@@ -234,8 +238,8 @@ public class RobotContainer {
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
 
-    operator.a().whileTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().whileTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
+    operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+    operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
   }
 
   /**
