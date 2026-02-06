@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.ClimberConstants;
 
 public class ClimberIOSim implements ClimberIO {
   CoreTalonFX coreTalonFX = new CoreTalonFX(1);
@@ -15,10 +16,10 @@ public class ClimberIOSim implements ClimberIO {
 
   private double simHeightMeters = 0.0;
   private double simVelocity = 0.0;
-  private static final double MAX_HEIGHT = 1.5;
+  private static final double MAX_HEIGHT = ClimberConstants.rung1Position;
   double appliedVoltage = 0.0;
   private double targetHeightMeters = 0.0;
-  private final SlewRateLimiter voltageLimiter = new SlewRateLimiter(24.0);
+  private final SlewRateLimiter voltageLimiter = new SlewRateLimiter(12.0);
 
   private final Mechanism2d climberCanvas = new Mechanism2d(3, 3);
   private final MechanismRoot2d climberRoot = climberCanvas.getRoot("pivot", 1.5, 1.5);
