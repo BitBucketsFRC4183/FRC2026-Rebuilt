@@ -10,8 +10,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-  private double voltageSupplied = 0;
-
   Servo servo1 = new Servo(1);
   Servo servo2 = new Servo(2);
   Servo servo3 = new Servo(3);
@@ -54,7 +52,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void moveClimbToLevel1() {
     // climberIO.setTargetHeight(ClimberConstants.rung1Position);
-    climberIO.setTargetHeight(voltageSupplied);
+    climberIO.setTargetHeight(0);
     //    servo1.set(.7);
     //    servo2.set(.7);
     //    servo3.set(.7);
@@ -62,6 +60,6 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setVoltageSupplied(double voltageSupplied) {
-    this.voltageSupplied = voltageSupplied;
+    climberIO.setVoltage(voltageSupplied);
   }
 }

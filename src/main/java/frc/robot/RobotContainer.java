@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
@@ -245,8 +244,11 @@ public class RobotContainer {
     //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
     // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
     // operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
-    climberSubsystem.setDefaultCommand(Commands.print(String.valueOf(operator.getLeftY())));
-        //ClimberCommands.climb(climberSubsystem, operator.getLeftY()));
+
+    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
+        .whileTrue(
+            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
+                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
   }
 
   /**

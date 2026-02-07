@@ -66,4 +66,7 @@ public class ClimberIOSim implements ClimberIO {
   public double getCurrentVoltage() {
     return appliedVoltage;
   }
+
+  @Override
+  public void setVoltage(double voltageSupplied) {}
 }

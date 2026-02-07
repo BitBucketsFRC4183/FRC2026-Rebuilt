@@ -11,4 +11,6 @@ public interface ClimberIO {
   double getCurrentHeight();
 
   double getCurrentVoltage();
+
+  void setVoltage(double voltageSupplied);
 }
