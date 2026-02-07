@@ -40,7 +40,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   public void updateInputs(ClimberIOInputs inputs) {
     inputs.climberHeight =
         (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
-            * ClimberConstants.motorRadius
+            * ClimberConstants.spoolRadius
             * 2
             * Math.PI;
     inputs.currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
@@ -51,7 +51,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setTargetHeight(double height) {
     double motorRotations =
-        height / (2 * Math.PI * ClimberConstants.motorRadius) * ClimberConstants.ARM_GEAR_RATIO;
+        height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
 
     climbMotor.setControl(climbRequest.withPosition(motorRotations));
   }
@@ -65,7 +65,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   public double getCurrentHeight() {
     double climberHeight =
         (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
-            * ClimberConstants.motorRadius
+            * ClimberConstants.spoolRadius
             * 2
             * Math.PI;
     return climberHeight;

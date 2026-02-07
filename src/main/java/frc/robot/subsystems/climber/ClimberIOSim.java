@@ -44,6 +44,7 @@ public class ClimberIOSim implements ClimberIO {
     double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
     appliedVoltage = voltageLimiter.calculate(commandedVoltage);
     inputs.currentVoltage = appliedVoltage;
+    climberSimMotor.setSupplyVoltage(inputs.currentVoltage);
   }
 
   @Override
