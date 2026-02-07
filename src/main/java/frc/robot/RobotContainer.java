@@ -213,9 +213,8 @@ public class RobotContainer {
         // get rid of transitional motion
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
         .whileTrue(
-            Commands.parallel(
-                ShooterCommands.revFlywheels(shooterSubsystem), Commands.run(shooterSim::periodic)))
-        .onFalse(ShooterCommands.reset(shooterSubsystem));
+                ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
   }
 
   /**

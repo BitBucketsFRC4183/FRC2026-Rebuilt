@@ -12,6 +12,7 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
+  private final TalonFX finalFlywheel2 = new TalonFX(ShooterConstants.flywheelID2);
   private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
   private final Orchestra blackHole = new Orchestra();
@@ -45,6 +46,19 @@ public class ShooterIOTalonFX implements ShooterIO {
     finalFlywheel.getConfigurator().apply(motorConfig);
     finalFlywheel.getConfigurator().apply(currentConfig);
 
+    motorConfig.MotorOutput.Inverted =
+            !ShooterConstants.flywheelInverted
+                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
+    finalFlywheel2.getConfigurator().apply(motorConfig);
+    finalFlywheel2.getConfigurator().apply(currentConfig);
+
+    motorConfig.MotorOutput.Inverted =
+            ShooterConstants.flywheelInverted
+                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
     // Intermediate Motor Configs
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     intermediateMotor.getConfigurator().apply(motorConfig);
@@ -62,6 +76,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void setSpeed(double targetSpeed) {
     // Please be the same radius
     finalFlywheel.setControl(target.withVelocity(targetSpeed));
+    finalFlywheel2.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
@@ -72,14 +87,18 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void stopMotor() {
     finalFlywheel.stopMotor();
+    finalFlywheel2.stopMotor();
     intermediateMotor.stopMotor();
   }
 
   @Override
   public boolean speedReached(double targetSpeed) {
     double currentTopFlywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
+    double currentBottomFlywheelVelocity = finalFlywheel2.getVelocity().getValueAsDouble();
     return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance
+            && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
+            && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
@@ -87,6 +106,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.appliedFlywheelOutput = finalFlywheel.getDutyCycle().getValueAsDouble();
     inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
     inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
+    inputs.flywheelVelocity2 = finalFlywheel2.getVelocity().getValueAsDouble();
     inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
   }
 }

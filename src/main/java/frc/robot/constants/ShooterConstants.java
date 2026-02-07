@@ -6,6 +6,7 @@ public final class ShooterConstants extends SubsystemBase {
 
   // Motor IDs
   public static final int flywheelID = 108;
+  public static final int flywheelID2 = 109;
   public static final int intermediateID = 52;
 
   // IntermediateMotorSpeed
