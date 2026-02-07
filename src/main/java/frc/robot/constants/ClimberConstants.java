@@ -29,4 +29,8 @@ public final class ClimberConstants {
 
   // target values
   public static final double rung1Position = 5.0;
+
+  //Limiters
+  public static final double maxHeight = 5.0;
+  public static final double minHeight = 1.0;
 }
