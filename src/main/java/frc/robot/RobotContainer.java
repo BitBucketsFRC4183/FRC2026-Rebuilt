@@ -212,23 +212,6 @@ public class RobotContainer {
                             .onlyIf(() -> intakeSubsystem.isExtended())
             );
 
-
-    // LEFT TRIGGER: hold to intake
-    operatorController
-            .leftTrigger(0.1)
-            .whileTrue(
-                    Commands.run(
-                            intakeSubsystem::intake,
-                            intakeSubsystem
-                    )
-            )
-            .onFalse(
-                    Commands.runOnce(
-                            intakeSubsystem::hold,
-                            intakeSubsystem
-                    )
-            );
-
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.1)
             
 
