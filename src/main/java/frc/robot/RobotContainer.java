@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
@@ -84,7 +85,7 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         climberIO = new ClimberIOTalonFX();
-
+        climberSubsystem = new ClimberSubsystem(climberIO);
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -127,6 +128,7 @@ public class RobotContainer {
                     driveSubsystem),
                 driveSubsystem);
         climberIO = new ClimberIOSim();
+        climberSubsystem = new ClimberSubsystem(climberIO);
         break;
         // thinking to what
 
@@ -146,7 +148,6 @@ public class RobotContainer {
     this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
     this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
     this.shooterSubsystem = new ShooterSubsystem();
-    this.climberSubsystem = new ClimberSubsystem(climberIO);
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
@@ -238,8 +239,14 @@ public class RobotContainer {
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
 
-    operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
+    //    new Trigger(() -> operator.getLeftTriggerAxis() > 0.1)
+    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToGround()));
+    //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
+    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
+    // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+    // operator.b().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToLevel1()));
+    climberSubsystem.setDefaultCommand(Commands.print(String.valueOf(operator.getLeftY())));
+        //ClimberCommands.climb(climberSubsystem, operator.getLeftY()));
   }
 
   /**

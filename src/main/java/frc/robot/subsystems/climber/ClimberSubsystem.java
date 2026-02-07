@@ -3,13 +3,14 @@ package frc.robot.subsystems.climber;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ClimberConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimberSubsystem extends SubsystemBase {
 
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+
+  private double voltageSupplied = 0;
 
   Servo servo1 = new Servo(1);
   Servo servo2 = new Servo(2);
@@ -42,14 +43,6 @@ public class ClimberSubsystem extends SubsystemBase {
     //    servo4.set(0);
   }
 
-  public void moveClimbToLevel1() {
-    climberIO.setTargetHeight(ClimberConstants.rung1Position);
-    //    servo1.set(.7);
-    //    servo2.set(.7);
-    //    servo3.set(.7);
-    //    servo4.set(.7);
-  }
-
   public void stopRise() {
     climberIO.stopClimb();
   }
@@ -57,5 +50,18 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public double getClimbHeight() {
     return inputs.climberHeight;
+  }
+
+  public void moveClimbToLevel1() {
+    // climberIO.setTargetHeight(ClimberConstants.rung1Position);
+    climberIO.setTargetHeight(voltageSupplied);
+    //    servo1.set(.7);
+    //    servo2.set(.7);
+    //    servo3.set(.7);
+    //    servo4.set(.7)
+  }
+
+  public void setVoltageSupplied(double voltageSupplied) {
+    this.voltageSupplied = voltageSupplied;
   }
 }

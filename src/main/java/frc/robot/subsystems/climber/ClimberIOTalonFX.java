@@ -16,9 +16,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   public ClimberIOTalonFX() {
 
     // Arm X60 motor
-    climbMotor = new TalonFX(ClimberConstants.ARM_MOTOR_CAN_ID);
+    climbMotor = new TalonFX(ClimberConstants.ARM_MOTOR_CAN_ID, ClimberConstants.climberBus);
 
     TalonFXConfiguration climbConfig = new TalonFXConfiguration();
+    climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 100;
+    climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    climbConfig.CurrentLimits.StatorCurrentLimit = 100;
     climbConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     climbConfig.MotorOutput.Inverted =
         ClimberConstants.ARM_MOTOR_INVERTED
@@ -53,7 +57,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     double motorRotations =
         height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
 
-    climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    // climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    climbMotor.setVoltage(height);
   }
 
   @Override
