@@ -19,8 +19,11 @@ public final class IntakeConstants {
   // Pneumatics
   public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;
 
-  public static final int PISTON_FORWARD_CHANNEL = 0;
-  public static final int PISTON_REVERSE_CHANNEL = 1;
+  public static final int LEFT_PISTON_FORWARD_CHANNEL = 0;
+  public static final int LEFT_PISTON_REVERSE_CHANNEL = 1;
+
+  public static final int RIGHT_PISTON_FORWARD_CHANNEL = 2;
+  public static final int RIGHT_PISTON_REVERSE_CHANNEL = 3;
 
   private IntakeConstants() {}
 }
