@@ -88,6 +88,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("StartBottomShootEndTower", autoSubystem.StartBottomShootEndTower());
         NamedCommands.registerCommand("StartMidShootIntakeTower", autoSubystem.StartMidShootIntakeTower());
         NamedCommands.registerCommand("StartTopShootIntakeTower", autoSubystem.StartTopShootIntakeTower());
+        NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
+
 
 
 

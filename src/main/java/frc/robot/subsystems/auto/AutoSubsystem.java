@@ -34,10 +34,10 @@ public class AutoSubsystem extends SubsystemBase {
   //Setup PathPlanner
 
   private void configureAutoBuilder() {
-    AutoBuilder.configureHolonomic(
-            drive::getPose,
-            drive::resetPose,
-            drive::getRobotRelativeSpeeds,
+            AutoBuilder.configureHolonomic(
+                    drive::getPose,
+                    drive::resetPose,
+                    drive::getRobotRelativeSpeeds,
             drive::driveRobotRelative,
             new PPHolonomicDriveController(
                     new PIDConstants(5.0, 0.0, 0.0),
@@ -89,12 +89,12 @@ public class AutoSubsystem extends SubsystemBase {
    * YOU NEED TO CHANGE ALL OF YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING
    * AND THEN YOU MUST TEST YOUR PATHS IN SIM!! PLEASSSEE!!!
    */
-  public Command goBottomToMid() {
+  public Command goBottomToShootPs() {
     PathPlannerPath path1;
 
     try {
       // Load the path from the deploy/pathplanner folder by name
-      path1 = PathPlannerPath.fromPathFile("BottomStartToMid");
+      path1 = PathPlannerPath.fromPathFile("BottomStartToShootB");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -116,11 +116,7 @@ public class AutoSubsystem extends SubsystemBase {
 
     return AutoBuilder.followPath(path2);
   }
-   // public Command goMidtoTower(){
-   // PathPlannerPath path2 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
 
-   // return AutoBuilder.followPath(path2);
-  //}
 
   public Command goToptoMid(){
     PathPlannerPath path3;
@@ -220,6 +216,19 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(pathRandom);
   }
 
+  public Command goBottomTower(){
+    PathPlannerPath BtTower;
+
+    try{
+      BtTower= PathPlannerPath.fromPathFile("BottomToTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(BtTower);
+  }
+
   /*public Command goRandomPath() {
       PathPlannerPath pathRandom  = PathPlannerPath.fromChoreoTrajectory("randomPath");
 
@@ -229,18 +238,28 @@ public class AutoSubsystem extends SubsystemBase {
   public Command bottomToMidAuto() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Bottom to Mid starting")),
-            goBottomToMid(),
+            goBottomToShootPs(),
             new InstantCommand(() -> System.out.println("Reached mid position"))
             );
+  }
+
+  public Command StartBottomToTower(){
+    return Commands.sequence(
+            new InstantCommand(()-> System.out.println("We will just be climbing")),
+            goBottomTower(),
+            climb(),
+            stop(),
+            new InstantCommand(()-> System.out.println("routine 1 complete"))
+    );
   }
   public Command StartBottomShootEndTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Routine 1 starting")),
-            goBottomToMid(),
+            goBottomToShootPs(),
             shoot(),
-            goMidtoDepot(),
+            //goMidtoDepot(),
             new WaitCommand(3),
-            goDepotToMid(),
+            //goDepotToMid(),
             goMidToTower(),
             climb(),
             stop(),
