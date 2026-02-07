@@ -89,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isExtended() {
-    return leftPiston.get() == DoubleSolenoid.Value.kForward
-            && rightPiston.get() == DoubleSolenoid.Value.kForward;
+    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
   }
+
 }

@@ -58,9 +58,12 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.motorCurrentAmps = motor.getSupplyCurrent().getValueAsDouble();
 
     // If either piston disagrees, treat as NOT extended (safe default)
-    inputs.pistonExtended =
+    boolean extended =
             leftPiston.get() == DoubleSolenoid.Value.kForward
                     && rightPiston.get() == DoubleSolenoid.Value.kForward;
+
+    inputs.primaryPistonExtended = extended;
+    inputs.secondaryPistonExtended = extended;
   }
 
   @Override

@@ -11,7 +11,8 @@ import frc.robot.constants.IntakeConstants;
 public class IntakeIOSim implements IntakeIO {
 
     // Simulated states
-    private boolean pistonExtended = false;
+    private boolean piston1Extended = false;
+    private boolean piston2Extended = false;
     private double motorOutput = 0.0;
 
     private double motorVelocityRPM = 0.0;
@@ -42,14 +43,15 @@ public class IntakeIOSim implements IntakeIO {
                 Math.abs(motorOutput) * MAX_CURRENT_AMPS;
 
         // Add intake load if extended and spinning inward
-        if (pistonExtended && motorOutput > 0.1) {
+        if (piston1Extended && piston2Extended && motorOutput > 0.1) {
             motorCurrentAmps += INTAKE_LOAD_CURRENT;
         }
 
         //inputs
         inputs.motorVelocityRPM = motorVelocityRPM;
         inputs.motorCurrentAmps = motorCurrentAmps;
-        inputs.pistonExtended = pistonExtended;
+        inputs.primaryPistonExtended = piston1Extended;
+        inputs.secondaryPistonExtended = piston2Extended;
     }
 
     @Override
@@ -59,11 +61,13 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public void extend() {
-        pistonExtended = true;
+        piston1Extended = true;
+        piston2Extended = true;
     }
 
     @Override
     public void retract() {
-        pistonExtended = false;
+        piston2Extended = false;
+        piston1Extended = false;
     }
 }

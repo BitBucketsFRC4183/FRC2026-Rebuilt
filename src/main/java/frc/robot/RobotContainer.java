@@ -230,6 +230,8 @@ public class RobotContainer {
             );
 
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.1)
+            
+
             //Insert method to store distance from vision
 //            .onTrue(Commands.runOnce(
 //                    () -> {
