@@ -249,6 +249,34 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(TpTower);
   }
 
+
+  public Command goShooterBtoTower(){
+    PathPlannerPath ShooterBTower;
+
+    try{
+      ShooterBTower= PathPlannerPath.fromPathFile("ShootBtoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(ShooterBTower);
+  }
+
+
+  public Command goShooterTtoTower(){
+    PathPlannerPath ShooterTTower;
+
+    try{
+      ShooterTTower= PathPlannerPath.fromPathFile("ShootTtoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(ShooterTTower);
+  }
+
 //AUTOROUTINES 
 
   public Command bottomStartToShootOnly() {
@@ -314,6 +342,42 @@ public class AutoSubsystem extends SubsystemBase {
             climb(),
             stop(),
             new InstantCommand(()-> System.out.println("mid to climb routine complete"))
+    );
+  }
+
+  public Command StartTopShootEndL1(){
+    return Commands.sequence(
+      new InstantCommand(()-> System.out.println("We will move to top shooting position")),
+      goToptoShooterPs(),
+      new InstantCommand (()->System.out.println("Begin shooting")),
+      shoot(),
+      new InstantCommand (()-> System.out.println("moving to tower to climb")),
+      goShooterTtoTower(),
+      climb()
+    );
+  }
+
+  public Command StartBottomShootEndL1(){
+    return Commands.sequence(
+      new InstantCommand(()-> System.out.println("We will move to bottom shooting position")),
+      goBottomToShootPs(),
+      new InstantCommand (()->System.out.println("Begin shooting")),
+      shoot(),
+      new InstantCommand (()-> System.out.println("moving to tower to climb")),
+      goShooterBtoTower(),
+      climb()
+    );
+  }
+  
+  public Command StartMidShootEndL1(){
+    return Commands.sequence(
+    new InstantCommand(()-> System.out.println("We will move to mid shooting position")),
+      goMidToShooterPs(),
+      new InstantCommand (()->System.out.println("Begin shooting")),
+      shoot(),
+      new InstantCommand (()-> System.out.println("moving to tower to climb")),
+      goMidtoTower(),
+      climb()
     );
   }
 
