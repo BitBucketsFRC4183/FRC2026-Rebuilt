@@ -89,6 +89,7 @@ public class AutoSubsystem extends SubsystemBase {
    * YOU NEED TO CHANGE ALL OF YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING
    * AND THEN YOU MUST TEST YOUR PATHS IN SIM!! PLEASSSEE!!!
    */
+
   public Command goBottomToShootPs() {
     PathPlannerPath path1;
 
@@ -104,6 +105,37 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path1);
   }
 
+
+
+  public Command goToptoShooterPs(){
+    PathPlannerPath path3;
+
+    try{
+      path3= PathPlannerPath.fromPathFile("TopStartToShootT");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path3);
+  }
+
+
+
+ public Command goMidToShooterPs(){
+    PathPlannerPath path6;
+
+    try{
+      path6= PathPlannerPath.fromPathFile("MidStartToShootM");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path6);
+  }
+
+//climbing only
   public Command goMidtoTower(){
     PathPlannerPath path2;
 
@@ -118,24 +150,11 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
 
-  public Command goToptoMid(){
-    PathPlannerPath path3;
-
-    try{
-      path3= PathPlannerPath.fromPathFile("TopStarttoMid");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path3);
-  }
-
-  public Command goMidtoDepot(){
+  public Command goBottomShootertoDepot(){
     PathPlannerPath path4;
 
     try{
-      path4= PathPlannerPath.fromPathFile("MidtoDepot");
+      path4= PathPlannerPath.fromPathFile("ShootMtoDepot");
     } catch(Exception e){
       e.printStackTrace();
       return Commands.none();
@@ -144,6 +163,35 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path4);
   }
   
+
+  public Command goMidShootertoDepot(){
+    PathPlannerPath path4;
+
+    try{
+      path4= PathPlannerPath.fromPathFile("ShootBtoDepot");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path4);
+  }
+
+
+ public Command goTopShootertoDepot(){
+    PathPlannerPath path4;
+
+    try{
+      path4= PathPlannerPath.fromPathFile("ShootTtoDepot");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path4);
+  }
+
+
   public Command goDepotToMid(){
     PathPlannerPath path5;
 
@@ -157,24 +205,13 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path5);
   }
   
-  public Command goMidToTower(){
-    PathPlannerPath path6;
-
-    try{
-      path6= PathPlannerPath.fromPathFile("MidStarttoTower");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path6);
-  }
+ 
 
   public Command goMidTower(){
     PathPlannerPath path7;
 
     try{
-      path7= PathPlannerPath.fromPathFile("MidStarttoTower");
+      path7= PathPlannerPath.fromPathFile("MidtoTower");
     } catch(Exception e){
       e.printStackTrace();
       return Commands.none();
@@ -183,18 +220,6 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path7);
   }
  
-  public Command goRandomPath(){
-    PathPlannerPath pathRandom;
-
-    try{
-      pathRandom= PathPlannerPath.fromPathFile("randomPath");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(pathRandom);
-  }
 
   public Command goBottomTower(){
     PathPlannerPath BtTower;
@@ -209,6 +234,7 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(BtTower);
   }
 
+
    public Command goTopTower(){
     PathPlannerPath TpTower;
 
@@ -222,8 +248,21 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(TpTower);
   }
 
+//delete this soon 
+  public Command goRandomPath(){
+    PathPlannerPath pathRandom;
 
+    try{
+      pathRandom= PathPlannerPath.fromPathFile("randomPath");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(pathRandom);
+  }
 //AUTOROUTINES 
+
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Moving from bottom position to Bottom shooting position")),
@@ -231,6 +270,32 @@ public class AutoSubsystem extends SubsystemBase {
             new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
             new InstantCommand(() -> System.out.println("We will now begin shooting")),
             shoot(),
+            stop(),
+            new InstantCommand(() -> System.out.println("routine complete")),
+    );
+  } 
+
+  public Command topStartToShootOnly() {
+    return Commands.sequence(
+            new InstantCommand(() -> System.out.println("Moving from top position to shooting position")),
+            goToptoShooterPs(),
+            new InstantCommand(() -> System.out.println("Reached top shooting position")),
+            new InstantCommand(() -> System.out.println("We will now begin shooting")),
+            shoot(),
+            stop(),
+            new InstantCommand(() -> System.out.println("routine complete")),
+    );
+  } 
+
+  public Command midStartToShootOnly() {
+    return Commands.sequence(
+            new InstantCommand(() -> System.out.println("Moving from mid position to shooting position")),
+            goMidToShooterPs(),
+            new InstantCommand(() -> System.out.println("Reached mid shooting position")),
+            new InstantCommand(() -> System.out.println("We will now begin shooting")),
+            shoot(),
+            stop(),
+            new InstantCommand(() -> System.out.println("routine complete")),
     );
   } 
 
@@ -254,7 +319,7 @@ public class AutoSubsystem extends SubsystemBase {
     );
   }
 
- public Command StartMidTower(){
+ public Command StartMidToTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("We will just be climbing")),
             goMidTower(),
@@ -264,15 +329,15 @@ public class AutoSubsystem extends SubsystemBase {
     );
   }
 
-  public Command StartBottomShootEndTower(){
+  public Command StartBottomShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Routine 1 starting - ")),
             goBottomToShootPs(),
             shoot(),
-            goMidtoDepot(),
+            goBottomShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
-            goMidToTower(),
+            goMidTower(),
             climb(),
             stop(),
             new InstantCommand(()-> System.out.println("routine 1 complete"))
@@ -282,12 +347,12 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartMidShootIntakeTower(){
     return Commands.sequence(
             new InstantCommand(()->System.out.println("Moving to Shooter position")),
-            goMidToMid(),
+            goMidToShooterPs(),
             shoot(),
-            goMidtoDepot(),
+            goMidShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
-            goMidToTower(),
+            goMidTower(),
             climb(),
             stop(),
             new InstantCommand(()->System.out.println("complete routine"))
@@ -297,12 +362,12 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartTopShootIntakeTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Moving from top to mid shooting position")),
-            goToptoMid(),
+            goToptoShooterPs(),
             shoot(),
-            goMidtoDepot(),
+            goTopShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
-            goMidToTower(),
+            goMidTower(),
             climb(),
             stop(),
              new InstantCommand(()->System.out.println("complete routine"))
