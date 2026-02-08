@@ -11,6 +11,7 @@ import java.util.function.DoubleSupplier;
 public class ClimberCommands {
 
   public static Command joystickClimb(ClimberSubsystem climberSubsystem, DoubleSupplier LeftY) {
+
     double currentHeight = climberSubsystem.getClimbHeight();
     double input = LeftY.getAsDouble();
     double desiredSpeed = input * ((ClimberConstants.maxHeight - currentHeight) * ClimberConstants.speedConstant);
@@ -22,10 +23,26 @@ public class ClimberCommands {
     } if (currentHeight >= ClimberConstants.maxHeight && input > 0){
       return Commands.run(() -> climberSubsystem.setVoltageSupplied(0));
     }
-    
+
     double voltageSupplied = input * scale;
     return Commands.run(() -> climberSubsystem.setVoltageSupplied(voltageSupplied));
   }
+  public static Command climberToLevelOne(ClimberSubsystem climberSubsystem){
+    double currentHeight = climberSubsystem.getClimbHeight();
+    double desiredSpeed = (ClimberConstants.rung1Position - climberSubsystem.getClimbHeight()) * ClimberConstants.speedConstant;
+    SimpleMotorFeedforward climbFeedForward = new SimpleMotorFeedforward(ClimberConstants.ARM_kS,ClimberConstants.ARM_kV,ClimberConstants.ARM_kA,0.2);
+    double scale = climbFeedForward.calculate(desiredSpeed);
+
+    if (currentHeight <= ClimberConstants.minHeight ){
+      return Commands.run(() -> climberSubsystem.setVoltageSupplied(0));
+    } if (currentHeight >= ClimberConstants.maxHeight){
+      return Commands.run(() -> climberSubsystem.setVoltageSupplied(0));
+    }
+
+    double voltageSupplied = scale;
+    return Commands.run(() -> climberSubsystem.setVoltageSupplied(voltageSupplied));
+  }
+
 }
 
 
