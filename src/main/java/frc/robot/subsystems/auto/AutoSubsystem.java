@@ -350,7 +350,7 @@ public class AutoSubsystem extends SubsystemBase {
       new InstantCommand(()-> System.out.println("We will move to top shooting position")),
       goToptoShooterPs(),
       new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot(),
+      shoot().withTimeout(6),
       new InstantCommand (()-> System.out.println("moving to tower to climb")),
       goShooterTtoTower(),
       climb()
@@ -362,7 +362,7 @@ public class AutoSubsystem extends SubsystemBase {
       new InstantCommand(()-> System.out.println("We will move to bottom shooting position")),
       goBottomToShootPs(),
       new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot(),
+      shoot().withTimeout(6),
       new InstantCommand (()-> System.out.println("moving to tower to climb")),
       goShooterBtoTower(),
       climb()
@@ -374,7 +374,7 @@ public class AutoSubsystem extends SubsystemBase {
     new InstantCommand(()-> System.out.println("We will move to mid shooting position")),
       goMidToShooterPs(),
       new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot(),
+      shoot().withTimeout(6),
       new InstantCommand (()-> System.out.println("moving to tower to climb")),
       goMidtoTower(),
       climb()
@@ -385,7 +385,7 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Routine 1 starting - ")),
             goBottomToShootPs(),
-            shoot(),
+            shoot().withTimeout(4),
             goBottomShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
@@ -400,7 +400,7 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
             new InstantCommand(()->System.out.println("Moving to Shooter position")),
             goMidToShooterPs(),
-            shoot(),
+            shoot().withTimeout(4),
             goMidShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
@@ -415,7 +415,7 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Moving from top to mid shooting position")),
             goToptoShooterPs(),
-            shoot(),
+            shoot().withTimeout(4),
             goTopShootertoDepot(),
             new WaitCommand(3),
             goDepotToMid(),
@@ -426,5 +426,5 @@ public class AutoSubsystem extends SubsystemBase {
     );
   }
 
-  
+
 }
