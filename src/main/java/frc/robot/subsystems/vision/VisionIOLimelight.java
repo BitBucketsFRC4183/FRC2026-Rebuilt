@@ -14,9 +14,9 @@ public class VisionIOLimelight implements VisionIO {
 
   // getTable(""), inside the "", is webUI/table name
   private final NetworkTable LimelightFrontTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+          NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
   private final NetworkTable LimelightBackTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
+          NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
   public final Supplier<Pose2d> poseSupplier;
 
   // get that pose for me
@@ -38,6 +38,7 @@ public class VisionIOLimelight implements VisionIO {
 
   /// inputs.tx = LimelightHelpers.getTX("FrontCam");
   // equals
+
   /// inputs.tx = table.getEntry("tx").getDouble(0);
 
   // SO, you can choose to do tables, OR limelighthelper. Either way
@@ -46,16 +47,20 @@ public class VisionIOLimelight implements VisionIO {
   private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
     // DON'T CHANGE ANY NAMING STUFF, AFTER THIS LINE OF CODE!!!!!!!!!!!!!!!!!!!!! SAYING YOU, AIDAN
 
-    inputs.cameraConnected = LimelightHelpers.getLimelightNTTableEntry(cameraName, "tv").exists();
+    inputs.cameraConnected = table.getEntry("tv").exists();
+    //fiducialid is double
+    inputs.aprilTagIDNumber = (int) LimelightHelpers.getFiducialID(cameraName);
+
     inputs.tx = LimelightHelpers.getTX(cameraName);
     inputs.ty = LimelightHelpers.getTY(cameraName);
     inputs.ta = LimelightHelpers.getTA(cameraName);
-    inputs.fiducialID = LimelightHelpers.getFiducialID(cameraName);
+//    inputs.fiducialID = LimelightHelpers.getFiducialID(cameraName);
+
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
     inputs.estimatedRobotPose = poseSupplier.get();
 
     LimelightHelpers.SetRobotOrientation(
-        cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;
@@ -63,12 +68,12 @@ public class VisionIOLimelight implements VisionIO {
     }
     // in here, visionPose is calculated
     var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
-    if (megaTag2Results.tagCount >= 2) {
+    if (megaTag2Results!=null && megaTag2Results.tagCount >= 2) {
       inputs.hasMegaTag2 = true;
       inputs.megaTagPose = megaTag2Results.pose;
       inputs.tagCount = megaTag2Results.tagCount;
       inputs.timestamp = megaTag2Results.timestampSeconds;
-      inputs.latency = megaTag2Results.latency;
+//      inputs.latency = megaTag2Results.latency;
       return;
     }
 
@@ -78,43 +83,10 @@ public class VisionIOLimelight implements VisionIO {
       inputs.megaTagPose = megaTag1Results.pose;
       inputs.tagCount = megaTag1Results.tagCount;
       inputs.timestamp = megaTag1Results.timestampSeconds;
-      inputs.latency = megaTag1Results.latency;
+//      inputs.latency = megaTag1Results.latency;
       return;
     }
     inputs.hasMegaTag2 = false;
     return;
   }
 }
-
-// Start of inputs
-//    @AutoLog
-//    class VisionIOLimelightInputs{
-//         SwerveModulePosition swerveModulePosition = new SwerveModulePosition[]{
-//                 frontLeft.getPosition(),
-//                 frontRight.getPosition(),
-//                 backLeft.getPosition(),
-//                 backRight.getPosition()}
-//         double tx = LimelightHelpers.getTX(""); //offset in x direction'
-//         //tx>0 right
-//         //tx<0 left
-//         //best: tx=0
-//         double ty = LimelightHelpers.getTY(""); //offset in y direction
-//         double ta = LimelightHelpers.getTA(""); //target area 0-100%
-//         boolean hasTarget = LimelightHelpers.getTV("");// whether or not the camera has a
-// target location
-//         double aprilTagID = 0;// turn into false if we decide to use MegaTag1
-//         // setting up the measured values of the camera to be set in the table//
-//         LimelightHelpers.setFiducial3DOffset(//forward offset,Side offset,Height offset)
-//                 LimelightHelpers .setCameraPose_RobotSpace("",//forward offset,Side
-// offset,Height offset,Roll,Pitch,Yaw)
-// }
-
-// Start of outputs
-// @Override
-// public void periodic() {
-//
-//    public Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight",
-// poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-//          // above code needs Drive System for robot orientation.
-//
-//     }
