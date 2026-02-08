@@ -26,28 +26,12 @@ public class AutoSubsystem extends SubsystemBase {
   public AutoSubsystem(DriveSubsystem drive, ShooterSubsystem shooter) {
     this.drive = drive;
     this.shooter = shooter;
-    configureAutoBuilder();
     registerNamedCommands();
   }
 
   //PathPlannerPath MidStarttoMid = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
   //Setup PathPlanner
 
-  private void configureAutoBuilder() {
-            AutoBuilder.configureHolonomic(
-                    drive::getPose,
-                    drive::resetPose,
-                    drive::getRobotRelativeSpeeds,
-            drive::driveRobotRelative,
-            new PPHolonomicDriveController(
-                    new PIDConstants(5.0, 0.0, 0.0),
-                    new PIDConstants(5.0, 0.0, 0.0)
-            ),
-            RobotConfig.fromGUISettings(),
-            drive::shouldFlipPath,
-            drive
-    );
-  }
 
   //Named Commands
 
@@ -163,7 +147,7 @@ public class AutoSubsystem extends SubsystemBase {
 
     return AutoBuilder.followPath(path5);
   }
-  
+
 
   public Command goMidShootertoDepot(){
     PathPlannerPath path6;
@@ -205,7 +189,7 @@ public class AutoSubsystem extends SubsystemBase {
 
     return AutoBuilder.followPath(path8);
   }
-  
+
 
 
   public Command goMidTower(){
@@ -220,7 +204,7 @@ public class AutoSubsystem extends SubsystemBase {
 
     return AutoBuilder.followPath(MdTower);
   }
- 
+
 
   public Command goBottomTower(){
     PathPlannerPath BtTower;
@@ -277,7 +261,7 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(ShooterTTower);
   }
 
-//AUTOROUTINES 
+//AUTOROUTINES
 
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
@@ -289,7 +273,7 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  } 
+  }
 
   public Command topStartToShootOnly() {
     return Commands.sequence(
@@ -301,7 +285,7 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  } 
+  }
 
   public Command midStartToShootOnly() {
     return Commands.sequence(
@@ -313,7 +297,7 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  } 
+  }
 
   public Command StartBottomToTower(){
     return Commands.sequence(
@@ -368,7 +352,7 @@ public class AutoSubsystem extends SubsystemBase {
       climb()
     );
   }
-  
+
   public Command StartMidShootEndL1(){
     return Commands.sequence(
     new InstantCommand(()-> System.out.println("We will move to mid shooting position")),
