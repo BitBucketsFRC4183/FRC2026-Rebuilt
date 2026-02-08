@@ -84,11 +84,16 @@ public class RobotContainer {
 
 
         //register named commands
-        NamedCommands.registerCommand("MoveRandomCircle", autoSubystem.MoveRandomCircle());
-        NamedCommands.registerCommand("StartBottomShootEndTower", autoSubystem.StartBottomShootEndTower());
-        NamedCommands.registerCommand("StartMidShootIntakeTower", autoSubystem.StartMidShootIntakeTower());
-        NamedCommands.registerCommand("StartTopShootIntakeTower", autoSubystem.StartTopShootIntakeTower());
         NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
+        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand("topStartToShootOnly", autoSubystem.topStartToShootOnly());
+        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem. midStartToShootOnly());
+        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
+        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
+        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubystem.StartMidShootIntakeEndL1());
+
 
 
 

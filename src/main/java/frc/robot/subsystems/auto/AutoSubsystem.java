@@ -108,39 +108,10 @@ public class AutoSubsystem extends SubsystemBase {
 
 
   public Command goToptoShooterPs(){
-    PathPlannerPath path3;
-
-    try{
-      path3= PathPlannerPath.fromPathFile("TopStartToShootT");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path3);
-  }
-
-
-
- public Command goMidToShooterPs(){
-    PathPlannerPath path6;
-
-    try{
-      path6= PathPlannerPath.fromPathFile("MidStartToShootM");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path6);
-  }
-
-//climbing only
-  public Command goMidtoTower(){
     PathPlannerPath path2;
 
     try{
-      path2= PathPlannerPath.fromPathFile("MidtoTower");
+      path2= PathPlannerPath.fromPathFile("TopStartToShootT");
     } catch(Exception e){
       e.printStackTrace();
       return Commands.none();
@@ -150,53 +121,41 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
 
+
+ public Command goMidToShooterPs(){
+    PathPlannerPath path3;
+
+    try{
+      path3= PathPlannerPath.fromPathFile("MidStartToShootM");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path3);
+  }
+
+
+//climbing only
+  public Command goMidtoTower(){
+    PathPlannerPath path4;
+
+    try{
+      path4= PathPlannerPath.fromPathFile("MidtoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path4);
+  }
+
+
   public Command goBottomShootertoDepot(){
-    PathPlannerPath path4;
-
-    try{
-      path4= PathPlannerPath.fromPathFile("ShootMtoDepot");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path4);
-  }
-  
-
-  public Command goMidShootertoDepot(){
-    PathPlannerPath path4;
-
-    try{
-      path4= PathPlannerPath.fromPathFile("ShootBtoDepot");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path4);
-  }
-
-
- public Command goTopShootertoDepot(){
-    PathPlannerPath path4;
-
-    try{
-      path4= PathPlannerPath.fromPathFile("ShootTtoDepot");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path4);
-  }
-
-
-  public Command goDepotToMid(){
     PathPlannerPath path5;
 
     try{
-      path5= PathPlannerPath.fromPathFile("DepotToMid");
+      path5= PathPlannerPath.fromPathFile("ShootMtoDepot");
     } catch(Exception e){
       e.printStackTrace();
       return Commands.none();
@@ -205,19 +164,61 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(path5);
   }
   
- 
 
-  public Command goMidTower(){
+  public Command goMidShootertoDepot(){
+    PathPlannerPath path6;
+
+    try{
+      path6= PathPlannerPath.fromPathFile("ShootBtoDepot");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path6);
+  }
+
+
+ public Command goTopShootertoDepot(){
     PathPlannerPath path7;
 
     try{
-      path7= PathPlannerPath.fromPathFile("MidtoTower");
+      path7= PathPlannerPath.fromPathFile("ShootTtoDepot");
     } catch(Exception e){
       e.printStackTrace();
       return Commands.none();
     }
 
     return AutoBuilder.followPath(path7);
+  }
+
+
+  public Command goDepotToMid(){
+    PathPlannerPath path8;
+
+    try{
+      path8= PathPlannerPath.fromPathFile("DepotToMid");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(path8);
+  }
+  
+
+
+  public Command goMidTower(){
+    PathPlannerPath MdTower;
+
+    try{
+      MdTower= PathPlannerPath.fromPathFile("MidtoTower");
+    } catch(Exception e){
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(MdTower);
   }
  
 
@@ -248,19 +249,6 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(TpTower);
   }
 
-//delete this soon 
-  public Command goRandomPath(){
-    PathPlannerPath pathRandom;
-
-    try{
-      pathRandom= PathPlannerPath.fromPathFile("randomPath");
-    } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(pathRandom);
-  }
 //AUTOROUTINES 
 
   public Command bottomStartToShootOnly() {
@@ -271,7 +259,7 @@ public class AutoSubsystem extends SubsystemBase {
             new InstantCommand(() -> System.out.println("We will now begin shooting")),
             shoot(),
             stop(),
-            new InstantCommand(() -> System.out.println("routine complete")),
+            new InstantCommand(() -> System.out.println("routine complete"))
     );
   } 
 
@@ -283,7 +271,7 @@ public class AutoSubsystem extends SubsystemBase {
             new InstantCommand(() -> System.out.println("We will now begin shooting")),
             shoot(),
             stop(),
-            new InstantCommand(() -> System.out.println("routine complete")),
+            new InstantCommand(() -> System.out.println("routine complete"))
     );
   } 
 
@@ -295,7 +283,7 @@ public class AutoSubsystem extends SubsystemBase {
             new InstantCommand(() -> System.out.println("We will now begin shooting")),
             shoot(),
             stop(),
-            new InstantCommand(() -> System.out.println("routine complete")),
+            new InstantCommand(() -> System.out.println("routine complete"))
     );
   } 
 
@@ -344,7 +332,7 @@ public class AutoSubsystem extends SubsystemBase {
     );
   }
 
-  public Command StartMidShootIntakeTower(){
+  public Command StartMidShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()->System.out.println("Moving to Shooter position")),
             goMidToShooterPs(),
@@ -359,7 +347,7 @@ public class AutoSubsystem extends SubsystemBase {
             );
   }
 
-  public Command StartTopShootIntakeTower(){
+  public Command StartTopShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Moving from top to mid shooting position")),
             goToptoShooterPs(),
@@ -374,13 +362,5 @@ public class AutoSubsystem extends SubsystemBase {
     );
   }
 
-  public Command MoveRandomCircle(){
-    return Commands.sequence(
-            new InstantCommand(()->System.out.println("We will be moving in a random circle now!")),
-            goRandomPath(),
-            new InstantCommand(()->System.out.println("We are done moving in a random circle"))
-
-
-    );
-  }
+  
 }
