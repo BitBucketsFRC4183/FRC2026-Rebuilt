@@ -14,7 +14,8 @@ public class ShooterCommands {
         });
   }
 
-  public static Command revFlywheels(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+  public static Command revFlywheels(
+      ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         // Waits for the distance from vision
         Commands.waitUntil(shooterSubsystem::distanceStored),
@@ -26,14 +27,13 @@ public class ShooterCommands {
                 Commands.parallel(
                     Commands.run(shooterSubsystem::setTargetVelocity),
                     Commands.run(shooterSubsystem::startIntermediateMotors),
-                        Commands.run(hopperSubsystem::runConveyorForward)
-                        )));
+                    Commands.run(hopperSubsystem::runConveyorForward))));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.parallel(
         Commands.runOnce(shooterSubsystem::resetStoredDistance),
         Commands.runOnce(shooterSubsystem::stop),
-            Commands.runOnce(hopperSubsystem::stopConveyor));
+        Commands.runOnce(hopperSubsystem::stopConveyor));
   }
 }

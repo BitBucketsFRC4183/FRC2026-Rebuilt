@@ -30,6 +30,7 @@ import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -128,7 +129,7 @@ public class RobotContainer {
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
     this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
-    this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+    this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
     this.shooterSim = new ShooterSim();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
@@ -206,14 +207,13 @@ public class RobotContainer {
         .whileTrue(Commands.run(intakeSubsystem::intake, intakeSubsystem))
         .onFalse(Commands.runOnce(intakeSubsystem::hold, intakeSubsystem));
 
-    double distance = 10;
+    double distance = 5;
     operatorController
         .rightTrigger(0.1)
         // Insert method to store distance from vision, in meters pls, and stop robot in place to
         // get rid of transitional motion
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-        .whileTrue(
-                ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
   }
 

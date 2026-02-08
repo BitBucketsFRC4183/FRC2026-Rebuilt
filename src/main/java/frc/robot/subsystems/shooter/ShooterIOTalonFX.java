@@ -1,21 +1,18 @@
 package frc.robot.subsystems.shooter;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
   private final TalonFX finalFlywheel2 = new TalonFX(ShooterConstants.flywheelID2);
-  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
+  //  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
-  private final Orchestra blackHole = new Orchestra();
 
   public ShooterIOTalonFX() {
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
@@ -47,29 +44,22 @@ public class ShooterIOTalonFX implements ShooterIO {
     finalFlywheel.getConfigurator().apply(currentConfig);
 
     motorConfig.MotorOutput.Inverted =
-            !ShooterConstants.flywheelInverted
-                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        ShooterConstants.flywheelInverted
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     finalFlywheel2.getConfigurator().apply(motorConfig);
     finalFlywheel2.getConfigurator().apply(currentConfig);
 
     motorConfig.MotorOutput.Inverted =
-            ShooterConstants.flywheelInverted
-                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        ShooterConstants.flywheelInverted
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     // Intermediate Motor Configs
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    intermediateMotor.getConfigurator().apply(motorConfig);
-    intermediateMotor.getConfigurator().apply(currentConfig);
-
-    blackHole.addInstrument(finalFlywheel);
-    var status = blackHole.loadMusic("music/blackhole.chrp");
-    if (!status.isOK()) {
-      Commands.print("ERROR: Black Hole not Playing lol");
-    }
-    blackHole.play();
+    //    intermediateMotor.getConfigurator().apply(motorConfig);
+    //    intermediateMotor.getConfigurator().apply(currentConfig);
   }
 
   @Override
@@ -81,14 +71,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void startIntermediateMotors() {
-    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
+    //    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
     finalFlywheel.stopMotor();
     finalFlywheel2.stopMotor();
-    intermediateMotor.stopMotor();
+    // intermediateMotor.stopMotor();
   }
 
   @Override
@@ -97,17 +87,17 @@ public class ShooterIOTalonFX implements ShooterIO {
     double currentBottomFlywheelVelocity = finalFlywheel2.getVelocity().getValueAsDouble();
     return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
         && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance
-            && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-            && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+        && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
+        && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.appliedFlywheelOutput = finalFlywheel.getDutyCycle().getValueAsDouble();
-    inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
+    //    inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
     inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
     inputs.flywheelVelocity2 = finalFlywheel2.getVelocity().getValueAsDouble();
-    inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
+    //    inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
   }
 }
 

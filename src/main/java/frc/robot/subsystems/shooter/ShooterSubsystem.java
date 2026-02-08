@@ -5,13 +5,15 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   ShooterIOTalonFX io;
+  ShooterIOSparkMax ioSpark;
 
   private static double targetVelocity = 0;
 
   private double storedDistance = 0;
 
-  public ShooterSubsystem(ShooterIOTalonFX io) {
+  public ShooterSubsystem(ShooterIOTalonFX io, ShooterIOSparkMax ioSpark) {
     this.io = io;
+    this.ioSpark = ioSpark;
   }
 
   public static double getTargetVelocity() {
@@ -76,10 +78,12 @@ public class ShooterSubsystem extends SubsystemBase {
   // Stops both Intermediate and Flywheel Motors
   public void stop() {
     io.stopMotor();
+    ioSpark.stopMotor();
   }
 
   public void startIntermediateMotors() {
-    io.startIntermediateMotors();
+    // io.startIntermediateMotors();
+    ioSpark.startIntermediateMotors();
   }
 
   // insert code for setting hood angle stuff
