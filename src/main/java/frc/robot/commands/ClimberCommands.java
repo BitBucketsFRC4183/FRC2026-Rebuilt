@@ -17,9 +17,9 @@ public class ClimberCommands {
     SimpleMotorFeedforward climbFeedForward = new SimpleMotorFeedforward(ClimberConstants.ARM_kS,ClimberConstants.ARM_kV,ClimberConstants.ARM_kA,0.2);
     double scale = climbFeedForward.calculate(desiredSpeed);
 
-    if (currentHeight <= ClimberConstants.minHeight){
+    if (currentHeight <= ClimberConstants.minHeight && input < 0){
       return Commands.run(() -> climberSubsystem.setVoltageSupplied(0));
-    } if (currentHeight >= ClimberConstants.maxHeight){
+    } if (currentHeight >= ClimberConstants.maxHeight && input > 0){
       return Commands.run(() -> climberSubsystem.setVoltageSupplied(0));
     }
     

@@ -22,9 +22,9 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     TalonFXConfiguration climbConfig = new TalonFXConfiguration();
     climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 100;
+    climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 40;
     climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    climbConfig.CurrentLimits.StatorCurrentLimit = 100;
+    climbConfig.CurrentLimits.StatorCurrentLimit = 40;
     climbConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     climbConfig.MotorOutput.Inverted =
         ClimberConstants.ARM_MOTOR_INVERTED
