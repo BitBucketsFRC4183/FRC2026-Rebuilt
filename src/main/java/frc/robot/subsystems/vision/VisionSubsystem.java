@@ -6,7 +6,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 ///so shooter game 2026: concept
-//there is a april tag right below the hopper.
+//there is april tag right below the hopper.
 //for example, red alliance is apriltag 10
 //we want to bind to these apriltags when trigger: aim only at these apriltags,
 //-> robot pose will always face the hopper form rotational movement, like an arc robot move back and forth
@@ -15,10 +15,11 @@ import org.littletonrobotics.junction.Logger;
 //-> we want to still aim the specific april tag, even though camera can't see it.
 
 /// how to implement
-//april tag adjust robot pose, we will need a field pose to aim the hopper
+//april tag adjust robot pose, so if we estimate hub pose on the field, we can technically aim them
 
-/// identify roles of different subsystem
-//
+  /// debug...
+  //reflection issues, possibly not this season --> soln: reduce exposue, reduce brightness
+
 
 public class VisionSubsystem extends SubsystemBase {
   private final VisionIO visionio;
@@ -40,7 +41,6 @@ public class VisionSubsystem extends SubsystemBase {
     // how big AprilTag is in the camera frame
     // basically, 3%-> far;
     // 80%-> takes big portion of the frame, AprilTag is near
-
     // fusion; add vision measurement
     Pose2d visionFusedPose = null;
     double visionFusedTimestamps = 0.0;
