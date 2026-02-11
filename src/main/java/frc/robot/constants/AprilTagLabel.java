@@ -15,8 +15,10 @@ public class AprilTagLabel {
     //offset, it is the center of hopper
     //estimation is estimation, actual needs to tuned on field
     //They should be very accurate
+    //2foot height from apriltag to hopper
+    //23.5inch from center of hopper
     public static final Transform3d tagToHub3d = new Transform3d(
-            new Translation3d(0.2,0, 0.6096),
+            new Translation3d(0.5969,0, 0.6096),
             new Rotation3d()
     );
     public static final Pose3d RedHubPose3d = aprilTagFieldLayout.getTagPose(RED_RIGHT_BELOW_HUB).get().plus(tagToHub3d);
