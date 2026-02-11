@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AimThatHopperCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
@@ -222,6 +223,14 @@ public class RobotContainer {
                 () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+
+    controller
+            .rightBumper()
+            .whileTrue(
+                    AimThatHopperCommand(
+
+                    )
+            )
   }
 
   /**

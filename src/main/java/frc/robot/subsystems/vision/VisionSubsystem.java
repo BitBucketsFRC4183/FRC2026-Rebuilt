@@ -5,21 +5,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-///so shooter game 2026: concept
-//there is april tag right below the hopper.
-//for example, red alliance is apriltag 10
-//we want to bind to these apriltags when trigger: aim only at these apriltags,
-//-> robot pose will always face the hopper form rotational movement, like an arc robot move back and forth
-//-> and shoot balls driver can still move around, then we based on the position, form another arc, and etc
-//-> shooter already calculated angular velocity to best shoot
-//-> we want to still aim the specific april tag, even though camera can't see it.
+///shooter game 2026: concept & mechanics
+// april tags, hub poses --> given
+// need: accurate robot pose on the field
+// just like gps, align robot pose to hub pose
 
 /// how to implement
-//april tag adjust robot pose, so if we estimate hub pose on the field, we can technically aim them
+
 
   /// debug...
   //reflection issues, possibly not this season --> soln: reduce exposue, reduce brightness
-
+//calibration
 
 public class VisionSubsystem extends SubsystemBase {
   private final VisionIO visionio;
@@ -80,3 +76,41 @@ public class VisionSubsystem extends SubsystemBase {
     return new Pose2d(avgX, avgY, avgRotation);
   }
 }
+
+
+
+
+
+///+++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++
+/// ++++++++++*@@@@@@@@@@@@@*+++++**#%@@@@@@###@@@@@@@@@@@@@#+++
+/// +++++++++++@@@@@@@@@@@@@@*#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+++
+/// +++++++++++%@@@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%***+
+/// ++++++++++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%+
+/// ++++++++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+
+/// +++++++++#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+
+/// ++++++++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#*
+/// +++++++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/// +++++++++++%@@@@@@@@@@@@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@
+/// ++++++++++#@@@@@@@@@@@@@@@@@@@@@@@@%%%@@@@@@@@@@@@@@@@@@@@@@
+/// +++++++++#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/// ++++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/// ++++++++#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/// +++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#%@@@@@@@@@@@@@@
+/// +++++++*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##@@@@@@@@@@@@@@
+/// +++++++#@@@@@@@@@@@@@#%@@@@@@@@@@@@@@@@@@@@@#+++++@@@@@@@@@@
+/// +++++++%@@@@@@@@@@@@@#@#++++++@@@@@@@@@@@%*+++#%#*++@@@@@@@@
+/// ++++++*@@@@@@@@@@@@@%@+++#%#*++*##********++*@@@@@@%*@@%@@@@
+/// ++++++*@@@@@@@@@@@@@@#+*@@@@@@@++*********++*@@@@@@@%*%#@@@@
+/// ++++++*@@@@@@@@@@@@@@*+@@@@@@@@#+**********+*@@@@@@@%*++%@@@
+/// ++++++%@@@@@@@@@@@@@@%*@@@@@@@@#+***********+*@@@@@@#++*%@@@
+/// +++++#@@@@@@@@@@@@@@@#+*@@@@@@#++*************+*###*++++%@@@
+/// ++++*@@@@@@@@@@@@@@@@*+++****+++*****************####***@@@#
+/// +++*@@@@@@@@@@@@@@@@@@*++++++++**************************#*#
+/// ++*#@@@@@@@@@@@@##@@@@*****#****************************@@@@
+/// +++++++++*@@@@@@@@##%@@*****************##*************@@@@%
+/// ++++++++*#%@%#*+#%@@@@@#***************%##%**********%@@@@@#
+/// ++++++++++++++++++#@@@@@@#*************@###%******#@@@@@@@#*
+/// +++++++++++++++++++#@@@@@@@@#**********#%##%***#@@@@@@@@@@@+
+/// ++++++++++++++++++++#@@@@@@@@@@@@%##****%%@@@@@@@%#@@@@@@@@@
+/// ++++++++++++++++++*@@@@@@@@@@@*#%@@@@@@@@@@@@@%%@@@@@@@@@@@@
+/// +++++++++++++++++%@@@@@@@@@@@@@@@@@@@###%%%##%@@@@@@@@@@@@@@
