@@ -127,9 +127,7 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.BackLeft),
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem =
-            new VisionSubsystem(new VisionIOInputsAutoLogged(), visionIO, driveSubsystem);
-
+        visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
         break;
 
       case SIM:
@@ -143,7 +141,6 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
         visionSubsystem =
             new VisionSubsystem(
-                new VisionIOInputsAutoLogged(),
                 new VisionIOPhotonVisionSim(
                     driveSubsystem.poseSupplierForSim,
                     VisionConstant.robotToBackCam,
