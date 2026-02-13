@@ -1,11 +1,13 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -15,6 +17,14 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
+    Orchestra m_orchestra = new Orchestra();
+
+    m_orchestra.addInstrument(finalFlywheel);
+    m_orchestra.addInstrument(finalFlywheel2);
+
+    m_orchestra.loadMusic("music/blackhole.chrp");
+    m_orchestra.play();
+
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     motorConfig.MotorOutput.Inverted =
         ShooterConstants.flywheelInverted
@@ -42,11 +52,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     finalFlywheel.getConfigurator().apply(motorConfig);
     finalFlywheel.getConfigurator().apply(currentConfig);
-
-    motorConfig.MotorOutput.Inverted =
-        ShooterConstants.flywheelInverted
-            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     finalFlywheel2.getConfigurator().apply(motorConfig);
     finalFlywheel2.getConfigurator().apply(currentConfig);
@@ -93,11 +98,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.appliedFlywheelOutput = finalFlywheel.getDutyCycle().getValueAsDouble();
-    //    inputs.appliedIntermediateOutput = intermediateMotor.getDutyCycle().getValueAsDouble();
-    inputs.flywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
-    inputs.flywheelVelocity2 = finalFlywheel2.getVelocity().getValueAsDouble();
-    //    inputs.intermediateVelocity = intermediateMotor.getVelocity().getValueAsDouble();
+    SmartDashboard.putNumber("Flywheel Motor 1 Speed", finalFlywheel.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Flywheel Motor 1 Voltage", finalFlywheel.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber("Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
+    //SmartDashboard.putNumber("Intermediate Motor Speed", intermediateMotor.getVelocity().getValueAsDouble());
+    //SmartDashboard.putNumber("Intermediate Motor Voltage", intermediateMotor.getMotorVoltage().getValueAsDouble());
   }
 }
 
