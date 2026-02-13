@@ -1,76 +1,69 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
+import frc.robot.constants.VisionConstant;
+import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
 
-  public final String BitBucketsCamera = "limelight";
-  public final String limelightName = "BitBucketsCamera";
-  NetworkTable limelight = NetworkTableInstance.getDefault().getTable(BitBucketsCamera);
+  // LIMELIGHT is constant
+  // "limelight" is Networktables path
 
-  // Start of inputs
-  //    @AutoLog
-  //    class VisionIOLimelightInputs{
-  //         SwerveModulePosition swerveModulePosition = new SwerveModulePosition[]{
-  //                 frontLeft.getPosition(),
-  //                 frontRight.getPosition(),
-  //                 backLeft.getPosition(),
-  //                 backRight.getPosition()}
-  //         double tx = LimelightHelpers.getTX(""); //offset in x direction'
-  //         //tx>0 right
-  //         //tx<0 left
-  //         //best: tx=0
-  //         double ty = LimelightHelpers.getTY(""); //offset in y direction
-  //         double ta = LimelightHelpers.getTA(""); //target area 0-100%
-  //         boolean hasTarget = LimelightHelpers.getTV("");// whether or not the camera has a
-  // target location
-  //         double aprilTagID = 0;// turn into false if we decide to use MegaTag1
-  //         // setting up the measured values of the camera to be set in the table//
-  //         LimelightHelpers.setFiducial3DOffset(//forward offset,Side offset,Height offset)
-  //                 LimelightHelpers .setCameraPose_RobotSpace("",//forward offset,Side
-  // offset,Height offset,Roll,Pitch,Yaw)
-  // }
+  // getTable(""), inside the "", is webUI/table name
+  private final NetworkTable LimelightFrontTable =
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+  private final NetworkTable LimelightBackTable =
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
+  public final Supplier<Pose2d> poseSupplier;
 
-  // Start of outputs
-  // @Override
-  // public void periodic() {
-  //
-  //    public Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight",
-  // poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-  //          // above code needs Drive System for robot orientation.
-  //
-  //     }
-  NetworkTableEntry txEntry = limelight.getEntry("tx");
-  NetworkTableEntry tyEntry = limelight.getEntry("ty");
-  NetworkTableEntry tvEntry = limelight.getEntry("tv");
-  NetworkTableEntry taEntry = limelight.getEntry("ta");
-  NetworkTableEntry fiducialIDEntry = limelight.getEntry("fiducialID");
-  NetworkTableEntry robotPoseEntry = limelight.getEntry("Pose2d");
+  // get that pose for me
+  public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
+    this.poseSupplier = poseSupplier;
+  }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  // getting two inputs
+  public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
+    // we use the method, give it the variable of its wanted type
+    readCameraData(LimelightFrontTable, frontCamInputs, VisionConstant.LIMELIGHT_FRONT);
+    readCameraData(LimelightBackTable, backCamInputs, VisionConstant.LIMELIGHT_BACK);
+  }
+
+  // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to
+  // write codes.
+  // However, we do receive networktable first
+
+  /// inputs.tx = LimelightHelpers.getTX("FrontCam");
+  // equals
+  /// inputs.tx = table.getEntry("tx").getDouble(0);
+
+  // SO, you can choose to do tables, OR limelighthelper. Either way
+
+  //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
+  private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
+    // DON'T CHANGE ANY NAMING STUFF, AFTER THIS LINE OF CODE!!!!!!!!!!!!!!!!!!!!! SAYING YOU, AIDAN
+
     inputs.cameraConnected =
-        LimelightHelpers.getLimelightNTTableEntry(BitBucketsCamera, "CameraIsConnected").exists();
-    inputs.tx = txEntry.getDouble(0.0);
-    inputs.ty = tyEntry.getDouble(0.0);
-    inputs.ta = taEntry.getDouble(0.0);
-    inputs.tv = tvEntry.getDouble(0.0);
+        LimelightHelpers.getLimelightNTTableEntry(cameraName, "CameraIsConnected").exists();
+    inputs.tx = LimelightHelpers.getTX(cameraName);
+    inputs.ty = LimelightHelpers.getTY(cameraName);
+    inputs.ta = LimelightHelpers.getTA(cameraName);
+    inputs.fiducialID = LimelightHelpers.getFiducialID(cameraName);
+    inputs.hasTarget = LimelightHelpers.getTV(cameraName);
+    inputs.estimatedRobotPose = poseSupplier.get();
 
-    inputs.fiducialID = fiducialIDEntry.getDouble(0.0);
+    LimelightHelpers.SetRobotOrientation(
+        "limelightFront", inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
-    inputs.hasTarget = LimelightHelpers.getTV(limelightName);
-    inputs.robotPose = LimelightHelpers.getBotPose2d(limelightName);
-
-    // if there is no target, then don't continue other inputs
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;
       return;
     }
-    // in here, visionPose is calculated from
-    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("BitBucketsCamera");
+    // in here, visionPose is calculated
+    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
     if (megaTag2Results.tagCount >= 2) {
       inputs.hasMegaTag2 = true;
       inputs.megaTagPose = megaTag2Results.pose;
@@ -80,7 +73,7 @@ public class VisionIOLimelight implements VisionIO {
       return;
     }
 
-    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue("BitBucketsCamera");
+    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
     if (megaTag1Results.tagCount >= 1) {
       inputs.hasMegaTag2 = false;
       inputs.megaTagPose = megaTag1Results.pose;
@@ -93,3 +86,36 @@ public class VisionIOLimelight implements VisionIO {
     return;
   }
 }
+
+// Start of inputs
+//    @AutoLog
+//    class VisionIOLimelightInputs{
+//         SwerveModulePosition swerveModulePosition = new SwerveModulePosition[]{
+//                 frontLeft.getPosition(),
+//                 frontRight.getPosition(),
+//                 backLeft.getPosition(),
+//                 backRight.getPosition()}
+//         double tx = LimelightHelpers.getTX(""); //offset in x direction'
+//         //tx>0 right
+//         //tx<0 left
+//         //best: tx=0
+//         double ty = LimelightHelpers.getTY(""); //offset in y direction
+//         double ta = LimelightHelpers.getTA(""); //target area 0-100%
+//         boolean hasTarget = LimelightHelpers.getTV("");// whether or not the camera has a
+// target location
+//         double aprilTagID = 0;// turn into false if we decide to use MegaTag1
+//         // setting up the measured values of the camera to be set in the table//
+//         LimelightHelpers.setFiducial3DOffset(//forward offset,Side offset,Height offset)
+//                 LimelightHelpers .setCameraPose_RobotSpace("",//forward offset,Side
+// offset,Height offset,Roll,Pitch,Yaw)
+// }
+
+// Start of outputs
+// @Override
+// public void periodic() {
+//
+//    public Pose3d estimatedRobotOrientation = LimelightHelpers.SetRobotOrientation("limelight",
+// poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+//          // above code needs Drive System for robot orientation.
+//
+//     }

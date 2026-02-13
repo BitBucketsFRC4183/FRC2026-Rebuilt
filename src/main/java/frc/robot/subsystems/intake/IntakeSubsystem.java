@@ -7,7 +7,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final IntakeIO io;
   private final IntakeIOInputs inputs = new IntakeIOInputs();
-  private double targetAngleDeg = 0.0;
+
+  private IntakeState currentState = IntakeState.STOWED;
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
@@ -17,56 +18,73 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
 
-    // Soft limits for forearm rotation
-    if (inputs.forearmPositionDeg <= IntakeConstants.MIN_ANGLE_DEG
-        && targetAngleDeg < inputs.forearmPositionDeg) {
-      io.stopForearm();
+    switch (currentState) {
+      case STOWED:
+        io.retract();
+        io.stopMotor();
+        break;
+
+      case DEPLOYED:
+        io.extend();
+        io.stopMotor();
+        break;
+
+      case INTAKING:
+        io.extend();
+        io.setMotorOutput(IntakeConstants.INTAKE_SPEED);
+        break;
+
+      case OUTTAKING:
+        io.extend();
+        io.setMotorOutput(IntakeConstants.OUTTAKE_SPEED);
+        break;
+
+      case HOLDING:
+        io.extend();
+        io.setMotorOutput(IntakeConstants.HOLD_SPEED);
+        break;
     }
-
-    if (inputs.forearmPositionDeg >= IntakeConstants.MAX_ANGLE_DEG
-        && targetAngleDeg > inputs.forearmPositionDeg) {
-      io.stopForearm();
-    }
   }
 
-  // ForearmConst
+  //State Control
 
-  // Closed loop position
-  public void setAngle(double degrees) {
-    targetAngleDeg =
-        Math.max(IntakeConstants.MIN_ANGLE_DEG, Math.min(IntakeConstants.MAX_ANGLE_DEG, degrees));
-    io.setForearmPosition(targetAngleDeg);
+  public void setState(IntakeState state) {
+    this.currentState = state;
   }
 
-  // Manual Percent for Com and Bindings
-  public void runForearmManual(double percent) {
-    io.setForearmPercent(percent);
+  public IntakeState getState() {
+    return currentState;
   }
 
-  // forearm motor
-  public void stopForearm() {
-    io.stopForearm();
+
+
+  public void stow() {
+    setState(IntakeState.STOWED);
   }
 
-  // Current angle
-  public double getAngle() {
-    return inputs.forearmPositionDeg;
+  public void deploy() {
+    setState(IntakeState.DEPLOYED);
   }
 
-  // Intake
-
-  // Run Intake
-  public void runIntake(double percent) {
-    io.setIntakePercent(percent);
+  public void intake() {
+    setState(IntakeState.INTAKING);
   }
 
-  // Intake
-  public void stopIntake() {
-    io.stopIntake();
+  public void outtake() {
+    setState(IntakeState.OUTTAKING);
   }
 
-  // telemetry for output
-  public double getIntakeOutput() {
-    return inputs.intakeAppliedOutput;
+  public void hold() {
+    setState(IntakeState.HOLDING);
+  }
+
+  //Telemetry
+
+  public double getMotorCurrent() {
+    return inputs.motorCurrentAmps;
+  }
+
+  public boolean isExtended() {
+    return inputs.pistonExtended;
   }
 }

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -7,29 +8,50 @@ import org.littletonrobotics.junction.Logger;
 public class VisionSubsystem extends SubsystemBase {
   private VisionIOInputsAutoLogged visionIOInputsAutoLogged;
   private final VisionIO visionio;
-  private final VisionIOInputs inputs = new VisionIOInputs();
-  private final DriveSubsystem drive;
+  private final VisionIOInputs frontCamInputs = new VisionIOInputs();
+  private final VisionIOInputs backCamInputs = new VisionIOInputs();
+  private final DriveSubsystem driveSubsystem;
 
   public VisionSubsystem(
-      VisionIOInputsAutoLogged visionIOInputsAutoLogged, VisionIO io, DriveSubsystem drive) {
+      VisionIOInputsAutoLogged visionIOInputsAutoLogged,
+      VisionIO io,
+      DriveSubsystem driveSubsystem) {
     this.visionIOInputsAutoLogged = visionIOInputsAutoLogged;
     this.visionio = io;
-    this.drive = drive;
+    this.driveSubsystem = driveSubsystem;
   }
 
   @Override
   public void periodic() {
-    visionio.updateInputs(inputs);
+    visionio.updateInputs(frontCamInputs, backCamInputs);
 
-    //    Logger.recordOutput("Area of Taget", inputs.ta); // how big AprilTag is in the camera
-    // frame
+    //    Logger.recordOutput("Area of Taget", inputs.ta);
+    // how big AprilTag is in the camera frame
     // basically, 3%-> far;
     // 80%-> takes big portion of the frame, AprilTag is near
 
-    Logger.processInputs("VisionInputs", visionIOInputsAutoLogged);
-    // drive.addVisionMeasurement(inputs.megaTagPose, inputs.timestamp);
+    // fusion; add vision measurement
+    Pose2d visionFusedPose = null;
+    double visionFusedTimestamps = 0.0;
 
-    //    Pose2d currentPose = drive.getPose();
+    if (frontCamInputs.hasTarget && backCamInputs.hasTarget) {
+      visionFusedTimestamps = Math.max(frontCamInputs.timestamp, backCamInputs.timestamp);
+
+    } else if (frontCamInputs.hasTarget) {
+      visionFusedPose = frontCamInputs.megaTagPose;
+      visionFusedTimestamps = frontCamInputs.timestamp;
+
+    } else if (backCamInputs.hasTarget) {
+      visionFusedPose = backCamInputs.megaTagPose;
+      visionFusedTimestamps = backCamInputs.timestamp;
+    }
+
+    if (visionFusedPose != null) {
+      driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
+    }
+
+    Logger.processInputs("Vision/frontCam", visionIOInputsAutoLogged);
+    Logger.processInputs("Vision/backCam", visionIOInputsAutoLogged);
   }
 }
 
