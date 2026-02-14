@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
@@ -237,10 +238,10 @@ public class RobotContainer {
             }, intakeSubsystem)
     );
 
-    operator.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
-    operator.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
-    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operator::getLeftY));
+    operatorController.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
+    operatorController.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
+    new Trigger(() -> Math.abs(operatorController.getLeftY()) > 0.1)
+        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
   /**
