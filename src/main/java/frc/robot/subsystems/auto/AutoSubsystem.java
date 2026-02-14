@@ -1,4 +1,4 @@
-package frc.robot.subsystems.auto;
+package frc.robot.subsystems.auto.AutoSubsystem;
 
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,252 +20,248 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
 
-  private final DriveSubsystem drive;
-  private final ShooterSubsystem shooter;
+    private final DriveSubsystem drive;
+    private final ShooterSubsystem shooter;
 
-  public AutoSubsystem(DriveSubsystem drive, ShooterSubsystem shooter) {
-    this.drive = drive;
-    this.shooter = shooter;
-    registerNamedCommands();
-  }
-
-  //PathPlannerPath MidStarttoMid = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
-  //Setup PathPlanner
-
-
-      //     AutoBuilder.configureHolonomic(
-      //        drive::getPose,
-      //         drive::resetPose,
-      //        drive::getChassisSpeeds,
-      //        drive::drive,
-      //        new HolonomicPathFollowerConfig(
-      //            config.getMaxLinearVelocity(), config.getDriveBaseRadius(), new
-      // ReplanningConfig()),
-      //       () ->
-      //           DriverStation.getAlliance()
-      //               .map(alliance -> alliance == DriverStation.Alliance.Red)
-      //               .orElse(false),
-      //       drive);
-    } catch (Exception e) {
-      DriverStation.reportError("Failed to configure AutoBuilder", e.getStackTrace());
+    public AutoSubsystem(DriveSubsystem drive, ShooterSubsystem shooter) {
+        this.drive = drive;
+        this.shooter = shooter;
+        registerNamedCommands();
     }
-  }
 
-  /** Stops drivetrain */
-  // public Command stop() {
-  //  return drive.run(() -> drive.drive(new edu.wpi.first.math.kinematics.ChassisSpeeds()));
-  // }
+    //PathPlannerPath MidStarttoMid = PathPlannerPath.fromChoreoTrajectory("MidStarttoMid");
+    //Setup PathPlanner
 
-  /** Example Choreo-based routine */
-  public Command midShootAuto() {
+
+    //     AutoBuilder.configureHolonomic(
+    //        drive::getPose,
+    //         drive::resetPose,
+    //        drive::getChassisSpeeds,
+    //        drive::drive,
+    //        new HolonomicPathFollowerConfig(
+    //            config.getMaxLinearVelocity(), config.getDriveBaseRadius(), new
+    // ReplanningConfig()),
+    //       () ->
+    //           DriverStation.getAlliance()
+    //               .map(alliance -> alliance == DriverStation.Alliance.Red)
+    //               .orElse(false),
+    //       drive);
+
+/** Stops drivetrain */
+// public Command stop() {
+//  return drive.run(() -> drive.drive(new edu.wpi.first.math.kinematics.ChassisSpeeds()));
+// }
+
+/** Example Choreo-based routine */
+public Command midShootAuto() {
     return new PathPlannerAuto("MidShootExample");
-  }
+}
 
-  public Command shoot() {
+public Command shoot() {
     return Commands.print("shooting!");
-  }
+}
 
-  public Command climb() {
+public Command climb() {
     return Commands.print("Climbing!");
     // replace with real climb command
-  }
+}
 
-  //autoroutines
-  /**TODO: NAVYA BELOW IS THE CORRECT WAY TO MAKE A PATHPLANNER COMMAND.
-   * YOU NEED TO CHANGE ALL OF YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING
-   * AND THEN YOU MUST TEST YOUR PATHS IN SIM!! PLEASSSEE!!!
-   */
+//autoroutines
+/**TODO: NAVYA BELOW IS THE CORRECT WAY TO MAKE A PATHPLANNER COMMAND.
+ * YOU NEED TO CHANGE ALL OF YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING
+ * AND THEN YOU MUST TEST YOUR PATHS IN SIM!! PLEASSSEE!!!
+ */
 
-  public Command goBottomToShootPs() {
+public Command goBottomToShootPs() {
     PathPlannerPath path1;
 
     try {
-      // Load the path from the deploy/pathplanner folder by name
-      path1 = PathPlannerPath.fromPathFile("BottomStartToShootB");
+        // Load the path from the deploy/pathplanner folder by name
+        path1 = PathPlannerPath.fromPathFile("BottomStartToShootB");
     } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path1);
-  }
+}
 
 
 
-  public Command goToptoShooterPs(){
+public Command goToptoShooterPs(){
     PathPlannerPath path2;
 
     try{
-      path2= PathPlannerPath.fromPathFile("TopStartToShootT");
+        path2= PathPlannerPath.fromPathFile("TopStartToShootT");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path2);
-  }
+}
 
 
 
- public Command goMidToShooterPs(){
+public Command goMidToShooterPs(){
     PathPlannerPath path3;
 
     try{
-      path3= PathPlannerPath.fromPathFile("MidStartToShootM");
+        path3= PathPlannerPath.fromPathFile("MidStartToShootM");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path3);
-  }
+}
 
 
 //climbing only
-  public Command goMidtoTower(){
+public Command goMidtoTower(){
     PathPlannerPath path4;
 
     try{
-      path4= PathPlannerPath.fromPathFile("MidtoTower");
+        path4= PathPlannerPath.fromPathFile("MidtoTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path4);
-  }
+}
 
 
-  public Command goBottomShootertoDepot(){
+public Command goBottomShootertoDepot(){
     PathPlannerPath path5;
 
     try{
-      path5= PathPlannerPath.fromPathFile("ShootMtoDepot");
+        path5= PathPlannerPath.fromPathFile("ShootMtoDepot");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path5);
-  }
+}
 
 
-  public Command goMidShootertoDepot(){
+public Command goMidShootertoDepot(){
     PathPlannerPath path6;
 
     try{
-      path6= PathPlannerPath.fromPathFile("ShootBtoDepot");
+        path6= PathPlannerPath.fromPathFile("ShootBtoDepot");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path6);
-  }
+}
 
 
- public Command goTopShootertoDepot(){
+public Command goTopShootertoDepot(){
     PathPlannerPath path7;
 
     try{
-      path7= PathPlannerPath.fromPathFile("ShootTtoDepot");
+        path7= PathPlannerPath.fromPathFile("ShootTtoDepot");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path7);
-  }
+}
 
 
-  public Command goDepotToMid(){
+public Command goDepotToMid(){
     PathPlannerPath path8;
 
     try{
-      path8= PathPlannerPath.fromPathFile("DepotToMid");
+        path8= PathPlannerPath.fromPathFile("DepotToMid");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(path8);
-  }
+}
 
 
 
-  public Command goMidTower(){
+public Command goMidTower(){
     PathPlannerPath MdTower;
 
     try{
-      MdTower= PathPlannerPath.fromPathFile("MidtoTower");
+        MdTower= PathPlannerPath.fromPathFile("MidtoTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(MdTower);
-  }
+}
 
 
-  public Command goBottomTower(){
+public Command goBottomTower(){
     PathPlannerPath BtTower;
 
     try{
-      BtTower= PathPlannerPath.fromPathFile("BottomToTower");
+        BtTower= PathPlannerPath.fromPathFile("BottomToTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(BtTower);
-  }
+}
 
 
-   public Command goTopTower(){
+public Command goTopTower(){
     PathPlannerPath TpTower;
 
     try{
-      TpTower= PathPlannerPath.fromPathFile("TopToTower");
+        TpTower= PathPlannerPath.fromPathFile("TopToTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(TpTower);
-  }
+}
 
 
-  public Command goShooterBtoTower(){
+public Command goShooterBtoTower(){
     PathPlannerPath ShooterBTower;
 
     try{
-      ShooterBTower= PathPlannerPath.fromPathFile("ShootBtoTower");
+        ShooterBTower= PathPlannerPath.fromPathFile("ShootBtoTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(ShooterBTower);
-  }
+}
 
 
-  public Command goShooterTtoTower(){
+public Command goShooterTtoTower(){
     PathPlannerPath ShooterTTower;
 
     try{
-      ShooterTTower= PathPlannerPath.fromPathFile("ShootTtoTower");
+        ShooterTTower= PathPlannerPath.fromPathFile("ShootTtoTower");
     } catch(Exception e){
-      e.printStackTrace();
-      return Commands.none();
+        e.printStackTrace();
+        return Commands.none();
     }
 
     return AutoBuilder.followPath(ShooterTTower);
-  }
+}
 
 //AUTOROUTINES
 
-  public Command bottomStartToShootOnly() {
+public Command bottomStartToShootOnly() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Moving from bottom position to Bottom shooting position")),
             goBottomToShootPs(),
@@ -275,9 +271,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  }
+}
 
-  public Command topStartToShootOnly() {
+public Command topStartToShootOnly() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Moving from top position to shooting position")),
             goToptoShooterPs(),
@@ -287,9 +283,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  }
+}
 
-  public Command midStartToShootOnly() {
+public Command midStartToShootOnly() {
     return Commands.sequence(
             new InstantCommand(() -> System.out.println("Moving from mid position to shooting position")),
             goMidToShooterPs(),
@@ -299,9 +295,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(() -> System.out.println("routine complete"))
     );
-  }
+}
 
-  public Command StartBottomToTower(){
+public Command StartBottomToTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("We will just be climbing")),
             goBottomTower(),
@@ -309,9 +305,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(()-> System.out.println("bottom to climb routine complete"))
     );
-  }
+}
 
-   public Command StartTopToTower(){
+public Command StartTopToTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("We will just be climbing")),
             goTopTower(),
@@ -319,9 +315,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(()-> System.out.println("top to climb routine complete"))
     );
-  }
+}
 
- public Command StartMidToTower(){
+public Command StartMidToTower(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("We will just be climbing")),
             goMidTower(),
@@ -329,45 +325,45 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(()-> System.out.println("mid to climb routine complete"))
     );
-  }
+}
 
-  public Command StartTopShootEndL1(){
+public Command StartTopShootEndL1(){
     return Commands.sequence(
-      new InstantCommand(()-> System.out.println("We will move to top shooting position")),
-      goToptoShooterPs(),
-      new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot().withTimeout(6),
-      new InstantCommand (()-> System.out.println("moving to tower to climb")),
-      goShooterTtoTower(),
-      climb()
+            new InstantCommand(()-> System.out.println("We will move to top shooting position")),
+            goToptoShooterPs(),
+            new InstantCommand (()->System.out.println("Begin shooting")),
+            shoot().withTimeout(6),
+            new InstantCommand (()-> System.out.println("moving to tower to climb")),
+            goShooterTtoTower(),
+            climb()
     );
-  }
+}
 
-  public Command StartBottomShootEndL1(){
+public Command StartBottomShootEndL1(){
     return Commands.sequence(
-      new InstantCommand(()-> System.out.println("We will move to bottom shooting position")),
-      goBottomToShootPs(),
-      new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot().withTimeout(6),
-      new InstantCommand (()-> System.out.println("moving to tower to climb")),
-      goShooterBtoTower(),
-      climb()
+            new InstantCommand(()-> System.out.println("We will move to bottom shooting position")),
+            goBottomToShootPs(),
+            new InstantCommand (()->System.out.println("Begin shooting")),
+            shoot().withTimeout(6),
+            new InstantCommand (()-> System.out.println("moving to tower to climb")),
+            goShooterBtoTower(),
+            climb()
     );
-  }
+}
 
-  public Command StartMidShootEndL1(){
+public Command StartMidShootEndL1(){
     return Commands.sequence(
-    new InstantCommand(()-> System.out.println("We will move to mid shooting position")),
-      goMidToShooterPs(),
-      new InstantCommand (()->System.out.println("Begin shooting")),
-      shoot().withTimeout(6),
-      new InstantCommand (()-> System.out.println("moving to tower to climb")),
-      goMidtoTower(),
-      climb()
+            new InstantCommand(()-> System.out.println("We will move to mid shooting position")),
+            goMidToShooterPs(),
+            new InstantCommand (()->System.out.println("Begin shooting")),
+            shoot().withTimeout(6),
+            new InstantCommand (()-> System.out.println("moving to tower to climb")),
+            goMidtoTower(),
+            climb()
     );
-  }
+}
 
-  public Command StartBottomShootIntakeEndL1(){
+public Command StartBottomShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Routine 1 starting - ")),
             goBottomToShootPs(),
@@ -380,9 +376,9 @@ public class AutoSubsystem extends SubsystemBase {
             stop(),
             new InstantCommand(()-> System.out.println("routine 1 complete"))
     );
-  }
+}
 
-  public Command StartMidShootIntakeEndL1(){
+public Command StartMidShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()->System.out.println("Moving to Shooter position")),
             goMidToShooterPs(),
@@ -394,10 +390,10 @@ public class AutoSubsystem extends SubsystemBase {
             climb(),
             stop(),
             new InstantCommand(()->System.out.println("complete routine"))
-            );
-  }
+    );
+}
 
-  public Command StartTopShootIntakeEndL1(){
+public Command StartTopShootIntakeEndL1(){
     return Commands.sequence(
             new InstantCommand(()-> System.out.println("Moving from top to mid shooting position")),
             goToptoShooterPs(),
@@ -408,9 +404,9 @@ public class AutoSubsystem extends SubsystemBase {
             goMidTower(),
             climb(),
             stop(),
-             new InstantCommand(()->System.out.println("complete routine"))
+            new InstantCommand(()->System.out.println("complete routine"))
     );
-  }
+}
 
 
 }
