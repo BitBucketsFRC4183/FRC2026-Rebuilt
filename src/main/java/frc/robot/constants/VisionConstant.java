@@ -1,8 +1,14 @@
 package frc.robot.constants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+
 import java.io.IOException;
 
 public final class VisionConstant {
@@ -26,5 +32,8 @@ public final class VisionConstant {
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
 
+  //TODO tune them
+  //start high values, then slowly lower them
+  public static final Matrix<N3, N1> GlobalVisionMeasurementStdDevs = VecBuilder.fill(0.7,0.7, Units.degreesToRadians(180));
   private VisionConstant() {}
 }
