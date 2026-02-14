@@ -23,8 +23,16 @@ public class HopperIOTalonFX implements HopperIO {
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
-    conveyorMotor.getConfigurator().apply(config);
-  }
+        //Current Limits
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 40.0;
+
+
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = 80.0;
+
+        conveyorMotor.getConfigurator().apply(config);
+    }
 
   @Override
   public void updateInputs(HopperIOInputs inputs) {

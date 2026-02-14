@@ -241,7 +241,16 @@ public class RobotContainer {
                 },
                 intakeSubsystem));
 
-    // Intake Control Motors
+    // Hopper reverse while right bumper held
+    operatorController.rightBumper().whileTrue(
+            Commands.startEnd(
+                    hopperSubsystem::runConveyorReverse,
+                    hopperSubsystem::stopConveyor,
+                    hopperSubsystem
+            )
+    );
+
+    //Intake Control Motors
 
     operatorController
         .leftTrigger()
