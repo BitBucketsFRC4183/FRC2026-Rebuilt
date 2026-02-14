@@ -25,6 +25,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
@@ -50,16 +51,14 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final DriveSubsystem driveSubsystem;
-  // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem visionSubsystem;
   private VisionIOLimelight visionIO;
+  private AutoSubsystem autoSubsystem;
   private ClimberSubsystem climberSubsystem;
   private ClimberIO climberIO;
-  private final AutoSubsystem autoSubsystem = new AutoSubsystem();
-
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -89,7 +88,11 @@ public class RobotContainer {
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
 
+        this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        this.intakeSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+        this.shooterSubsystem = new ShooterSubsystem();
 
+        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
         //register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
         NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
@@ -140,6 +143,13 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+
+        this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        this.intakeSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+        this.shooterSubsystem = new ShooterSubsystem();
+
+        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
+
         visionSubsystem =
             new VisionSubsystem(
                 new VisionIOInputsAutoLogged(),
@@ -163,13 +173,16 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        this.intakeSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
+        this.shooterSubsystem = new ShooterSubsystem();
+
         break;
     }
 
     // Set up auto routines
-    this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.intakeSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
-    this.shooterSubsystem = new ShooterSubsystem();
+
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 

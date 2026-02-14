@@ -21,7 +21,7 @@ public class AutoSubsystem extends SubsystemBase {
     private final DriveSubsystem drive;
     private final ShooterSubsystem shooter;
     private final ClimberSubsystem climber;
-    private ClimberSubsystem climberSubsystem;
+    //private ClimberSubsystem climberSubsystem;
 
     public AutoSubsystem(DriveSubsystem drive, ShooterSubsystem shooter, ClimberSubsystem climber) {
         this.drive = drive;
