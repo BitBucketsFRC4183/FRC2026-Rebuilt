@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.AimConstants;
 import frc.robot.constants.ForearmConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
@@ -51,6 +52,8 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private VisionSubsystem visionSubsystem;
   private VisionIOLimelight visionIO;
+//  private AimController aimController;
+
 
   // Toggle state for left bumper
   private boolean forearmExtended = false;
@@ -95,6 +98,11 @@ public class RobotContainer {
         // new ModuleIOTalonFXS(TunerConstants.BackRight));
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
+
+//        aimController = new AimController(
+//                AimConstants.KP,
+//                AimConstants.KI,
+//                AimConstants.KD);
         break;
 
       case SIM:
@@ -223,14 +231,14 @@ public class RobotContainer {
                 forearmSubsystem))
         .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
 
-//    controller
-//            .x()
-//            .whileTrue(
-//                    AimThatHopperCommand(
+//        controller
+//                .x()
+//                .whileTrue(
+//                        AimThatHopperCommand(
 //
-//                    )
-//            )
- }
+//                        )
+//                )
+//  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

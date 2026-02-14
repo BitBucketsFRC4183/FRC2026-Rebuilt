@@ -13,8 +13,6 @@ public final class VisionConstant {
   public static final String LIMELIGHT_FRONT = "limelight-front";
   public static final String LIMELIGHT_BACK = "limelight-back";
 
-
-
   public static AprilTagFieldLayout aprilTagFieldLayout;
 
   static {
@@ -24,7 +22,6 @@ public final class VisionConstant {
       throw new RuntimeException(e);
     }
   }
-
 
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());

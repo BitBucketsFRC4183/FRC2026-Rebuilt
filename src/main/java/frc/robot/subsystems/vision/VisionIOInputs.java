@@ -20,7 +20,7 @@ public class VisionIOInputs {
   // vision use this data (robot orientation/robot pose), so the estimate will not too off
   // add vision measurement(vision pose, timestamp), then provide a new estimated robot pose
   public Pose2d estimatedRobotPose;
-//  public double latency;
+  //  public double latency;
 
   public boolean hasMegaTag2;
 
@@ -37,6 +37,4 @@ public class VisionIOInputs {
   public Rotation2d FieldAngleFromHubToRobot;
 
   public Rotation2d TurningAngle;
-
-
 }

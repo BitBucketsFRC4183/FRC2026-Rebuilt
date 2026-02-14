@@ -5,17 +5,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-///shooter game 2026: concept & mechanics
+/// shooter game 2026: concept & mechanics
 // april tags, hub poses --> given
 // need: accurate robot pose on the field
 // just like gps, align robot pose to hub pose
 
 /// how to implement
 
-
-  /// debug...
-  //reflection issues, possibly not this season --> soln: reduce exposue, reduce brightness
-//calibration
+/// debug...
+// reflection issues, possibly not this season --> soln: reduce exposue, reduce brightness
+// calibration
 
 public class VisionSubsystem extends SubsystemBase {
   private final VisionIO visionio;
@@ -53,16 +52,16 @@ public class VisionSubsystem extends SubsystemBase {
       visionFusedPose = backCamInputs.megaTagPose;
       visionFusedTimestamps = backCamInputs.timestamp;
     }
-//add vision measurement
+    // add vision measurement
     if (visionFusedPose != null) {
       driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps);
     }
-//log loggable inputs
+    // log loggable inputs
     // Stringkey: the path, distinguish where the data wants to go to; custom naming
     Logger.processInputs("Vision/front", frontCamInputs);
     Logger.processInputs("Vision/back", backCamInputs);
 
-    //filter the best tag!
+    // filter the best tag!
   }
 
   private Pose2d averagePose(Pose2d a, Pose2d b) {
@@ -77,11 +76,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 }
 
-
-
-
-
-///+++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++
+/// +++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++
 /// ++++++++++*@@@@@@@@@@@@@*+++++**#%@@@@@@###@@@@@@@@@@@@@#+++
 /// +++++++++++@@@@@@@@@@@@@@*#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+++
 /// +++++++++++%@@@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%***+

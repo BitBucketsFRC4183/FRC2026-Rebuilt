@@ -5,8 +5,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-import frc.robot.subsystems.drive.DriveSubsystem;
-
 import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
@@ -16,9 +14,9 @@ public class VisionIOLimelight implements VisionIO {
 
   // getTable(""), inside the "", is webUI/table name
   private final NetworkTable LimelightFrontTable =
-          NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
   private final NetworkTable LimelightBackTable =
-          NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_BACK);
   public final Supplier<Pose2d> poseSupplier;
 
   // get that pose for me
@@ -47,30 +45,28 @@ public class VisionIOLimelight implements VisionIO {
 
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
   private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
-/// basics
-    //drive estimation
+    /// basics
+    // drive estimation
     inputs.estimatedRobotPose = poseSupplier.get();
 
     inputs.cameraConnected = table.getEntry("tv").exists();
-    //fiducialid is double
+    // fiducialid is double
     inputs.aprilTagIDNumber = (int) LimelightHelpers.getFiducialID(cameraName);
 
     inputs.tx = LimelightHelpers.getTX(cameraName);
     inputs.ty = LimelightHelpers.getTY(cameraName);
     inputs.ta = LimelightHelpers.getTA(cameraName);
-/// log details for hopperTracker, also for testing
+    /// log details for hopperTracker, also for testing
     inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
-    inputs.DistanceFromRobotToHub = HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
+    inputs.DistanceFromRobotToHub =
+        HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
     inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
-    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
-
+    //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
 
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
 
-
-
     LimelightHelpers.SetRobotOrientation(
-            cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     if (!inputs.hasTarget) {
       inputs.hasMegaTag2 = false;
@@ -78,12 +74,12 @@ public class VisionIOLimelight implements VisionIO {
     }
     // in here, visionPose is calculated
     var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
-    if (megaTag2Results!=null && megaTag2Results.tagCount >= 2) {
+    if (megaTag2Results != null && megaTag2Results.tagCount >= 2) {
       inputs.hasMegaTag2 = true;
       inputs.megaTagPose = megaTag2Results.pose;
       inputs.tagCount = megaTag2Results.tagCount;
       inputs.timestamp = megaTag2Results.timestampSeconds;
-//      inputs.latency = megaTag2Results.latency;
+      //      inputs.latency = megaTag2Results.latency;
       return;
     }
 
@@ -93,7 +89,7 @@ public class VisionIOLimelight implements VisionIO {
       inputs.megaTagPose = megaTag1Results.pose;
       inputs.tagCount = megaTag1Results.tagCount;
       inputs.timestamp = megaTag1Results.timestampSeconds;
-//      inputs.latency = megaTag1Results.latency;
+      //      inputs.latency = megaTag1Results.latency;
       return;
     }
     inputs.hasMegaTag2 = false;
@@ -101,7 +97,7 @@ public class VisionIOLimelight implements VisionIO {
   }
 }
 
-///@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++*@@@#+++++++#@@@@@@@@@@@@@@@@@@@@@@@@
+/// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@++*@@@#+++++++#@@@@@@@@@@@@@@@@@@@@@@@@
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@*+*++#*+++++++*@@@%%@@@@@@@@@@@@@@@@@@@@@
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@#+++++++++++#@@@@@@@@@@@@@@@@@@@@@@@@@@
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*+++++++++++*#@@@@@@@@@@@@@@@@@@@@@@
