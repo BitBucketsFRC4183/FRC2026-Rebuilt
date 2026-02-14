@@ -2,17 +2,23 @@ package frc.robot.subsystems.intake;
 
 public interface IntakeIO {
 
-  void updateInputs(IntakeIOInputs inputs);
+  /** Updates all sensor inputs */
+  default void updateInputs(IntakeIOInputs inputs) {}
 
-  /* Forearm */
-  void setForearmPercent(double percent);
+  /** Sets intake wheel motor output (-1 to 1) */
+  default void setMotorOutput(double percent) {}
 
-  void setForearmPosition(double degrees);
+  /** Stops the intake motor */
+  default void stopMotor() {
+    setMotorOutput(0.0);
+  }
 
-  void stopForearm();
+  /** Extends the intake piston */
+  default void extend() {}
 
-  /* Intake */
-  void setIntakePercent(double percent);
+  /** Retracts the intake piston */
+  default void retract() {}
 
-  void stopIntake();
+
+
 }

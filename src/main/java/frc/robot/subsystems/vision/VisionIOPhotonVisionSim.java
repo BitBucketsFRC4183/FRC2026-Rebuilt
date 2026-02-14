@@ -3,13 +3,18 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import java.util.List;
 import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
-public class VisionIOPhotonVisionSim extends VisionIOLimelight {
+public class VisionIOPhotonVisionSim implements VisionIO {
   // set the stage
   // this is basically allinone yooo
   private VisionSystemSim visionSim;
@@ -19,14 +24,25 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
   private PhotonCameraSim frontCamSim;
   private PhotonCameraSim backCamSim;
+  private final Supplier<Pose2d> poseSupplier;
+
+  DriveSubsystem driveSubsystem =
+      new DriveSubsystem(
+          new GyroIO() {},
+          new ModuleIOSim(TunerConstants.FrontLeft),
+          new ModuleIOSim(TunerConstants.FrontRight),
+          new ModuleIOSim(TunerConstants.BackLeft),
+          new ModuleIOSim(TunerConstants.BackRight));
 
   public VisionIOPhotonVisionSim(
       Supplier<Pose2d> poseSupplier,
       Transform3d robotToFrontCam,
-      Transform3d robotToBackCam) // the parameter
+      Transform3d robotToBackCam,
+      DriveSubsystem driveSubsystem) // the parameter
       {
     // now create the stage
-    super(poseSupplier);
+    this.poseSupplier = poseSupplier;
+    //    poseSupplier = driveSubsystem.poseSupplierForSim;
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");
@@ -64,6 +80,11 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   @Override
   public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
     visionSim.update(poseSupplier.get());
-    super.updateInputs(frontCamInputs, backCamInputs);
+    List visionResult = PHOTON_FRONT.getAllUnreadResults();
+
+    frontCamInputs.estimatedRobotPose = visionSim.getRobotPose().toPose2d();
+    frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
+    frontCamInputs.fiducialID = PHOTON_FRONT.getPipelineIndex();
+    frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
   }
 }
