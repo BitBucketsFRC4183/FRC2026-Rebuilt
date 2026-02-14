@@ -244,21 +244,15 @@ public class RobotContainer {
     //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
     //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
     // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(
-            ClimberCommands.climberToLevelOne(climberSubsystem));
-    operator.a().onTrue(
-            ClimberCommands.climberToGround(climberSubsystem));
+    operator.b().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
+    operator.a().onTrue(ClimberCommands.climberToGround(climberSubsystem));
 
-//    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-//        .whileTrue(
-//            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
-//                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
+    //    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
+    //        .whileTrue(
+    //            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
+    //                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
     new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-            .whileTrue(
-                    ClimberCommands.joystickClimb(
-                            climberSubsystem,
-                            operator::getLeftY));
-
+        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operator::getLeftY));
   }
 
   /**

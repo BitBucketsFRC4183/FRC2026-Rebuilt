@@ -26,12 +26,12 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/ClimbingInputs", inputs);
-    if(climberIO.getCurrentHeight() >= ClimberConstants.maxHeight){
+    if (climberIO.getCurrentHeight() >= ClimberConstants.maxHeight) {
       climberIO.setVoltage(0);
       Commands.waitSeconds(2);
       climberIO.setVoltage(-2);
     }
-    if(climberIO.getCurrentHeight() <= ClimberConstants.minHeight){
+    if (climberIO.getCurrentHeight() <= ClimberConstants.minHeight) {
       climberIO.setVoltage(0);
       Commands.waitSeconds(2);
       climberIO.setVoltage(2);

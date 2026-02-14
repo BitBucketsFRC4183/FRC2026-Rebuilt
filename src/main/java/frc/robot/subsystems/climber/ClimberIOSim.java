@@ -24,7 +24,7 @@ public class ClimberIOSim implements ClimberIO {
   private final Mechanism2d climberCanvas = new Mechanism2d(3, 3);
   private final MechanismRoot2d climberRoot = climberCanvas.getRoot("pivot", 1.5, 1.5);
   MechanismLigament2d climberModel =
-          climberRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
+      climberRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
 
   public ClimberIOSim() {
     SmartDashboard.putData("Climber Data", climberCanvas);
@@ -42,7 +42,7 @@ public class ClimberIOSim implements ClimberIO {
     simHeightMeters = MathUtil.clamp(simHeightMeters, 0, maxHeight);
 
     if ((simHeightMeters == 0 && appliedVoltage < 0)
-            || (simHeightMeters == maxHeight && appliedVoltage > 0)) {
+        || (simHeightMeters == maxHeight && appliedVoltage > 0)) {
       simVelocity = 0;
     }
 

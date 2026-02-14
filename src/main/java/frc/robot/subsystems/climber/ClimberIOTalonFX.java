@@ -5,8 +5,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -58,7 +56,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   public void setTargetHeight(double height) {
     double motorRotations =
         height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
-     climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    climbMotor.setControl(climbRequest.withPosition(motorRotations));
   }
 
   @Override
