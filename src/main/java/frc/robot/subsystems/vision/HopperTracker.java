@@ -55,8 +55,4 @@ public class HopperTracker {
     public static Rotation2d getTurningAngle(Pose2d robotPose){
         return getAngleToHub(robotPose).minus(robotPose.getRotation());
     }
-
-
-
-
 }
