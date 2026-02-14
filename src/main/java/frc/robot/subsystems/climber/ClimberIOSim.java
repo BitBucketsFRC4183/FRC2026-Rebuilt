@@ -16,7 +16,7 @@ public class ClimberIOSim implements ClimberIO {
 
   private double simHeightMeters = 0.0;
   private double simVelocity = 0.0;
-  private static final double MAX_HEIGHT = ClimberConstants.rung1Position;
+  private static final double maxHeight = ClimberConstants.rung1Position;
   double appliedVoltage = 0.0;
   private double targetHeightMeters = 0.0;
   private final SlewRateLimiter voltageLimiter = new SlewRateLimiter(12.0);
@@ -24,7 +24,7 @@ public class ClimberIOSim implements ClimberIO {
   private final Mechanism2d climberCanvas = new Mechanism2d(3, 3);
   private final MechanismRoot2d climberRoot = climberCanvas.getRoot("pivot", 1.5, 1.5);
   MechanismLigament2d climberModel =
-      climberRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
+          climberRoot.append(new MechanismLigament2d("climberMotor", 1, 0));
 
   public ClimberIOSim() {
     SmartDashboard.putData("Climber Data", climberCanvas);
@@ -33,25 +33,42 @@ public class ClimberIOSim implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     double dt = 0.02;
+    double maxSpeedMetersPerSec = 1.5; // tune this
+
+    simVelocity = (appliedVoltage / 12.0) * maxSpeedMetersPerSec;
 
     simHeightMeters += simVelocity * dt;
-    simHeightMeters = Math.max(0, Math.min(MAX_HEIGHT, simHeightMeters));
+
+    simHeightMeters = MathUtil.clamp(simHeightMeters, 0, maxHeight);
+
+    if ((simHeightMeters == 0 && appliedVoltage < 0)
+            || (simHeightMeters == maxHeight && appliedVoltage > 0)) {
+      simVelocity = 0;
+    }
 
     climberModel.setLength(simHeightMeters + 0.2);
-
     inputs.climberHeight = simHeightMeters;
-    double error = targetHeightMeters - simHeightMeters;
-    double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
-    appliedVoltage = voltageLimiter.calculate(commandedVoltage);
     inputs.currentVoltage = appliedVoltage;
-    climberSimMotor.setSupplyVoltage(inputs.currentVoltage);
+
+    climberSimMotor.setSupplyVoltage(appliedVoltage);
+
+    //    simHeightMeters += simVelocity * dt;
+    //    simHeightMeters = Math.max(0, Math.min(MAX_HEIGHT, simHeightMeters));
+    //
+    //    climberModel.setLength(simHeightMeters + 0.2);
+    //
+    //    inputs.climberHeight = simHeightMeters;
+    //    double error = targetHeightMeters - simHeightMeters;
+    //    double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
+    //    appliedVoltage = voltageLimiter.calculate(commandedVoltage);
+    //    inputs.currentVoltage = appliedVoltage;
+    //    climberSimMotor.setSupplyVoltage(inputs.currentVoltage);
   }
 
   @Override
   public void setTargetHeight(double height) {
     targetHeightMeters = height;
     double error = height - simHeightMeters;
-    simVelocity = error * 2.0;
   }
 
   @Override
@@ -68,5 +85,13 @@ public class ClimberIOSim implements ClimberIO {
   }
 
   @Override
-  public void setVoltage(double voltageSupplied) {}
+  public void setVoltage(double voltageSupplied) {
+    if (voltageSupplied > 12.0) {
+      appliedVoltage = 12.0;
+    } else if (voltageSupplied < -12.0) {
+      appliedVoltage = -12.0;
+    } else {
+      appliedVoltage = voltageSupplied;
+    }
+  }
 }

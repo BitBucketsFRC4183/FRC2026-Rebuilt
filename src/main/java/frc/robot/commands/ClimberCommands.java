@@ -56,6 +56,28 @@ public class ClimberCommands {
     }, climberSubsystem)
             .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
   }
+  public static Command climberToGround(
+          ClimberSubsystem climberSubsystem) {
+
+    return Commands.run(() -> {
+
+              double currentHeight = climberSubsystem.getClimbHeight();
+              double desiredSpeed = (- climberSubsystem.getClimbHeight()) * ClimberConstants.speedConstant;
+              SimpleMotorFeedforward climbFeedForward = new SimpleMotorFeedforward(ClimberConstants.ARM_kS, ClimberConstants.ARM_kV, ClimberConstants.ARM_kA, 0.2);
+              double scale = climbFeedForward.calculate(desiredSpeed);
+
+              if (currentHeight <= ClimberConstants.minHeight) {
+                climberSubsystem.setVoltageSupplied(0);
+              }
+              if (currentHeight >= ClimberConstants.maxHeight) {
+                climberSubsystem.setVoltageSupplied(0);
+              }
+
+              climberSubsystem.setVoltageSupplied(scale);
+
+            }, climberSubsystem)
+            .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
+  }
 }
 
 
