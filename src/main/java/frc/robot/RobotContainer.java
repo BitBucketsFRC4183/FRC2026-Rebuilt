@@ -95,18 +95,18 @@ public class RobotContainer {
         //register named commands
 
 
-        NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubystem.bottomStartToShootOnly());
-        NamedCommands.registerCommand("topStartToShootOnly", autoSubystem.topStartToShootOnly());
-        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem. midStartToShootOnly());
-        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubystem.StartMidShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootEndL1", autoSubystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubystem.StartBottomShootEndL1());
-        NamedCommands.registerCommand("StartMidShootEndL1", autoSubystem.StartMidShootEndL1());
+//        NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
+//        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubystem.bottomStartToShootOnly());
+//        NamedCommands.registerCommand("topStartToShootOnly", autoSubystem.topStartToShootOnly());
+//        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem. midStartToShootOnly());
+//        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
+//        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
+//        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubystem.StartBottomShootIntakeEndL1());
+//        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubystem.StartTopShootIntakeEndL1());
+//        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubystem.StartMidShootIntakeEndL1());
+//        NamedCommands.registerCommand("StartTopShootEndL1", autoSubystem.StartTopShootEndL1());
+//        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubystem.StartBottomShootEndL1());
+//        NamedCommands.registerCommand("StartMidShootEndL1", autoSubystem.StartMidShootEndL1());
 
 
         visionIO =
