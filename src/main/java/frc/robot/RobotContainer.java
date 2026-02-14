@@ -244,8 +244,8 @@ public class RobotContainer {
     //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
     //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
     // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
-    operator.a().onTrue(ClimberCommands.climberToGround(climberSubsystem));
+    operator.povUp().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
+    operator.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
 
     //    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
     //        .whileTrue(
