@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoAimCommand;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommands;
@@ -220,7 +221,11 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+//    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController
+            .x()
+            .whileTrue(new AutoAimCommand(driveSubsystem,
+                    () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
     operatorController

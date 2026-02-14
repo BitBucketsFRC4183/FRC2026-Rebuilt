@@ -19,6 +19,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +29,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -94,7 +97,9 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition()
       };
   public SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
+              Pose2d.kZero);
+  //sim
   public Supplier<Pose2d> poseSupplierForSim = () -> poseEstimator.getEstimatedPosition();
 
   public DriveSubsystem(
@@ -334,10 +339,12 @@ public class DriveSubsystem extends SubsystemBase {
   /** Adds a new timestamped vision measurement. */
 
   // *********
-  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds
-      //      Matrix<N3, N1> visionMeasurementStdDevs
-      ) {
-    poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3,N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public final void setVisionMeasurementStdDevs(Matrix<N3,N1> visionMeasurementStdDevs){
+    poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
