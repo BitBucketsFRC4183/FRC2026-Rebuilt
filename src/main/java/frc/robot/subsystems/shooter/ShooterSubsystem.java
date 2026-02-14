@@ -57,7 +57,9 @@ public class ShooterSubsystem extends SubsystemBase {
       targetVelocity = bestRPS;
     }
 
-    if(storedDistance == 0) {targetVelocity = 50;}
+    if (storedDistance == 0) {
+      targetVelocity = 50;
+    }
   }
 
   public void setTargetVelocity() {

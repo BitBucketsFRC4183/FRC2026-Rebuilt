@@ -230,9 +230,8 @@ public class DriveSubsystem extends SubsystemBase {
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
-  /**Same with runVelocity, but for rotations
-   * */
-  public void runOmega(double omega){
+  /** Same with runVelocity, but for rotations */
+  public void runOmega(double omega) {
     runVelocity(new ChassisSpeeds(0, 0, omega));
   }
 

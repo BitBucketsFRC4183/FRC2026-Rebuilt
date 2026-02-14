@@ -14,19 +14,16 @@ public class HopperIOSparkMax implements HopperIO {
   public HopperIOSparkMax() {
     // Conveyor motor (NEO 550)
     conveyorMotor =
-            new SparkMax(
-                    HopperConstants.HOPPER_CONVEYOR_MOTOR_CAN_ID,
-                    SparkLowLevel.MotorType.kBrushless);
+        new SparkMax(
+            HopperConstants.HOPPER_CONVEYOR_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
 
     SparkMaxConfig conveyorConfig = new SparkMaxConfig();
     conveyorConfig
-            .inverted(HopperConstants.HOPPER_CONVEYOR_MOTOR_INVERTED)
-            .idleMode(SparkMaxConfig.IdleMode.kBrake);
+        .inverted(HopperConstants.HOPPER_CONVEYOR_MOTOR_INVERTED)
+        .idleMode(SparkMaxConfig.IdleMode.kBrake);
 
     conveyorMotor.configure(
-            conveyorConfig,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);
+        conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

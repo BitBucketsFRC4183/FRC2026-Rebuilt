@@ -5,5 +5,4 @@ public class IntakeIOInputs {
   public double motorCurrentAmps = 0.0;
   public boolean primaryPistonExtended = false;
   public boolean secondaryPistonExtended = false;
-
 }
