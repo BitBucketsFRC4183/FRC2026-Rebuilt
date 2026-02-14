@@ -132,7 +132,7 @@ public class RobotContainer {
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem =
-                new ShooterSubsystem(new ShooterSim(), new ShooterSim());
+                new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem =
@@ -162,7 +162,7 @@ public class RobotContainer {
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem =
-                new ShooterSubsystem(new ShooterSim(), new ShooterSim());
+                new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem = null;
