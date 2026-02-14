@@ -33,30 +33,32 @@ public class AutoSubsystem extends SubsystemBase {
   //Setup PathPlanner
 
 
-  //Named Commands
-
-  private void registerNamedCommands() {
-
-    NamedCommands.registerCommand(
-            "Stop",
-            stop()
-    );
-
-    NamedCommands.registerCommand(
-            "Shoot",
-            shoot()
-    );
-
-    NamedCommands.registerCommand(
-            "Climb",
-            climb()
-    );
+      //     AutoBuilder.configureHolonomic(
+      //        drive::getPose,
+      //         drive::resetPose,
+      //        drive::getChassisSpeeds,
+      //        drive::drive,
+      //        new HolonomicPathFollowerConfig(
+      //            config.getMaxLinearVelocity(), config.getDriveBaseRadius(), new
+      // ReplanningConfig()),
+      //       () ->
+      //           DriverStation.getAlliance()
+      //               .map(alliance -> alliance == DriverStation.Alliance.Red)
+      //               .orElse(false),
+      //       drive);
+    } catch (Exception e) {
+      DriverStation.reportError("Failed to configure AutoBuilder", e.getStackTrace());
+    }
   }
 
-  // Auto Actions
+  /** Stops drivetrain */
+  // public Command stop() {
+  //  return drive.run(() -> drive.drive(new edu.wpi.first.math.kinematics.ChassisSpeeds()));
+  // }
 
-  public Command stop() {
-    return Commands.runOnce(drive::stop, drive);
+  /** Example Choreo-based routine */
+  public Command midShootAuto() {
+    return new PathPlannerAuto("MidShootExample");
   }
 
   public Command shoot() {

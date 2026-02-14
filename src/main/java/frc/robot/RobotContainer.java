@@ -18,11 +18,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.ForearmConstants;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -34,10 +33,14 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.intake.IntakeState;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -55,19 +58,13 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
-  private VisionSubsystem visionSubsystem;
-  private VisionIOLimelight visionIO;
-  private ClimberSubsystem climberSubsystem;
-  private ClimberIO climberIO;
-  private final AutoSubsystem autoSubystem = new AutoSubsystem();
-
-
+  private final ShooterSim shooterSim;
+  private VisionSubsystem vision;
   // Toggle state for left bumper
-  private boolean forearmExtended = false;
 
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController operator = new CommandXboxController(1);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -110,7 +107,7 @@ public class RobotContainer {
 
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        // TalonFXS driverController connected to a CANdi with a PWM encoder. The
         // implementations
         // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
         // swerve
@@ -166,8 +163,9 @@ public class RobotContainer {
 
     // Set up auto routines
     this.hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-    this.intakeSubsystem = new IntakeSubsystem(new frc.robot.subsystems.intake.IntakeIOTalonFX());
-    this.shooterSubsystem = new ShooterSubsystem();
+    this.intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
+    this.shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+    this.shooterSim = new ShooterSim();
     // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
     // ShooterSubystem shooter);
 
@@ -207,76 +205,51 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-    driver
+    driverController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 driveSubsystem,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-
-    // Reset gyro to 0° when B button is pressed
-    driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        driveSubsystem.setPose(
-                            new Pose2d(
-                                driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
-                    driveSubsystem)
-                .ignoringDisable(true));
-
-    driver
-        // Left Bumper Triggers Intake extended mode and Intake retract mode
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    // Intake driverController
+    // LEFT BUMPER: toggle forearm extend / retract
+    driverController
         .leftBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  if (forearmExtended) {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
+                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                    intakeSubsystem.deploy();
                   } else {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
+                    intakeSubsystem.stow();
                   }
-                  forearmExtended = !forearmExtended;
                 },
-                forearmSubsystem));
+                intakeSubsystem));
 
-    // Left trigger: run intake while held
-    new Trigger(() -> driver.getLeftTriggerAxis() > 0.1)
-        .whileTrue(
-            Commands.run(
-                () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
-                forearmSubsystem))
-        .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+    // LEFT TRIGGER: hold to intake
+    driverController
+        .leftTrigger(0.1)
+        .whileTrue(Commands.run(intakeSubsystem::intake, intakeSubsystem))
+        .onFalse(Commands.runOnce(intakeSubsystem::hold, intakeSubsystem));
 
-    //    new Trigger(() -> operator.getLeftTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToGround()));
-    //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
-    // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(
-            ClimberCommands.climberToLevelOne(climberSubsystem));
-
-//    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-//        .whileTrue(
-//            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
-//                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
-    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-            .whileTrue(
-                    ClimberCommands.joystickClimb(
-                            climberSubsystem,
-                            operator::getLeftY));
-
+    double distance = 5;
+    operatorController
+        .rightTrigger(0.1)
+        // Insert method to store distance from vision, in meters pls, and stop robot in place to
+        // get rid of transitional motion
+        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
   }
 
 

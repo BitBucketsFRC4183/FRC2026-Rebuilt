@@ -46,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  //State Control
+  // State Control
 
   public void setState(IntakeState state) {
     this.currentState = state;
@@ -55,8 +55,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeState getState() {
     return currentState;
   }
-
-
 
   public void stow() {
     setState(IntakeState.STOWED);
@@ -78,7 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
     setState(IntakeState.HOLDING);
   }
 
-  //Telemetry
+  // Telemetry
 
   public double getMotorCurrent() {
     return inputs.motorCurrentAmps;

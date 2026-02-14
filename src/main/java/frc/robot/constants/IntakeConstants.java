@@ -17,8 +17,7 @@ public final class IntakeConstants {
   public static final double STATOR_CURRENT_LIMIT = 60.0;
 
   // Pneumatics
-  public static final PneumaticsModuleType PNEUMATICS_TYPE =
-          PneumaticsModuleType.REVPH;
+  public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;
 
   public static final int PISTON_FORWARD_CHANNEL = 0;
   public static final int PISTON_REVERSE_CHANNEL = 1;
