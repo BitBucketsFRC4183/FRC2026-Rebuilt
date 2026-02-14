@@ -237,21 +237,10 @@ public class RobotContainer {
             }, intakeSubsystem)
     );
 
-    operatorController
-            .leftTrigger()
-            .whileTrue(
-                    IntakeCommands.intake(intakeSubsystem)
-                            .onlyIf(() -> intakeSubsystem.isExtended()));
-
-    double distance = 5;
-
-    operatorController
-            .rightTrigger(0.1)
-            // Insert method to store distance from vision, in meters pls, and stop robot in place to
-            // get rid of transitional motion
-            .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-            .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
-            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+    operator.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
+    operator.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
+    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
+        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operator::getLeftY));
   }
 
   /**
