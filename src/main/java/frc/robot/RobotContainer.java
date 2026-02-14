@@ -257,13 +257,18 @@ public class RobotContainer {
     operatorController.x().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
     operatorController.a().onTrue(ClimberCommands.climberToGround(climberSubsystem));
 
+    operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    operatorController.povLeft().onTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    operatorController.povRight().onTrue(ClimberCommands.baseServoUp(climberSubsystem));
+
     //    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
     //        .whileTrue(
     //            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
     //                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
     new Trigger(() ->
             Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.leftStick().getAsBoolean())
+                    && operatorController.rightStick().getAsBoolean())
                     .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
                     )
             );
