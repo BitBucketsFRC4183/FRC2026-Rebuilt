@@ -9,7 +9,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private static double targetVelocity = 0;
 
-  private double storedDistance = 0;
+  private double storedDistance = -1;
 
   public ShooterSubsystem(ShooterIOTalonFX io, ShooterIOSparkMax ioSpark) {
     this.io = io;
@@ -56,6 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
     } else {
       targetVelocity = bestRPS;
     }
+
+    if(storedDistance == 0) {targetVelocity = 50;}
   }
 
   public void setTargetVelocity() {
@@ -68,11 +70,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public boolean distanceStored() {
-    return storedDistance > 0;
+    return storedDistance > -1;
   }
 
   public void resetStoredDistance() {
-    storedDistance = 0;
+    storedDistance = -1;
   }
 
   // Stops both Intermediate and Flywheel Motors
