@@ -238,6 +238,15 @@ public class RobotContainer {
             }, intakeSubsystem)
     );
 
+    //Intake Control Motors
+
+    operatorController
+            .leftTrigger()
+            .whileTrue(
+                    IntakeCommands.intake(intakeSubsystem)
+                            .onlyIf(() -> intakeSubsystem.isExtended())
+            );
+
     operatorController.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
     new Trigger(() -> Math.abs(operatorController.getLeftY()) > 0.1)
