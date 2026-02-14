@@ -34,7 +34,6 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -59,7 +58,7 @@ public class RobotContainer {
   private VisionIOLimelight visionIO;
   private ClimberSubsystem climberSubsystem;
   private ClimberIO climberIO;
-  private final AutoSubsystem autoSubystem = new AutoSubsystem();
+  private final AutoSubsystem autoSubsystem = new AutoSubsystem();
 
 
   // Toggle state for left bumper
@@ -92,18 +91,18 @@ public class RobotContainer {
 
 
         //register named commands
-        NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubystem.bottomStartToShootOnly());
-        NamedCommands.registerCommand("topStartToShootOnly", autoSubystem.topStartToShootOnly());
-        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem. midStartToShootOnly());
-        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubystem.StartMidShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootEndL1", autoSubystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubystem.StartBottomShootEndL1());
-        NamedCommands.registerCommand("StartMidShootEndL1", autoSubystem.StartMidShootEndL1());
+        NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
+        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem. midStartToShootOnly());
+        NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
+        NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
+        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+        NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+        NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
 
 
