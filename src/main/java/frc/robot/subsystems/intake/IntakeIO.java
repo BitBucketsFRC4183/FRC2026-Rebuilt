@@ -1,8 +1,8 @@
-package frc.robot.subsystems.forearm;
+package frc.robot.subsystems.intake;
 
-public interface ForearmIO {
+public interface IntakeIO {
 
-  void updateInputs(ForearmIOInputs inputs);
+  void updateInputs(IntakeIOInputs inputs);
 
   /* Forearm */
   void setForearmPercent(double percent);

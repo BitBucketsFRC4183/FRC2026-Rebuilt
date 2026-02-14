@@ -1,15 +1,15 @@
-package frc.robot.subsystems.forearm;
+package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ForearmConstants;
+import frc.robot.constants.IntakeConstants;
 
-public class ForearmSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
 
-  private final ForearmIO io;
-  private final ForearmIOInputs inputs = new ForearmIOInputs();
+  private final IntakeIO io;
+  private final IntakeIOInputs inputs = new IntakeIOInputs();
   private double targetAngleDeg = 0.0;
 
-  public ForearmSubsystem(ForearmIO io) {
+  public IntakeSubsystem(IntakeIO io) {
     this.io = io;
   }
 
@@ -18,12 +18,12 @@ public class ForearmSubsystem extends SubsystemBase {
     io.updateInputs(inputs);
 
     // Soft limits for forearm rotation
-    if (inputs.forearmPositionDeg <= ForearmConstants.MIN_ANGLE_DEG
+    if (inputs.forearmPositionDeg <= IntakeConstants.MIN_ANGLE_DEG
         && targetAngleDeg < inputs.forearmPositionDeg) {
       io.stopForearm();
     }
 
-    if (inputs.forearmPositionDeg >= ForearmConstants.MAX_ANGLE_DEG
+    if (inputs.forearmPositionDeg >= IntakeConstants.MAX_ANGLE_DEG
         && targetAngleDeg > inputs.forearmPositionDeg) {
       io.stopForearm();
     }
@@ -34,7 +34,7 @@ public class ForearmSubsystem extends SubsystemBase {
   // Closed loop position
   public void setAngle(double degrees) {
     targetAngleDeg =
-        Math.max(ForearmConstants.MIN_ANGLE_DEG, Math.min(ForearmConstants.MAX_ANGLE_DEG, degrees));
+        Math.max(IntakeConstants.MIN_ANGLE_DEG, Math.min(IntakeConstants.MAX_ANGLE_DEG, degrees));
     io.setForearmPosition(targetAngleDeg);
   }
 

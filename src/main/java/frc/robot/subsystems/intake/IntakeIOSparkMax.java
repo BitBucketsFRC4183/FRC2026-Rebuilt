@@ -1,4 +1,4 @@
-package frc.robot.subsystems.forearm;
+package frc.robot.subsystems.intake;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -8,9 +8,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.constants.ForearmConstants;
+import frc.robot.constants.IntakeConstants;
 
-public class ForearmIOSparkMax implements ForearmIO {
+public class IntakeIOSparkMax implements IntakeIO {
 
   private final SparkMax forearmMotor;
   private final SparkMax intakeMotor;
@@ -18,24 +18,24 @@ public class ForearmIOSparkMax implements ForearmIO {
   private final SparkRelativeEncoder forearmEncoder;
   private final SparkClosedLoopController forearmClosedLoop;
 
-  public ForearmIOSparkMax() {
+  public IntakeIOSparkMax() {
 
     // Forearm
 
-    forearmMotor = new SparkMax(ForearmConstants.FOREARM_MOTOR_CAN_ID, MotorType.kBrushless);
+    forearmMotor = new SparkMax(IntakeConstants.FOREARM_MOTOR_CAN_ID, MotorType.kBrushless);
 
     SparkMaxConfig forearmConfig = new SparkMaxConfig();
 
     forearmConfig
-        .inverted(ForearmConstants.FOREARM_MOTOR_INVERTED)
+        .inverted(IntakeConstants.FOREARM_MOTOR_INVERTED)
         .idleMode(SparkMaxConfig.IdleMode.kBrake);
 
-    forearmConfig.encoder.positionConversionFactor(ForearmConstants.POSITION_CONVERSION_FACTOR);
+    forearmConfig.encoder.positionConversionFactor(IntakeConstants.POSITION_CONVERSION_FACTOR);
 
     forearmConfig
         .closedLoop
-        .pid(ForearmConstants.kP, ForearmConstants.kI, ForearmConstants.kD)
-        .outputRange(ForearmConstants.MIN_OUTPUT, ForearmConstants.MAX_OUTPUT);
+        .pid(IntakeConstants.kP, IntakeConstants.kI, IntakeConstants.kD)
+        .outputRange(IntakeConstants.MIN_OUTPUT, IntakeConstants.MAX_OUTPUT);
 
     forearmMotor.configure(
         forearmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -45,12 +45,12 @@ public class ForearmIOSparkMax implements ForearmIO {
 
     // Intake
 
-    intakeMotor = new SparkMax(ForearmConstants.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
+    intakeMotor = new SparkMax(IntakeConstants.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
 
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
     intakeConfig
-        .inverted(ForearmConstants.INTAKE_MOTOR_INVERTED)
+        .inverted(IntakeConstants.INTAKE_MOTOR_INVERTED)
         .idleMode(SparkMaxConfig.IdleMode.kBrake);
 
     intakeMotor.configure(
@@ -58,7 +58,7 @@ public class ForearmIOSparkMax implements ForearmIO {
   }
 
   @Override
-  public void updateInputs(ForearmIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     inputs.forearmPositionDeg = forearmEncoder.getPosition();
     inputs.forearmAppliedOutput = forearmMotor.getAppliedOutput();
     inputs.intakeAppliedOutput = intakeMotor.getAppliedOutput();
