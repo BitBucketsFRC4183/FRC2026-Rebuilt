@@ -13,10 +13,10 @@ public class AprilTagLabel {
     public static final int BLUE_LITTLE_SIDE_BELOW_HUB =25;
 
     //offset, it is the center of hopper
-    //estimation is estimation, actual needs to tuned on field
-    //They should be very accurate
     //2foot height from apriltag to hopper
     //23.5inch from center of hopper
+
+    //TODO, need to tune
     public static final Transform3d tagToHub3d = new Transform3d(
             new Translation3d(0.5969,0, 0.6096),
             new Rotation3d()

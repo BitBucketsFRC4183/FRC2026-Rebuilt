@@ -5,6 +5,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
+import frc.robot.subsystems.drive.DriveSubsystem;
+
 import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
@@ -45,7 +47,9 @@ public class VisionIOLimelight implements VisionIO {
 
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
   private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
-    // DON'T CHANGE ANY NAMING STUFF, AFTER THIS LINE OF CODE!!!!!!!!!!!!!!!!!!!!! SAYING YOU, AIDAN
+/// basics
+    //drive estimation
+    inputs.estimatedRobotPose = poseSupplier.get();
 
     inputs.cameraConnected = table.getEntry("tv").exists();
     //fiducialid is double
@@ -54,10 +58,16 @@ public class VisionIOLimelight implements VisionIO {
     inputs.tx = LimelightHelpers.getTX(cameraName);
     inputs.ty = LimelightHelpers.getTY(cameraName);
     inputs.ta = LimelightHelpers.getTA(cameraName);
-//    inputs.fiducialID = LimelightHelpers.getFiducialID(cameraName);
+/// log details for hopperTracker, also for testing
+    inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
+    inputs.DistanceFromRobotToHub = HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
+    inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
+    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
+
 
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
-    inputs.estimatedRobotPose = poseSupplier.get();
+
+
 
     LimelightHelpers.SetRobotOrientation(
             cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);

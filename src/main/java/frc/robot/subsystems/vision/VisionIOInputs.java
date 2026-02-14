@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 @AutoLog
@@ -28,4 +29,14 @@ public class VisionIOInputs {
   public double timestamp;
 
   public int tagCount;
+
+  public Pose2d TargetHubPose2d;
+
+  public double DistanceFromRobotToHub;
+
+  public Rotation2d FieldAngleFromHubToRobot;
+
+  public Rotation2d TurningAngle;
+
+
 }
