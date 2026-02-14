@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.ForearmConstants;
+//import frc.robot.constants.ForearmConstants; - uncomment 
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
@@ -251,46 +251,46 @@ public class RobotContainer {
                     driveSubsystem)
                 .ignoringDisable(true));
 
-    driver
-        // Left Bumper Triggers Intake extended mode and Intake retract mode
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (forearmExtended) {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
-                  } else {
-                    forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
-                  }
-                  forearmExtended = !forearmExtended;
-                },
-                forearmSubsystem));
+    Trigger trigger = driver
+            // Left Bumper Triggers Intake extended mode and Intake retract mode
+            .leftBumper()
+            .onTrue(
+                    Commands.runOnce(
+                            () -> {
+                              if (forearmExtended) {
+                                //forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT); - error uncomment
+                              } else {
+                                //forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT); - error uncomment
+                              }
+                              forearmExtended = !forearmExtended;
+                            },
+                            //forearmSubsystem)); - error uncomment
 
-    // Left trigger: run intake while held
-    new Trigger(() -> driver.getLeftTriggerAxis() > 0.1)
-        .whileTrue(
-            Commands.run(
-                () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
-                forearmSubsystem))
-        .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+                            // Left trigger: run intake while held
+                            new Trigger(() -> driver.getLeftTriggerAxis() > 0.1)
+                                    .whileTrue(
+                                            Commands.run(
+                                                    //() -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT), - error uncomment 
+                                                    //forearmSubsystem)) - error uncomment 
+                                                    //.onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem)); - error uncomment 
 
-    //    new Trigger(() -> operator.getLeftTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToGround()));
-    //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
-    // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
-    operator.b().onTrue(
-            ClimberCommands.climberToLevelOne(climberSubsystem));
+                                                    //    new Trigger(() -> operator.getLeftTriggerAxis() > 0.1)
+                                                    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToGround()));
+                                                    //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
+                                                    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
+                                                    // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+                                                    operator.b().onTrue(
+                                                            ClimberCommands.climberToLevelOne(climberSubsystem)),
 
 //    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
 //        .whileTrue(
 //            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
 //                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
-    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-            .whileTrue(
-                    ClimberCommands.joystickClimb(
-                            climberSubsystem,
-                            operator::getLeftY));
+                                                    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
+                                                            .whileTrue(
+                                                                    ClimberCommands.joystickClimb(
+                                                                            climberSubsystem,
+                                                                            operator::getLeftY));
 
   }
 
