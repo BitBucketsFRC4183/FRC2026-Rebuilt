@@ -8,12 +8,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -24,8 +21,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommands;
-import frc.robot.commands.ShooterCommands;
-import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -33,8 +28,8 @@ import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.hopper.*;
+import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -77,41 +72,46 @@ public class RobotContainer {
         // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
         // a CANcoder
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+            new DriveSubsystem(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
-        shooterSubsystem =
-                new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        //register named commands
+        // register named commands
 
+        //        NamedCommands.registerCommand("StartBottomToTower",
+        // autoSubystem.StartBottomToTower());
+        //        NamedCommands.registerCommand("bottomStartToShootOnly",
+        // autoSubystem.bottomStartToShootOnly());
+        //        NamedCommands.registerCommand("topStartToShootOnly",
+        // autoSubystem.topStartToShootOnly());
+        //        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem.
+        // midStartToShootOnly());
+        //        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
+        //        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
+        //        NamedCommands.registerCommand("StartBottomShootIntakeEndL1",
+        // autoSubystem.StartBottomShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartTopShootIntakeEndL1",
+        // autoSubystem.StartTopShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartMidShootIntakeEndL1",
+        // autoSubystem.StartMidShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartTopShootEndL1",
+        // autoSubystem.StartTopShootEndL1());
+        //        NamedCommands.registerCommand("StartBottomShootEndL1",
+        // autoSubystem.StartBottomShootEndL1());
+        //        NamedCommands.registerCommand("StartMidShootEndL1",
+        // autoSubystem.StartMidShootEndL1());
 
-//        NamedCommands.registerCommand("StartBottomToTower", autoSubystem.StartBottomToTower());
-//        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubystem.bottomStartToShootOnly());
-//        NamedCommands.registerCommand("topStartToShootOnly", autoSubystem.topStartToShootOnly());
-//        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem. midStartToShootOnly());
-//        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-//        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-//        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubystem.StartBottomShootIntakeEndL1());
-//        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubystem.StartTopShootIntakeEndL1());
-//        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubystem.StartMidShootIntakeEndL1());
-//        NamedCommands.registerCommand("StartTopShootEndL1", autoSubystem.StartTopShootEndL1());
-//        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubystem.StartBottomShootEndL1());
-//        NamedCommands.registerCommand("StartMidShootEndL1", autoSubystem.StartMidShootEndL1());
-
-
-        visionIO =
-                new VisionIOLimelight(
-                        () -> driveSubsystem.poseEstimator.getEstimatedPosition());
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
 
         shooterSim = new ShooterSim();
@@ -120,29 +120,27 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIO() {},
-                        new ModuleIOSim(TunerConstants.FrontLeft),
-                        new ModuleIOSim(TunerConstants.FrontRight),
-                        new ModuleIOSim(TunerConstants.BackLeft),
-                        new ModuleIOSim(TunerConstants.BackRight));
+            new DriveSubsystem(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem =
-                new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem =
-                new VisionSubsystem(
-                        new VisionIOPhotonVisionSim(
-                                driveSubsystem.poseSupplierForSim,
-                                VisionConstant.robotToBackCam,
-                                VisionConstant.robotToFrontCam,
-                                driveSubsystem),
-                        driveSubsystem);
+            new VisionSubsystem(
+                new VisionIOPhotonVisionSim(
+                    driveSubsystem.poseSupplierForSim,
+                    VisionConstant.robotToBackCam,
+                    VisionConstant.robotToFrontCam),
+                driveSubsystem);
 
         shooterSim = new ShooterSim();
         break;
@@ -150,19 +148,18 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {},
-                        new ModuleIO() {});
+            new DriveSubsystem(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem =
-                new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem = null;
@@ -172,28 +169,27 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    autoChooser =
-            new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
-            "DriveSubsystem Wheel Radius Characterization",
-            DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+        "DriveSubsystem Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
     autoChooser.addOption(
-            "DriveSubsystem Simple FF Characterization",
-            DriveCommands.feedforwardCharacterization(driveSubsystem));
+        "DriveSubsystem Simple FF Characterization",
+        DriveCommands.feedforwardCharacterization(driveSubsystem));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Quasistatic Forward)",
-            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        "DriveSubsystem SysId (Quasistatic Forward)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Quasistatic Reverse)",
-            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        "DriveSubsystem SysId (Quasistatic Reverse)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Dynamic Forward)",
-            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "DriveSubsystem SysId (Dynamic Forward)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Dynamic Reverse)",
-            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "DriveSubsystem SysId (Dynamic Reverse)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -207,36 +203,38 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
-            DriveCommands.joystickDrive(
-                    driveSubsystem,
-                    () -> -driverController.getLeftY(),
-                    () -> -driverController.getLeftX(),
-                    () -> -driverController.getRightX()));
+        DriveCommands.joystickDrive(
+            driveSubsystem,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
     driverController
-            .a()
-            .whileTrue(
-                    DriveCommands.joystickDriveAtAngle(
-                            driveSubsystem,
-                            () -> -driverController.getLeftY(),
-                            () -> -driverController.getLeftX(),
-                            () -> Rotation2d.kZero));
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                driveSubsystem,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    driverController.x().onTrue(
-            Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
-    //Left bumper Intake deployed and stowed
-    operatorController.leftBumper().onTrue(
-            Commands.runOnce(() -> {
-              if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                intakeSubsystem.deploy();
-              } else {
-                intakeSubsystem.stow();
-              }
-            }, intakeSubsystem)
-    );
+    // Left bumper Intake deployed and stowed
+    operatorController
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                    intakeSubsystem.deploy();
+                  } else {
+                    intakeSubsystem.stow();
+                  }
+                },
+                intakeSubsystem));
 
     // Hopper reverse while right bumper held
     operatorController.rightBumper().whileTrue(
@@ -250,11 +248,9 @@ public class RobotContainer {
     //Intake Control Motors
 
     operatorController
-            .leftTrigger()
-            .whileTrue(
-                    IntakeCommands.intake(intakeSubsystem)
-                            .onlyIf(() -> intakeSubsystem.isExtended())
-            );
+        .leftTrigger()
+        .whileTrue(
+            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
     operatorController.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));

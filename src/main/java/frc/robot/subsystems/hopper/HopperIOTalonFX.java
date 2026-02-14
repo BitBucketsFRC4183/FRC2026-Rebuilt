@@ -9,19 +9,19 @@ import frc.robot.constants.HopperConstants;
 
 public class HopperIOTalonFX implements HopperIO {
 
-    private final TalonFX conveyorMotor;
-    private final DutyCycleOut percentRequest = new DutyCycleOut(0);
+  private final TalonFX conveyorMotor;
+  private final DutyCycleOut percentRequest = new DutyCycleOut(0);
 
-    public HopperIOTalonFX() {
+  public HopperIOTalonFX() {
 
-        conveyorMotor = new TalonFX(HopperConstants.HOPPER_CONVEYOR_MOTOR_CAN_ID);
+    conveyorMotor = new TalonFX(HopperConstants.HOPPER_CONVEYOR_MOTOR_CAN_ID);
 
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted =
-                HopperConstants.HOPPER_CONVEYOR_MOTOR_INVERTED
-                        ? InvertedValue.Clockwise_Positive
-                        : InvertedValue.CounterClockwise_Positive;
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.Inverted =
+        HopperConstants.HOPPER_CONVEYOR_MOTOR_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
         //Current Limits
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -34,19 +34,18 @@ public class HopperIOTalonFX implements HopperIO {
         conveyorMotor.getConfigurator().apply(config);
     }
 
-    @Override
-    public void updateInputs(HopperIOInputs inputs) {
-        inputs.conveyorAppliedOutput =
-                conveyorMotor.getDutyCycle().getValueAsDouble();
-    }
+  @Override
+  public void updateInputs(HopperIOInputs inputs) {
+    inputs.conveyorAppliedOutput = conveyorMotor.getDutyCycle().getValueAsDouble();
+  }
 
-    @Override
-    public void setConveyorPercent(double percent) {
-        conveyorMotor.setControl(percentRequest.withOutput(percent));
-    }
+  @Override
+  public void setConveyorPercent(double percent) {
+    conveyorMotor.setControl(percentRequest.withOutput(percent));
+  }
 
-    @Override
-    public void stopConveyor() {
-        conveyorMotor.stopMotor();
-    }
+  @Override
+  public void stopConveyor() {
+    conveyorMotor.stopMotor();
+  }
 }

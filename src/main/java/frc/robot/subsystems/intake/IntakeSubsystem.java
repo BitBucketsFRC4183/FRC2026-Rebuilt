@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 
@@ -86,5 +85,4 @@ public class IntakeSubsystem extends SubsystemBase {
   public boolean isExtended() {
     return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
   }
-
 }

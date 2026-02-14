@@ -98,12 +98,18 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    SmartDashboard.putNumber("Flywheel Motor 1 Speed", finalFlywheel.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Flywheel Motor 1 Voltage", finalFlywheel.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putNumber("Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
-    //SmartDashboard.putNumber("Intermediate Motor Speed", intermediateMotor.getVelocity().getValueAsDouble());
-    //SmartDashboard.putNumber("Intermediate Motor Voltage", intermediateMotor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "Flywheel Motor 1 Speed", finalFlywheel.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "Flywheel Motor 1 Voltage", finalFlywheel.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
+    // SmartDashboard.putNumber("Intermediate Motor Speed",
+    // intermediateMotor.getVelocity().getValueAsDouble());
+    // SmartDashboard.putNumber("Intermediate Motor Voltage",
+    // intermediateMotor.getMotorVoltage().getValueAsDouble());
   }
 }
 

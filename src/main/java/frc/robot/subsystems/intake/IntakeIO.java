@@ -18,7 +18,4 @@ public interface IntakeIO {
 
   /** Retracts the intake piston */
   default void retract() {}
-
-
-
 }

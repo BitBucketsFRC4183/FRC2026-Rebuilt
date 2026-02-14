@@ -6,4 +6,3 @@ import org.littletonrobotics.junction.AutoLog;
 public class HopperIOInputs {
   public double conveyorAppliedOutput;
 }
-
