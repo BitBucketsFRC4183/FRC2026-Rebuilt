@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommands;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
@@ -33,6 +36,7 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
@@ -56,8 +60,8 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem;
   // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
   private final ShooterSim shooterSim;
   private VisionSubsystem vision;
   // Toggle state for left bumper
@@ -149,6 +153,7 @@ public class RobotContainer {
         break;
         // thinking to what
 
+
       default:
         // Replayed robot, disable IO implementations
         driveSubsystem =
@@ -158,7 +163,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        break;
+      intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
+      break;
     }
 
     // Set up auto routines
@@ -221,26 +227,24 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    // Intake driverController
-    // LEFT BUMPER: toggle forearm extend / retract
-    driverController
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                    intakeSubsystem.deploy();
-                  } else {
-                    intakeSubsystem.stow();
-                  }
-                },
-                intakeSubsystem));
 
-    // LEFT TRIGGER: hold to intake
-    driverController
-        .leftTrigger(0.1)
-        .whileTrue(Commands.run(intakeSubsystem::intake, intakeSubsystem))
-        .onFalse(Commands.runOnce(intakeSubsystem::hold, intakeSubsystem));
+    //Left bumper Intake deployed and stowed
+    operatorController.leftBumper().onTrue(
+            Commands.runOnce(() -> {
+              if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                intakeSubsystem.deploy();
+              } else {
+                intakeSubsystem.stow();
+              }
+            }, intakeSubsystem)
+    );
+
+    operatorController
+            .leftTrigger()
+            .whileTrue(
+                    IntakeCommands.intake(intakeSubsystem)
+                            .onlyIf(() -> intakeSubsystem.isExtended())
+            );
 
     double distance = 5;
     operatorController

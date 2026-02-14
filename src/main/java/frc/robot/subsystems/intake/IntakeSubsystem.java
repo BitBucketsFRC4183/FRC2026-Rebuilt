@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 
@@ -21,26 +22,31 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentState) {
       case STOWED:
         io.retract();
+        io.retractSecondary();
         io.stopMotor();
         break;
 
       case DEPLOYED:
         io.extend();
+        io.extendSecondary();
         io.stopMotor();
         break;
 
       case INTAKING:
         io.extend();
+        io.extendSecondary();
         io.setMotorOutput(IntakeConstants.INTAKE_SPEED);
         break;
 
       case OUTTAKING:
         io.extend();
+        io.extendSecondary();
         io.setMotorOutput(IntakeConstants.OUTTAKE_SPEED);
         break;
 
       case HOLDING:
         io.extend();
+        io.extendSecondary();
         io.setMotorOutput(IntakeConstants.HOLD_SPEED);
         break;
     }
@@ -83,6 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isExtended() {
-    return inputs.pistonExtended;
+    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
   }
+
 }

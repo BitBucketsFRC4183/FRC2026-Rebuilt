@@ -11,7 +11,10 @@ import frc.robot.constants.IntakeConstants;
 public class IntakeIOTalonFX implements IntakeIO {
 
   private final TalonFX motor;
-  private final DoubleSolenoid piston;
+
+  // Pneumatics (always actuated together)
+  private final DoubleSolenoid leftPiston;
+  private final DoubleSolenoid rightPiston;
 
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
 
@@ -21,9 +24,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     // Motor output config
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.Inverted =
-        IntakeConstants.MOTOR_INVERTED
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
+            IntakeConstants.MOTOR_INVERTED
+                    ? InvertedValue.Clockwise_Positive
+                    : InvertedValue.CounterClockwise_Positive;
 
     // Current limits
     CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
@@ -35,18 +38,32 @@ public class IntakeIOTalonFX implements IntakeIO {
     motor.getConfigurator().apply(outputConfigs);
     motor.getConfigurator().apply(currentConfigs);
 
-    piston =
-        new DoubleSolenoid(
-            IntakeConstants.PNEUMATICS_TYPE,
-            IntakeConstants.PISTON_FORWARD_CHANNEL,
-            IntakeConstants.PISTON_REVERSE_CHANNEL);
+    // Pistons (mirrored / paired)
+    leftPiston =
+            new DoubleSolenoid(
+                    IntakeConstants.PNEUMATICS_TYPE,
+                    IntakeConstants.LEFT_PISTON_FORWARD_CHANNEL,
+                    IntakeConstants.LEFT_PISTON_REVERSE_CHANNEL);
+
+    rightPiston =
+            new DoubleSolenoid(
+                    IntakeConstants.PNEUMATICS_TYPE,
+                    IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
+                    IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.motorVelocityRPM = motor.getVelocity().getValueAsDouble() * 60.0;
     inputs.motorCurrentAmps = motor.getSupplyCurrent().getValueAsDouble();
-    inputs.pistonExtended = piston.get() == DoubleSolenoid.Value.kForward;
+
+    // If either piston disagrees, treat as NOT extended (safe default)
+    boolean extended =
+            leftPiston.get() == DoubleSolenoid.Value.kForward
+                    && rightPiston.get() == DoubleSolenoid.Value.kForward;
+
+    inputs.primaryPistonExtended = extended;
+    inputs.secondaryPistonExtended = extended;
   }
 
   @Override
@@ -56,11 +73,13 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void extend() {
-    piston.set(DoubleSolenoid.Value.kForward);
+    leftPiston.set(DoubleSolenoid.Value.kForward);
+    rightPiston.set(DoubleSolenoid.Value.kForward);
   }
 
   @Override
   public void retract() {
-    piston.set(DoubleSolenoid.Value.kReverse);
+    leftPiston.set(DoubleSolenoid.Value.kReverse);
+    rightPiston.set(DoubleSolenoid.Value.kReverse);
   }
 }
