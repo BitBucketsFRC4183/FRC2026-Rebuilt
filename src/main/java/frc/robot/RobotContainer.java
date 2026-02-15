@@ -53,6 +53,7 @@ public class RobotContainer {
   private final ShooterSim shooterSim;
   private VisionSubsystem visionSubsystem;
   private AutoSubsystem autoSubsystem;
+  private final SendableChooser<Command> autoChooser;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -66,12 +67,16 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
-  private final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    // building autochooser
     autoChooser = AutoBuilder.buildAutoChooser();
+
+    // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -195,7 +200,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -293,7 +298,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
     return autoChooser.getSelected();
   }
 }
