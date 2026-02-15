@@ -16,8 +16,8 @@ public final class VisionConstant {
 
   // We need to change that in the settings
   // not pipeline name!!!!!
-  public static final String LIMELIGHT_FRONT = "limelight-front";
-  public static final String LIMELIGHT_BACK = "limelight-back";
+  public static final String LIMELIGHT_FRONT = "limelight-side";
+  public static final String LIMELIGHT_FRONT_SHOOTER = "limelight-frontShooter";
 
   public static AprilTagFieldLayout aprilTagFieldLayout;
 
@@ -29,11 +29,16 @@ public final class VisionConstant {
     }
   }
 
+  //just for sim
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
 
   //TODO tune them
   //start high values, then slowly lower them
   public static final Matrix<N3, N1> GlobalVisionMeasurementStdDevs = VecBuilder.fill(0.7,0.7, Units.degreesToRadians(180));
+
+  public static final Matrix<N3, N1> VeryGood_VisionMeasurementStdDevs = VecBuilder.fill(0.4,0.4, Units.degreesToRadians(90));
+  public static final Matrix<N3, N1> Ish_VisionMeasurementStdDevs = VecBuilder.fill(0.3,0.3, Units.degreesToRadians(90));
+
   private VisionConstant() {}
 }

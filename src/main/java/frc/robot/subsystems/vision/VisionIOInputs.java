@@ -20,8 +20,9 @@ public class VisionIOInputs {
   // vision use this data (robot orientation/robot pose), so the estimate will not too off
   // add vision measurement(vision pose, timestamp), then provide a new estimated robot pose
   public Pose2d estimatedRobotPose;
-  //  public double latency;
+  public double latency;
 
+//  public double poseAmbiguity;
   public boolean hasMegaTag2;
 
   // this is the estimated vision pose
