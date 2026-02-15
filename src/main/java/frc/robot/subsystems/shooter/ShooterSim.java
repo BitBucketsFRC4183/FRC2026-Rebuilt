@@ -20,7 +20,8 @@ public class ShooterSim {
 
   private final FlywheelSim flySim =
       new FlywheelSim(
-          LinearSystemId.identifyVelocitySystem(ShooterConstants.flywheel_kV, ShooterConstants.flywheel_kA),
+          LinearSystemId.identifyVelocitySystem(
+              ShooterConstants.flywheel_kV, ShooterConstants.flywheel_kA),
           DCMotor.getKrakenX60(1),
           3.0);
 
@@ -31,7 +32,8 @@ public class ShooterSim {
   private final TalonFX m_motor = new TalonFX(1);
   private final TalonFXSimState m_motorSim = m_motor.getSimState();
   private final PIDController pidController =
-      new PIDController(ShooterConstants.flywheel_kP, ShooterConstants.flywheel_kI, ShooterConstants.flywheel_kD);
+      new PIDController(
+          ShooterConstants.flywheel_kP, ShooterConstants.flywheel_kI, ShooterConstants.flywheel_kD);
 
   public ShooterSim() {
     SmartDashboard.putData("Flywheel Stuff", mechCanvas);

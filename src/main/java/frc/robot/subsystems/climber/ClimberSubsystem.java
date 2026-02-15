@@ -1,6 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -74,20 +73,23 @@ public class ClimberSubsystem extends SubsystemBase {
     climberIO.setVoltage(voltageSupplied);
   }
 
-    public void setClimbServoPosition(double servoPosition){
+  public void setClimbServoPosition(double servoPosition) {
     climbServo1.set(servoPosition);
     climbServo2.set(servoPosition);
-    }
-  public void setBaseServoPosition(double servoPosition){
+  }
+
+  public void setBaseServoPosition(double servoPosition) {
     baseServo1.set(servoPosition);
     baseServo2.set(servoPosition);
   }
-  public double getClimbServoPosition(){
-    double climberServo1Position =climbServo1.getPosition();
+
+  public double getClimbServoPosition() {
+    double climberServo1Position = climbServo1.getPosition();
     return climberServo1Position;
   }
-  public double getBaseServoPosition(){
-    double baseServo1Position =climbServo1.getPosition();
+
+  public double getBaseServoPosition() {
+    double baseServo1Position = climbServo1.getPosition();
     return baseServo1Position;
   }
 }

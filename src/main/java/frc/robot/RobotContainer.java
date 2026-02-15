@@ -68,9 +68,7 @@ public class RobotContainer {
 
   // Dashboard inputs
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     // building autochooser
@@ -85,12 +83,12 @@ public class RobotContainer {
         // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
         // a CANcoder
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                        new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                        new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+            new DriveSubsystem(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -120,29 +118,6 @@ public class RobotContainer {
         NamedCommands.registerCommand(
             "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
         NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
-
-        //        NamedCommands.registerCommand("StartBottomToTower",
-        // autoSubystem.StartBottomToTower());
-        //        NamedCommands.registerCommand("bottomStartToShootOnly",
-        // autoSubystem.bottomStartToShootOnly());
-        //        NamedCommands.registerCommand("topStartToShootOnly",
-        // autoSubystem.topStartToShootOnly());
-        //        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem.
-        // midStartToShootOnly());
-        //        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-        //        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-        //        NamedCommands.registerCommand("StartBottomShootIntakeEndL1",
-        // autoSubystem.StartBottomShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootIntakeEndL1",
-        // autoSubystem.StartTopShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartMidShootIntakeEndL1",
-        // autoSubystem.StartMidShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootEndL1",
-        // autoSubystem.StartTopShootEndL1());
-        //        NamedCommands.registerCommand("StartBottomShootEndL1",
-        // autoSubystem.StartBottomShootEndL1());
-        //        NamedCommands.registerCommand("StartMidShootEndL1",
-        // autoSubystem.StartMidShootEndL1());
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
@@ -207,23 +182,23 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption(
-            "DriveSubsystem Wheel Radius Characterization",
-            DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+        "DriveSubsystem Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
     autoChooser.addOption(
-            "DriveSubsystem Simple FF Characterization",
-            DriveCommands.feedforwardCharacterization(driveSubsystem));
+        "DriveSubsystem Simple FF Characterization",
+        DriveCommands.feedforwardCharacterization(driveSubsystem));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Quasistatic Forward)",
-            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        "DriveSubsystem SysId (Quasistatic Forward)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Quasistatic Reverse)",
-            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        "DriveSubsystem SysId (Quasistatic Reverse)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Dynamic Forward)",
-            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "DriveSubsystem SysId (Dynamic Forward)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-            "DriveSubsystem SysId (Dynamic Reverse)",
-            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "DriveSubsystem SysId (Dynamic Reverse)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -237,89 +212,86 @@ public class RobotContainer {
    * @return
    */
   private void configureButtonBindings() {
-      // Default command, normal field-relative driveSubsystem
-      driveSubsystem.setDefaultCommand(
-              DriveCommands.joystickDrive(
-                      driveSubsystem,
-                      () -> -driverController.getLeftY(),
-                      () -> -driverController.getLeftX(),
-                      () -> -driverController.getRightX()));
+    // Default command, normal field-relative driveSubsystem
+    driveSubsystem.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            driveSubsystem,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
-      // Lock to 0° when A button is held
-      driverController
-              .a()
-              .whileTrue(
-                      DriveCommands.joystickDriveAtAngle(
-                              driveSubsystem,
-                              () -> -driverController.getLeftY(),
-                              () -> -driverController.getLeftX(),
-                              () -> Rotation2d.kZero));
+    // Lock to 0° when A button is held
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                driveSubsystem,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> Rotation2d.kZero));
 
-      // Switch to X pattern when X button is pressed
-      //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-      driverController
-              .x()
-              .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
+    // Switch to X pattern when X button is pressed
+    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController
+        .x()
+        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
-      // Left bumper Intake deployed and stowed
-      //intake Commands
-      operatorController
-              .leftBumper()
-              .onTrue(
-                      Commands.runOnce(
-                              () -> {
-                                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                                      intakeSubsystem.deploy();
-                                  } else {
-                                      intakeSubsystem.stow();
-                                  }
-                              },
-                              intakeSubsystem));
-      operatorController
-              .leftTrigger()
-              .whileTrue(
-                      IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+    // Left bumper Intake deployed and stowed
+    // intake Commands
+    operatorController
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                    intakeSubsystem.deploy();
+                  } else {
+                    intakeSubsystem.stow();
+                  }
+                },
+                intakeSubsystem));
+    operatorController
+        .leftTrigger()
+        .whileTrue(
+            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
-      // Hopper reverse while right bumper held
-      operatorController
-              .rightBumper()
-              .whileTrue(
-                      Commands.startEnd(
-                              hopperSubsystem::runConveyorReverse,
-                              hopperSubsystem::stopConveyor,
-                              hopperSubsystem));
+    // Hopper reverse while right bumper held
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            Commands.startEnd(
+                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::stopConveyor,
+                hopperSubsystem));
 
-      //Intake Control Motors
+    // Intake Control Motors
 
-      //servo command
-      operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-      operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-      new Trigger(() ->
-              (operatorController.getRightY()) > 0.1
-                      && operatorController.back().getAsBoolean())
-              .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-      new Trigger(() ->
-              (operatorController.getRightY()) < 0.1
-                      && operatorController.back().getAsBoolean())
-              .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    // servo command
+    operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    new Trigger(
+            () ->
+                (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
+        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    new Trigger(
+            () ->
+                (operatorController.getRightY()) < 0.1 && operatorController.back().getAsBoolean())
+        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
-      //manual climb command
-      new Trigger(() ->
-              Math.abs(operatorController.getLeftY()) > 0.1
-                      && operatorController.back().getAsBoolean())
-              .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
-                      )
-              );
+    // manual climb command
+    new Trigger(
+            () ->
+                Math.abs(operatorController.getLeftY()) > 0.1
+                    && operatorController.back().getAsBoolean())
+        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
-
-      /**
-       * Use this to pass the autonomous command to the main {@link Robot} class.
-       *
-       * @return the command to run in autonomous
-       */
-      public Command getAutonomousCommand () {
-          return autoChooser.getSelected();
-
-      }
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
+}
