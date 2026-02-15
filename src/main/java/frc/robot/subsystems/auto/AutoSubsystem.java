@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.ClimberCommands;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
@@ -18,12 +20,18 @@ public class AutoSubsystem extends SubsystemBase {
   private final DriveSubsystem drive;
   private final ShooterSubsystem shooter;
   private final ClimberSubsystem climber;
+  private final HopperSubsystem hopper;
   // private ClimberSubsystem climberSubsystem;
 
-  public AutoSubsystem(DriveSubsystem drive, ShooterSubsystem shooter, ClimberSubsystem climber) {
+  public AutoSubsystem(
+      DriveSubsystem drive,
+      ShooterSubsystem shooter,
+      ClimberSubsystem climber,
+      HopperSubsystem hopper) {
     this.drive = drive;
     this.shooter = shooter;
     this.climber = climber;
+    this.hopper = hopper;
     registerNamedCommands();
   }
 
@@ -65,7 +73,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command shoot() {
-    return Commands.print("shooting!");
+    return ShooterCommands.revFlywheels(shooter, hopper);
   }
 
   public Command climb() {

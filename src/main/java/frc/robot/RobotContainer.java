@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,7 +37,6 @@ import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final ShooterSim shooterSim;
   private VisionSubsystem visionSubsystem;
   private AutoSubsystem autoSubsystem;
+  private final SendableChooser<Command> autoChooser;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -65,12 +67,18 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    // building autochooser
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    // putting chooser on dashboard
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -92,7 +100,8 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         // register named commands
-        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
+        autoSubsystem =
+            new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
         // register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
         NamedCommands.registerCommand(
@@ -194,7 +203,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -280,9 +289,7 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    //climb command
-    operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem));
-    operatorController.a().onTrue(ClimberCommands.decreaseClimberLength(climberSubsystem));
+    //Intake Control Motors
 
     //servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
@@ -304,13 +311,12 @@ public class RobotContainer {
                     )
             );
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand () {
-      return autoChooser.get();
-    }
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
   }
 }
