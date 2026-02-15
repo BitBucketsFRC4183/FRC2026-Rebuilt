@@ -1,0 +1,61 @@
+package frc.robot.subsystems.vision;
+
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.constants.AprilTagLabel;
+
+public class HopperTracker {
+  /// fancy notation
+  /// function that give you hub pose based on alliance color
+  public static Pose2d getTargetHubPose2d() {
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+    return (alliance == DriverStation.Alliance.Red)
+        ? AprilTagLabel.RedHubPose3d.toPose2d()
+        : AprilTagLabel.BlueHubPose3d.toPose2d();
+  }
+
+  public static double getDistanceFromRobotToHub(Pose2d robotPose) {
+    Pose2d HubPose = getTargetHubPose2d();
+    Translation2d diff = HubPose.getTranslation().minus(robotPose.getTranslation());
+    // TODO, need to tune
+
+    // -0.677 = from center of hub minus the center robot, it is about this much allowance
+    // this is a valid estimation lol
+    if (diff.getX() < -0.677) {
+      return -1;
+    }
+    return robotPose.getTranslation().getDistance(HubPose.getTranslation());
+  }
+
+  // from +x to the magnitude line
+  /// targetRad
+  public static Rotation2d getAngleToHub(Pose2d robotPose) {
+
+    // Vector--> robot to hub; code--> hub - robot
+    // could from any degrees -> 360
+
+    /// kinda struggle over this concept, so this link will help you
+    // https://maththebeautiful.com/angle-between-points/
+    // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
+    // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
+
+    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
+    Rotation2d fieldAngle = diff.getAngle();
+    return fieldAngle;
+  }
+
+  public static double getAngleToHubRad(Pose2d robotPose) {
+    return getAngleToHub(robotPose).getRadians();
+  }
+
+  /// doesn't really needed
+  // error
+  // https://youtu.be/55FDgyuhWTM?si=_PU5S1oCPOQ_Kzcc
+  //    public static Rotation2d getTurningAngle(Pose2d robotPose) {
+  //        return getAngleToHub(robotPose).minus(robotPose.getRotation());
+  //    }
+
+  //    public static double getTurningAngleRad(Pose2d robotPose) {
+  //        return getTurningAngle(robotPose).getRadians();
+  //    }
+}

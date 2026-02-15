@@ -1,10 +1,8 @@
 package frc.robot.subsystems.hopper;
 
-public class HopperIOInputs {
-  // Conveyor applied output
-  public double conveyorAppliedOutput;
+import org.littletonrobotics.junction.AutoLog;
 
-  // Outtake applied outputs
-  public double outtakeLeftAppliedOutput;
-  public double outtakeRightAppliedOutput;
+@AutoLog
+public class HopperIOInputs {
+  public double conveyorAppliedOutput;
 }

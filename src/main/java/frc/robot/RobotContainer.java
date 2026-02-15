@@ -8,7 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -19,25 +19,21 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoAimCommand;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.ForearmConstants;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.forearm.ForearmIOSparkMax;
-import frc.robot.subsystems.forearm.ForearmSubsystem;
-import frc.robot.subsystems.hopper.HopperIOSparkMax;
-import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.hopper.*;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -50,20 +46,22 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final DriveSubsystem driveSubsystem;
-  // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
-  private final ForearmSubsystem forearmSubsystem;
   private final ShooterSubsystem shooterSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
+  private final ShooterSim shooterSim;
   private VisionSubsystem visionSubsystem;
-  private VisionIOLimelight visionIO;
-  private ClimberSubsystem climberSubsystem;
+  private AutoSubsystem autoSubsystem;
+
+  // Added missing subsystem fields
   private ClimberIO climberIO;
+  private ClimberSubsystem climberSubsystem;
+  private VisionIO visionIO;
 
   // Toggle state for left bumper
-  private boolean forearmExtended = false;
 
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
@@ -88,77 +86,114 @@ public class RobotContainer {
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem =
-                new VisionSubsystem(new VisionIOInputsAutoLogged(), visionIO, driveSubsystem);
 
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+        hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+
+        // register named commands
+        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
+        // register named commands
+        NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
+        NamedCommands.registerCommand(
+            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+        NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
+        NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
+        NamedCommands.registerCommand(
+            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+        NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+        NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
+
+        //        NamedCommands.registerCommand("StartBottomToTower",
+        // autoSubystem.StartBottomToTower());
+        //        NamedCommands.registerCommand("bottomStartToShootOnly",
+        // autoSubystem.bottomStartToShootOnly());
+        //        NamedCommands.registerCommand("topStartToShootOnly",
+        // autoSubystem.topStartToShootOnly());
+        //        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem.
+        // midStartToShootOnly());
+        //        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
+        //        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
+        //        NamedCommands.registerCommand("StartBottomShootIntakeEndL1",
+        // autoSubystem.StartBottomShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartTopShootIntakeEndL1",
+        // autoSubystem.StartTopShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartMidShootIntakeEndL1",
+        // autoSubystem.StartMidShootIntakeEndL1());
+        //        NamedCommands.registerCommand("StartTopShootEndL1",
+        // autoSubystem.StartTopShootEndL1());
+        //        NamedCommands.registerCommand("StartBottomShootEndL1",
+        // autoSubystem.StartBottomShootEndL1());
+        //        NamedCommands.registerCommand("StartMidShootEndL1",
+        // autoSubystem.StartMidShootEndL1());
+
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
+        visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
+
+        shooterSim = new ShooterSim();
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIO() {
-                        },
-                        new ModuleIOSim(TunerConstants.FrontLeft),
-                        new ModuleIOSim(TunerConstants.FrontRight),
-                        new ModuleIOSim(TunerConstants.BackLeft),
-                        new ModuleIOSim(TunerConstants.BackRight));
-        visionSubsystem =
-                new VisionSubsystem(
-                        new VisionIOInputsAutoLogged(),
-                        new VisionIOPhotonVisionSim(
-                                driveSubsystem.poseSupplierForSim,
-                                VisionConstant.robotToBackCam,
-                                VisionConstant.robotToFrontCam,
-                                driveSubsystem),
-                        driveSubsystem);
+            new DriveSubsystem(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
+
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
+
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+        hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+
+        visionSubsystem =
+            new VisionSubsystem(
+                new VisionIOPhotonVisionSim(
+                    driveSubsystem.poseSupplierForSim,
+                    VisionConstant.robotToBackCam,
+                    VisionConstant.robotToFrontCam),
+                driveSubsystem);
+
+        shooterSim = new ShooterSim();
         break;
-      // thinking to what
+        // thinking to what
 
       default:
         // Replayed robot, disable IO implementations
         driveSubsystem =
-                new DriveSubsystem(
-                        new GyroIO() {
-                        },
-                        new ModuleIO() {
-                        },
-                        new ModuleIO() {
-                        },
-                        new ModuleIO() {
-                        },
-                        new ModuleIO() {
-                        });
+            new DriveSubsystem(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+
+        climberIO = new ClimberIOSim();
+        climberSubsystem = new ClimberSubsystem(climberIO);
+
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
+        hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+
+        visionSubsystem = null;
+
+        shooterSim = new ShooterSim();
         break;
     }
 
     // Set up auto routines
-    this.hopperSubsystem = new HopperSubsystem(new HopperIOSparkMax());
-    this.forearmSubsystem = new ForearmSubsystem(new ForearmIOSparkMax());
-    this.shooterSubsystem = new ShooterSubsystem();
-    // this.autoSubsystem = new AutoSubsystem(DriveSubsystem driveSubsystem, ClimbSubsystem climber,
-    // ShooterSubystem shooter);
-
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
@@ -195,64 +230,59 @@ public class RobotContainer {
   private Command configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
-            DriveCommands.joystickDrive(
-                    driveSubsystem,
-                    () -> -driver.getLeftY(),
-                    () -> -driver.getLeftX(),
-                    () -> -driver.getRightX()));
+        DriveCommands.joystickDrive(
+            driveSubsystem,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-    driver
-            .a()
-            .whileTrue(
-                    DriveCommands.joystickDriveAtAngle(
-                            driveSubsystem,
-                            () -> -driver.getLeftY(),
-                            () -> -driver.getLeftX(),
-                            () -> Rotation2d.kZero));
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                driveSubsystem,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController
+        .x()
+        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
-    // Reset gyro to 0° when B button is pressed
-    driver
-            .b()
-            .onTrue(
-                    Commands.runOnce(
-                                    () ->
-                                            driveSubsystem.setPose(
-                                                    new Pose2d(
-                                                            driveSubsystem.getPose().getTranslation(), Rotation2d.kZero)),
-                                    driveSubsystem)
-                            .ignoringDisable(true));
+    // Left bumper Intake deployed and stowed
+    operatorController
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                    intakeSubsystem.deploy();
+                  } else {
+                    intakeSubsystem.stow();
+                  }
+                },
+                intakeSubsystem));
 
-    driver
-            // Left Bumper Triggers Intake extended mode and Intake retract mode
-            .leftBumper()
-            .onTrue(
-                    Commands.runOnce(
-                            () -> {
-                              if (forearmExtended) {
-                                forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_RETRACT_PERCENT);
-                              } else {
-                                forearmSubsystem.runForearmManual(ForearmConstants.MANUAL_EXTEND_PERCENT);
-                              }
-                              forearmExtended = !forearmExtended;
-                            },
-                            forearmSubsystem));
-
-    // Left trigger: run intake while held
-    new Trigger(() -> driver.getLeftTriggerAxis() > 0.1)
-            .whileTrue(
-                    Commands.run(
-                            () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
-                            forearmSubsystem))
-            .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
+    // Hopper reverse while right bumper held
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            Commands.startEnd(
+                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::stopConveyor,
+                hopperSubsystem));
 
     //climb command
     operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem));
     operatorController.a().onTrue(ClimberCommands.decreaseClimberLength(climberSubsystem));
 
+    operatorController
+        .leftTrigger()
+        .whileTrue(
+            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
     //servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));

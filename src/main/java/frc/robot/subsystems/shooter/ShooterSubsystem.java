@@ -1,154 +1,89 @@
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
 
-public class ShooterSubsystem {
-  private final SparkMax m_topFlywheel =
-      new SparkMax(ShooterConstants.topFlywheelID, MotorType.kBrushless);
-  private final SparkMax m_bottomFlywheel =
-      new SparkMax(ShooterConstants.bottomFlywheelID, MotorType.kBrushless);
+public class ShooterSubsystem extends SubsystemBase {
+  ShooterIOTalonFX io;
 
-  private final SparkRelativeEncoder m_topEncoder =
-      (SparkRelativeEncoder) m_topFlywheel.getEncoder();
-  private final SparkRelativeEncoder m_bottomEncoder =
-      (SparkRelativeEncoder) m_bottomFlywheel.getEncoder();
+  private static double targetVelocity = 0;
 
-  private final SparkClosedLoopController m_topPID = m_topFlywheel.getClosedLoopController();
-  private final SparkClosedLoopController m_bottomPID = m_bottomFlywheel.getClosedLoopController();
+  private double storedDistance = -1;
 
-  double topTargetFlywheelVelocity, bottomTargetFlywheelVelocity;
-  // In meters
-  double hubHeight, shooterHeight, hubDistance, topFlywheelRadius, bottomFlywheelRadius;
-
-  public ShooterSubsystem() {
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.smartCurrentLimit(40).idleMode(IdleMode.kCoast);
-
-    // For PID and Feed Forward
-    config
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ShooterConstants.kP)
-        .i(ShooterConstants.kI)
-        .d(ShooterConstants.kD)
-        .outputRange(ShooterConstants.kMinOutput, ShooterConstants.kMaxOutput);
-    config
-        .closedLoop
-        .feedForward
-        .kS(ShooterConstants.kS)
-        .kV(ShooterConstants.kV)
-        .kA(ShooterConstants.kA)
-        .kCosRatio(ShooterConstants.cosRatio);
-
-    // Convert all American Units to Metric
-    hubHeight = ShooterConstants.hubHeight / 39.37;
-    shooterHeight = ShooterConstants.shooterHeight / 39.37;
-    topFlywheelRadius = ShooterConstants.topFlywheelRadius / 39.37;
-    bottomFlywheelRadius = ShooterConstants.bottomFlywheelRadius / 39.37;
-    hubDistance = ShooterConstants.distanceFromCenter / 39.37;
-
-    // Configures both Flywheels, inverts the bottom Flywheel
-    // Deprecated again lol
-    // m_topFlywheel.configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kNoPersistParameters);
-
-    config.inverted(true);
-    // m_bottomFlywheel.configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kNoPersistParameters);
+  public ShooterSubsystem(ShooterIOTalonFX io) {
+    this.io = io;
   }
 
-  public void setTargetFlywheelVelocity(double distance) {
-    // Method for setting flywheel speeds assuming constant hood angle
-    // Distance from April-Tag + Distance away from center of the Hub
-    distance += hubDistance;
-    double radius;
-    // Uses the radius of the smallest fly wheel (so that we do not go over the RPM limit)
-    if (topFlywheelRadius > bottomTargetFlywheelVelocity) {
-      radius = bottomFlywheelRadius;
-    } else {
-      radius = topFlywheelRadius;
-    }
-    double targetFlywheelVelocity = 0;
-    // Computationally heavy, TODO: Use a different method to find RPM
-    for (double distanceAchieved = 0; distanceAchieved >= distance; targetFlywheelVelocity += 2) {
-      // Calculating tangential velocity
-      double yVelocity =
-          targetFlywheelVelocity * radius * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
-      // Using Kinematics to calculate RPM to launch the ball, hopefully air resistance is
-      // negligible lol
-      double h = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-      double airTime =
-          -yVelocity
-              + (Math.sqrt(Math.pow(yVelocity, 2) - 2 * ShooterConstants.gravity * h))
-                  / ShooterConstants.gravity;
-      distanceAchieved =
-          airTime
-              * targetFlywheelVelocity
-              * radius
-              * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
-      // If it reaches this statement, the bot is too far from the hub to make it in or the
-      // shooterAngle is not appropriate
-      if (targetFlywheelVelocity > ShooterConstants.maxRPM * 2 * Math.PI / 60) {
-        break;
-      }
-    }
-
-    if (topFlywheelRadius > bottomTargetFlywheelVelocity) {
-      bottomTargetFlywheelVelocity = targetFlywheelVelocity;
-      m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
-      topTargetFlywheelVelocity =
-          bottomTargetFlywheelVelocity * bottomFlywheelRadius / topFlywheelRadius;
-      m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-    } else {
-      topFlywheelRadius = targetFlywheelVelocity;
-      m_topPID.setSetpoint(topTargetFlywheelVelocity / 2 / Math.PI * 60, ControlType.kVelocity);
-      bottomTargetFlywheelVelocity =
-          topTargetFlywheelVelocity * topFlywheelRadius / bottomFlywheelRadius;
-      m_bottomPID.setSetpoint(bottomFlywheelRadius / 2 / Math.PI * 60, ControlType.kVelocity);
-    }
+  public static double getTargetVelocity() {
+    return targetVelocity;
   }
 
-  // The Distance inputted should be the distance of the bot from the "center" of the hub
+  // Changes only the Flywheel Velocity, using storedDistance
+  public void calculateVelocity() {
+    double bestRPS = 0;
+    boolean solutionFound = false;
 
-  public void setTargetHoodAngle(double distance) {
-    double targetFlywheelRPM = 3000;
-    // ill change later i j chose a value for now
-    double launchVelocity = (targetFlywheelRPM * 2 * Math.PI / 60) * topFlywheelRadius;
-    double verticalDistance = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-    // initialize velocity squared - physics variables
-    // double v0squared = Math.pow(v0, 2);
-    // 6double v0fourth = Math.pow(v0, 4);
+    // Iterate through possible motor speeds (RPS)
+    for (double testRPS = 0; testRPS <= ShooterConstants.maxRPS; testRPS += 0.5) {
 
-    double targetHoodAngle = ShooterConstants.minHoodAngle;
-    // change accuracy for min and max hood angle later
-    for (double angle = ShooterConstants.minHoodAngle;
-        angle <= ShooterConstants.maxHoodAngle;
-        angle += 0.01) {
-      double launchVelX = launchVelocity * Math.cos(angle);
-      double launchVelY = launchVelocity * Math.sin(angle);
+      // Conversion to Rad/Sec
+      double omega = testRPS * 2 * Math.PI;
+      double vExit = omega * ShooterConstants.radius;
 
-      double discriminant =
-          Math.pow(launchVelY, 2) + 2 * ShooterConstants.gravity * verticalDistance;
-      // discriminant = launch energy - energy needed for dist + height - theory
+      double vX = vExit * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
+      double vY = vExit * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
+
+      double dy = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
+      double g = -9.81;
+      double discriminant = Math.pow(vY, 2) + 2 * g * dy;
+
       if (discriminant >= 0) {
-        double airtime = (launchVelY + Math.sqrt(discriminant)) / ShooterConstants.gravity;
+        double t = (-vY - Math.sqrt(discriminant)) / g;
+        double distanceX = vX * t;
 
-        double distanceAchieved = launchVelX * airtime;
-
-        if (Math.abs(distanceAchieved - distance) <= ShooterConstants.error) {
-          targetHoodAngle = angle;
+        if (distanceX >= storedDistance) {
+          bestRPS = testRPS;
+          solutionFound = true;
+          break; // Found the minimum speed needed to reach the distance
         }
       }
-      setTargetFlywheelVelocity(targetFlywheelRPM);
     }
+
+    if (!solutionFound) {
+      System.out.println("Range Error: Target out of reach!");
+    } else {
+      targetVelocity = bestRPS;
+    }
+
+    if (storedDistance == 0) {
+      targetVelocity = 50;
+    }
+  }
+
+  public void setTargetVelocity() {
+    io.setSpeed(targetVelocity);
+  }
+
+  // Stores a distance to be used calculateTargetVelocity()
+  public void setStoredDistance(double distance) {
+    storedDistance = distance;
+  }
+
+  public boolean distanceStored() {
+    return storedDistance > -1;
+  }
+
+  public void resetStoredDistance() {
+    storedDistance = -1;
+  }
+
+  // Stops both Intermediate and Flywheel Motors
+  public void stop() {
+    io.stopMotor();
+  }
+
+  public void startIntermediateMotors() {
+    io.startIntermediateMotors();
   }
 
   // insert code for setting hood angle stuff
@@ -156,19 +91,10 @@ public class ShooterSubsystem {
     angle = Math.max(ShooterConstants.minHoodAngle, Math.min(ShooterConstants.maxHoodAngle, angle));
     // finish it after figuring out how to
   }
-  // Emergency Stop?
-  private void stop() {
-    m_topFlywheel.stopMotor();
-    m_bottomFlywheel.stopMotor();
-  }
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    double tolerance = 50.0;
-    return Math.abs(m_topEncoder.getVelocity() - topTargetFlywheelVelocity / 2 / Math.PI * 60)
-            < tolerance
-        && Math.abs(m_bottomEncoder.getVelocity() - bottomTargetFlywheelVelocity / 2 / Math.PI * 60)
-            < tolerance;
+    return io.speedReached(targetVelocity);
   }
 }

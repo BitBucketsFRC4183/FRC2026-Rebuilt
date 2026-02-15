@@ -3,10 +3,6 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
 import java.util.List;
 import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
@@ -26,19 +22,18 @@ public class VisionIOPhotonVisionSim implements VisionIO {
   private PhotonCameraSim backCamSim;
   private final Supplier<Pose2d> poseSupplier;
 
-  DriveSubsystem driveSubsystem =
-      new DriveSubsystem(
-          new GyroIO() {},
-          new ModuleIOSim(TunerConstants.FrontLeft),
-          new ModuleIOSim(TunerConstants.FrontRight),
-          new ModuleIOSim(TunerConstants.BackLeft),
-          new ModuleIOSim(TunerConstants.BackRight));
+  //  DriveSubsystem driveSubsystem =
+  //      new DriveSubsystem(
+  //          new GyroIO() {},
+  //          new ModuleIOSim(TunerConstants.FrontLeft),
+  //          new ModuleIOSim(TunerConstants.FrontRight),
+  //          new ModuleIOSim(TunerConstants.BackLeft),
+  //          new ModuleIOSim(TunerConstants.BackRight));
 
   public VisionIOPhotonVisionSim(
       Supplier<Pose2d> poseSupplier,
       Transform3d robotToFrontCam,
-      Transform3d robotToBackCam,
-      DriveSubsystem driveSubsystem) // the parameter
+      Transform3d robotToBackCam) // the parameter
       {
     // now create the stage
     this.poseSupplier = poseSupplier;
@@ -84,7 +79,7 @@ public class VisionIOPhotonVisionSim implements VisionIO {
 
     frontCamInputs.estimatedRobotPose = visionSim.getRobotPose().toPose2d();
     frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
-    frontCamInputs.fiducialID = PHOTON_FRONT.getPipelineIndex();
+    frontCamInputs.aprilTagIDNumber = PHOTON_FRONT.getPipelineIndex();
     frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
   }
 }
