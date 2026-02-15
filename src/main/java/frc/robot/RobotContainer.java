@@ -86,7 +86,7 @@ public class RobotContainer {
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         // register named commands
@@ -153,7 +153,7 @@ public class RobotContainer {
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem =
@@ -181,7 +181,7 @@ public class RobotContainer {
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         visionSubsystem = null;
