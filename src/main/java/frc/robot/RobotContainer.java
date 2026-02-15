@@ -67,7 +67,9 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
@@ -75,12 +77,12 @@ public class RobotContainer {
         // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
         // a CANcoder
         driveSubsystem =
-            new DriveSubsystem(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
-                new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+                new DriveSubsystem(
+                        new GyroIOPigeon2(),
+                        new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
+                        new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
+                        new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -166,6 +168,7 @@ public class RobotContainer {
 
         shooterSim = new ShooterSim();
         break;
+        // thinking to what
 
       default:
         // Replayed robot, disable IO implementations
@@ -195,23 +198,23 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption(
-        "DriveSubsystem Wheel Radius Characterization",
-        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+            "DriveSubsystem Wheel Radius Characterization",
+            DriveCommands.wheelRadiusCharacterization(driveSubsystem));
     autoChooser.addOption(
-        "DriveSubsystem Simple FF Characterization",
-        DriveCommands.feedforwardCharacterization(driveSubsystem));
+            "DriveSubsystem Simple FF Characterization",
+            DriveCommands.feedforwardCharacterization(driveSubsystem));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Forward)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+            "DriveSubsystem SysId (Quasistatic Forward)",
+            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Reverse)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+            "DriveSubsystem SysId (Quasistatic Reverse)",
+            driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Forward)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+            "DriveSubsystem SysId (Dynamic Forward)",
+            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Reverse)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+            "DriveSubsystem SysId (Dynamic Reverse)",
+            driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -221,8 +224,10 @@ public class RobotContainer {
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
    * XboxController}), and then passing it to a {@link JoystickButton}.
+   *
+   * @return
    */
-  private void configureButtonBindings() {
+  private Command configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -248,6 +253,7 @@ public class RobotContainer {
         .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
+    //intake Commands
     operatorController
         .leftBumper()
         .onTrue(
@@ -260,6 +266,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
+    operatorController
+            .leftTrigger()
+            .whileTrue(
+                    IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
     // Hopper reverse while right bumper held
     operatorController
@@ -270,25 +280,37 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // Intake Control Motors
+    //climb command
+    operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem));
+    operatorController.a().onTrue(ClimberCommands.decreaseClimberLength(climberSubsystem));
 
-    operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+    //servo command
+    operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    new Trigger(() ->
+            (operatorController.getRightY()) > 0.1
+                    && operatorController.back().getAsBoolean())
+            .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    new Trigger(() ->
+            (operatorController.getRightY()) < 0.1
+                    && operatorController.back().getAsBoolean())
+            .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
-    operatorController.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
-    operatorController.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
-    new Trigger(() -> Math.abs(operatorController.getLeftY()) > 0.1)
-        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
-  }
+    //manual climb command
+    new Trigger(() ->
+            Math.abs(operatorController.getLeftY()) > 0.1
+                    && operatorController.back().getAsBoolean())
+                    .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
+                    )
+            );
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand () {
+      return autoChooser.get();
+    }
   }
 }
