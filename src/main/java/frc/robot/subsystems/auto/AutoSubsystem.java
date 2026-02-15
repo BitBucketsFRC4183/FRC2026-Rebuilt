@@ -14,6 +14,9 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 
 public class AutoSubsystem extends SubsystemBase {
 
@@ -93,7 +96,7 @@ public class AutoSubsystem extends SubsystemBase {
 
     try {
       // Load the path from the deploy/pathplanner folder by name
-      path1 = PathPlannerPath.fromPathFile("BottomStartToShootB");
+      path1 = PathPlannerPath.fromChoreoTrajectory("BottomStartToShootB");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -102,17 +105,18 @@ public class AutoSubsystem extends SubsystemBase {
     // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path1);
   }
-
   public Command goToptoShooterPs() {
     PathPlannerPath path2;
 
     try {
-      path2 = PathPlannerPath.fromPathFile("TopStartToShootT");
+      // Load the path from the deploy/pathplanner folder by name
+      path2 = PathPlannerPath.fromChoreoTrajectory("TopStartToShootT");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
     }
 
+    // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path2);
   }
 
@@ -120,7 +124,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path3;
 
     try {
-      path3 = PathPlannerPath.fromPathFile("MidStartToShootM");
+      path3 = PathPlannerPath.fromChoreoTrajectory("MidStartToShootM");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -134,7 +138,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path4;
 
     try {
-      path4 = PathPlannerPath.fromPathFile("MidtoTower");
+      path4 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -147,7 +151,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path5;
 
     try {
-      path5 = PathPlannerPath.fromPathFile("ShootMtoDepot");
+      path5 = PathPlannerPath.fromChoreoTrajectory("ShootMtoDepot");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -160,7 +164,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path6;
 
     try {
-      path6 = PathPlannerPath.fromPathFile("ShootBtoDepot");
+      path6 = PathPlannerPath.fromChoreoTrajectory("ShootBtoDepot");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -173,7 +177,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path7;
 
     try {
-      path7 = PathPlannerPath.fromPathFile("ShootTtoDepot");
+      path7 = PathPlannerPath.fromChoreoTrajectory("ShootTtoDepot");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -186,7 +190,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath path8;
 
     try {
-      path8 = PathPlannerPath.fromPathFile("DepotToMid");
+      path8 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -199,7 +203,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath MdTower;
 
     try {
-      MdTower = PathPlannerPath.fromPathFile("MidtoTower");
+      MdTower = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -212,7 +216,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath BtTower;
 
     try {
-      BtTower = PathPlannerPath.fromPathFile("BottomToTower");
+      BtTower = PathPlannerPath.fromChoreoTrajectory("BottomToTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -225,7 +229,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath TpTower;
 
     try {
-      TpTower = PathPlannerPath.fromPathFile("TopToTower");
+      TpTower = PathPlannerPath.fromChoreoTrajectory("TopToTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -238,7 +242,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath ShooterBTower;
 
     try {
-      ShooterBTower = PathPlannerPath.fromPathFile("ShootBtoTower");
+      ShooterBTower = PathPlannerPath.fromChoreoTrajectory("ShootBtoTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
@@ -251,7 +255,7 @@ public class AutoSubsystem extends SubsystemBase {
     PathPlannerPath ShooterTTower;
 
     try {
-      ShooterTTower = PathPlannerPath.fromPathFile("ShootTtoTower");
+      ShooterTTower = PathPlannerPath.fromChoreoTrajectory("ShootTtoTower");
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
