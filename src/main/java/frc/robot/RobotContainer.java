@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -89,7 +90,7 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         // register named commands
-        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
+        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
         //register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
         NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
