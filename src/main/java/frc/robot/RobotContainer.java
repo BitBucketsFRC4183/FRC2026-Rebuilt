@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -65,10 +67,12 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -90,19 +94,25 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         // register named commands
-        autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
-        //register named commands
+        autoSubsystem =
+            new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
+        // register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand(
+            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
         NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem. midStartToShootOnly());
+        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
         NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
         NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
         NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
         NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
         //        NamedCommands.registerCommand("StartBottomToTower",
@@ -186,7 +196,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    //autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -237,11 +247,10 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-//    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController
-            .x()
-            .whileTrue(new AutoAimCommand(driveSubsystem,
-                    () -> driveSubsystem.getPose()));
+        .x()
+        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
     operatorController
@@ -258,15 +267,15 @@ public class RobotContainer {
                 intakeSubsystem));
 
     // Hopper reverse while right bumper held
-    operatorController.rightBumper().whileTrue(
+    operatorController
+        .rightBumper()
+        .whileTrue(
             Commands.startEnd(
-                    hopperSubsystem::runConveyorReverse,
-                    hopperSubsystem::stopConveyor,
-                    hopperSubsystem
-            )
-    );
+                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::stopConveyor,
+                hopperSubsystem));
 
-    //Intake Control Motors
+    // Intake Control Motors
 
     operatorController
         .leftTrigger()
@@ -285,6 +294,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+
+    return autoChooser.getSelected();
   }
 }

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstant;
@@ -56,8 +55,9 @@ public class VisionSubsystem extends SubsystemBase {
     }
     // add vision measurement
     if (visionFusedPose != null) {
-      //TODO constant tune
-      driveSubsystem.addVisionMeasurement(visionFusedPose, visionFusedTimestamps, VisionConstant.GlobalVisionMeasurementStdDevs);
+      // TODO constant tune
+      driveSubsystem.addVisionMeasurement(
+          visionFusedPose, visionFusedTimestamps, VisionConstant.GlobalVisionMeasurementStdDevs);
     }
     // log loggable inputs
     // Stringkey: the path, distinguish where the data wants to go to; custom naming
