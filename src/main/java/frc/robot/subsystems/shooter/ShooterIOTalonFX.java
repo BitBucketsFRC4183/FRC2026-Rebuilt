@@ -52,6 +52,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     finalFlywheel.getConfigurator().apply(motorConfig);
     finalFlywheel.getConfigurator().apply(currentConfig);
 
+    motorConfig.MotorOutput.Inverted =
+            !ShooterConstants.flywheelInverted
+                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
     finalFlywheel2.getConfigurator().apply(motorConfig);
     finalFlywheel2.getConfigurator().apply(currentConfig);
 
