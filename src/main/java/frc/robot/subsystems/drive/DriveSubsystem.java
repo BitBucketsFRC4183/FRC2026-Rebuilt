@@ -97,9 +97,8 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition()
       };
   public SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
-              Pose2d.kZero);
-  //sim
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  // sim
   public Supplier<Pose2d> poseSupplierForSim = () -> poseEstimator.getEstimatedPosition();
 
   public DriveSubsystem(
@@ -339,11 +338,15 @@ public class DriveSubsystem extends SubsystemBase {
   /** Adds a new timestamped vision measurement. */
 
   // *********
-  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3,N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
-  public final void setVisionMeasurementStdDevs(Matrix<N3,N1> visionMeasurementStdDevs){
+  public final void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
   }
 

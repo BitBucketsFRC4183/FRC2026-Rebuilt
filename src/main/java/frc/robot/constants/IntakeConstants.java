@@ -18,6 +18,7 @@ public final class IntakeConstants {
 
   // Pneumatics
   public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;
+  public static final int PNEUMATICS_HUB_CANID = 10;
 
   public static final int LEFT_PISTON_FORWARD_CHANNEL = 0;
   public static final int LEFT_PISTON_REVERSE_CHANNEL = 1;

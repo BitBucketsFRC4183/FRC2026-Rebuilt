@@ -8,6 +8,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.constants.IntakeConstants;
 
+import static frc.robot.constants.IntakeConstants.PNEUMATICS_HUB_CANID;
+
 public class IntakeIOTalonFX implements IntakeIO {
 
   private final TalonFX motor;
@@ -40,13 +42,13 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     // Pistons (mirrored / paired)
     leftPiston =
-        new DoubleSolenoid(
+        new DoubleSolenoid(PNEUMATICS_HUB_CANID,
             IntakeConstants.PNEUMATICS_TYPE,
             IntakeConstants.LEFT_PISTON_FORWARD_CHANNEL,
             IntakeConstants.LEFT_PISTON_REVERSE_CHANNEL);
 
     rightPiston =
-        new DoubleSolenoid(
+        new DoubleSolenoid(PNEUMATICS_HUB_CANID,
             IntakeConstants.PNEUMATICS_TYPE,
             IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
             IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);

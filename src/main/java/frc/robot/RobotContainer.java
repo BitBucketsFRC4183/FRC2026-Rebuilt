@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -90,18 +91,23 @@ public class RobotContainer {
 
         // register named commands
         autoSubsystem = new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem);
-        //register named commands
+        // register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand(
+            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
         NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem. midStartToShootOnly());
+        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
         NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
         NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
         NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
         NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
         //        NamedCommands.registerCommand("StartBottomToTower",
@@ -236,11 +242,10 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-//    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController
-            .x()
-            .whileTrue(new AutoAimCommand(driveSubsystem,
-                    () -> driveSubsystem.getPose()));
+        .x()
+        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
     operatorController
@@ -257,15 +262,15 @@ public class RobotContainer {
                 intakeSubsystem));
 
     // Hopper reverse while right bumper held
-    operatorController.rightBumper().whileTrue(
+    operatorController
+        .rightBumper()
+        .whileTrue(
             Commands.startEnd(
-                    hopperSubsystem::runConveyorReverse,
-                    hopperSubsystem::stopConveyor,
-                    hopperSubsystem
-            )
-    );
+                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::stopConveyor,
+                hopperSubsystem));
 
-    //Intake Control Motors
+    // Intake Control Motors
 
     operatorController
         .leftTrigger()
