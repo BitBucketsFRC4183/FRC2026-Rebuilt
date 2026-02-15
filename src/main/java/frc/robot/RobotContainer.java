@@ -248,27 +248,27 @@ public class RobotContainer {
                             () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
                             forearmSubsystem))
             .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
-
-    //    new Trigger(() -> operator.getLeftTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToGround()));
-    //    new Trigger(() -> operator.getRightTriggerAxis() > 0.1)
-    //        .whileTrue(Commands.run(() -> climberSubsystem.moveClimbToLevel1()));
-    // operator.a().onTrue(Commands.runOnce(() -> climberSubsystem.moveClimbToGround()));
+    
+    //climb command
     operatorController.x().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
     operatorController.a().onTrue(ClimberCommands.climberToGround(climberSubsystem));
 
+    //servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-    operatorController.povLeft().onTrue(ClimberCommands.baseServoDown(climberSubsystem));
-    operatorController.povRight().onTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    new Trigger(() ->
+            (operatorController.getRightY()) > 0.1
+                    && operatorController.back().getAsBoolean())
+            .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    new Trigger(() ->
+            (operatorController.getRightY()) < 0.1
+                    && operatorController.back().getAsBoolean())
+            .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
-    //    new Trigger(() -> Math.abs(operator.getLeftY()) > 0.1)
-    //        .whileTrue(
-    //            Commands.run(() -> climberSubsystem.setVoltageSupplied(operator.getLeftY() * 6))
-    //                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0)));
+    //manual climb command
     new Trigger(() ->
             Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.rightStick().getAsBoolean())
+                    && operatorController.back().getAsBoolean())
                     .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
                     )
             );
