@@ -325,10 +325,11 @@ public class RobotContainer {
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
 
     double distance = 5;
-    operatorController.rightTrigger().
-            onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-            .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
-            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+    operatorController
+        .rightTrigger()
+        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
     new Trigger(
             () ->
                 (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())

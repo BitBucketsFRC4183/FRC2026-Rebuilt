@@ -6,6 +6,8 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   ShooterIOTalonFX io;
 
+  private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
+
   private static double targetVelocity = 0;
 
   private double storedDistance = -1;
@@ -96,5 +98,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
     return io.speedReached(targetVelocity);
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(shooterInputs);
   }
 }

@@ -132,4 +132,8 @@ public class ClimberCommands {
           climberSubsystem.setBaseServoPosition(servoPosition);
         });
   }
+
+  public static Command climberToLevelOne(ClimberSubsystem climber) {
+    return Commands.none();
+  }
 }
