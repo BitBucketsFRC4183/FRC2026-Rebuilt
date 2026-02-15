@@ -236,87 +236,90 @@ public class RobotContainer {
    *
    * @return
    */
-  private Command configureButtonBindings() {
-    // Default command, normal field-relative driveSubsystem
-    driveSubsystem.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            driveSubsystem,
-            () -> -driverController.getLeftY(),
-            () -> -driverController.getLeftX(),
-            () -> -driverController.getRightX()));
+  private void configureButtonBindings() {
+      // Default command, normal field-relative driveSubsystem
+      driveSubsystem.setDefaultCommand(
+              DriveCommands.joystickDrive(
+                      driveSubsystem,
+                      () -> -driverController.getLeftY(),
+                      () -> -driverController.getLeftX(),
+                      () -> -driverController.getRightX()));
 
-    // Lock to 0° when A button is held
-    driverController
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                driveSubsystem,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> Rotation2d.kZero));
+      // Lock to 0° when A button is held
+      driverController
+              .a()
+              .whileTrue(
+                      DriveCommands.joystickDriveAtAngle(
+                              driveSubsystem,
+                              () -> -driverController.getLeftY(),
+                              () -> -driverController.getLeftX(),
+                              () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    driverController
-        .x()
-        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
+      // Switch to X pattern when X button is pressed
+      //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+      driverController
+              .x()
+              .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
-    // Left bumper Intake deployed and stowed
-    //intake Commands
-    operatorController
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
-                    intakeSubsystem.deploy();
-                  } else {
-                    intakeSubsystem.stow();
-                  }
-                },
-                intakeSubsystem));
-    operatorController
-            .leftTrigger()
-            .whileTrue(
-                    IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+      // Left bumper Intake deployed and stowed
+      //intake Commands
+      operatorController
+              .leftBumper()
+              .onTrue(
+                      Commands.runOnce(
+                              () -> {
+                                  if (intakeSubsystem.getState() == IntakeState.STOWED) {
+                                      intakeSubsystem.deploy();
+                                  } else {
+                                      intakeSubsystem.stow();
+                                  }
+                              },
+                              intakeSubsystem));
+      operatorController
+              .leftTrigger()
+              .whileTrue(
+                      IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
-    // Hopper reverse while right bumper held
-    operatorController
-        .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                hopperSubsystem::runConveyorReverse,
-                hopperSubsystem::stopConveyor,
-                hopperSubsystem));
+      // Hopper reverse while right bumper held
+      operatorController
+              .rightBumper()
+              .whileTrue(
+                      Commands.startEnd(
+                              hopperSubsystem::runConveyorReverse,
+                              hopperSubsystem::stopConveyor,
+                              hopperSubsystem));
 
-    //Intake Control Motors
+      //Intake Control Motors
 
-    //servo command
-    operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-    operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-    new Trigger(() ->
-            (operatorController.getRightY()) > 0.1
-                    && operatorController.back().getAsBoolean())
-            .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-    new Trigger(() ->
-            (operatorController.getRightY()) < 0.1
-                    && operatorController.back().getAsBoolean())
-            .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+      //servo command
+      operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+      operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+      new Trigger(() ->
+              (operatorController.getRightY()) > 0.1
+                      && operatorController.back().getAsBoolean())
+              .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+      new Trigger(() ->
+              (operatorController.getRightY()) < 0.1
+                      && operatorController.back().getAsBoolean())
+              .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
-    //manual climb command
-    new Trigger(() ->
-            Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.back().getAsBoolean())
-                    .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
-                    )
-            );
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+      //manual climb command
+      new Trigger(() ->
+              Math.abs(operatorController.getLeftY()) > 0.1
+                      && operatorController.back().getAsBoolean())
+              .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY
+                      )
+              );
   }
-}
+
+
+      /**
+       * Use this to pass the autonomous command to the main {@link Robot} class.
+       *
+       * @return the command to run in autonomous
+       */
+      public Command getAutonomousCommand () {
+          return autoChooser.getSelected();
+
+      }
+  }
