@@ -253,6 +253,7 @@ public class RobotContainer {
         .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
+    //intake Commands
     operatorController
         .leftBumper()
         .onTrue(
@@ -265,6 +266,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
+    operatorController
+            .leftTrigger()
+            .whileTrue(
+                    IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
     // Hopper reverse while right bumper held
     operatorController
@@ -279,10 +284,6 @@ public class RobotContainer {
     operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem));
     operatorController.a().onTrue(ClimberCommands.decreaseClimberLength(climberSubsystem));
 
-    operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
     //servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
