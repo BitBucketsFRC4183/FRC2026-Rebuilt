@@ -77,7 +77,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command climb() {
-    return ClimberCommands.climberToLevelOne(climber)
+    return ClimberCommands.increaseClimberLength(climber)
         .beforeStarting(() -> System.out.println("Climbing!"));
   }
 
