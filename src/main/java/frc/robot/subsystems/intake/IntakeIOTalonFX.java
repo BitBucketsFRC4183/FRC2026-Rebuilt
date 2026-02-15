@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.constants.IntakeConstants.PNEUMATICS_HUB_CANID;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -7,8 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.constants.IntakeConstants;
-
-import static frc.robot.constants.IntakeConstants.PNEUMATICS_HUB_CANID;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
@@ -42,13 +42,15 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     // Pistons (mirrored / paired)
     leftPiston =
-        new DoubleSolenoid(PNEUMATICS_HUB_CANID,
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
             IntakeConstants.PNEUMATICS_TYPE,
             IntakeConstants.LEFT_PISTON_FORWARD_CHANNEL,
             IntakeConstants.LEFT_PISTON_REVERSE_CHANNEL);
 
     rightPiston =
-        new DoubleSolenoid(PNEUMATICS_HUB_CANID,
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
             IntakeConstants.PNEUMATICS_TYPE,
             IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
             IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);
