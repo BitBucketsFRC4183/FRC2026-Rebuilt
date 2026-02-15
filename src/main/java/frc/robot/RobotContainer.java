@@ -21,10 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoAimCommand;
-import frc.robot.commands.ClimberCommands;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IntakeCommands;
+import frc.robot.commands.*;
 import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
@@ -334,6 +331,12 @@ public class RobotContainer {
     // servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+
+    double distance = 5;
+    operatorController.rightTrigger().
+            onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+            .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
     new Trigger(
             () ->
                 (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
