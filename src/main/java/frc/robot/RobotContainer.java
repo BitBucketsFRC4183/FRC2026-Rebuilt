@@ -92,21 +92,9 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         // register named commands
-        autoSubsystem =
-            new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
+
         // register named commands
-        NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-        NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-        NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-        NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
-        NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-        NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
+
 
         //        NamedCommands.registerCommand("StartBottomToTower",
         // autoSubystem.StartBottomToTower());
@@ -188,7 +176,26 @@ public class RobotContainer {
         shooterSim = new ShooterSim();
         break;
     }
+    autoSubsystem =
+            new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
 
+    NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    NamedCommands.registerCommand(
+            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
+    NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
+    NamedCommands.registerCommand(
+            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    NamedCommands.registerCommand(
+            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+    NamedCommands.registerCommand(
+            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+    NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    NamedCommands.registerCommand(
+            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // building autochooser
@@ -197,32 +204,20 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    //for registered commands
+    // for registered commands
+    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
     autoChooser.addOption(
-            "StartBottomToTower", autoSubsystem.StartBottomToTower());
-    autoChooser.addOption(
-            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption(
-            "topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption(
-            "midStartToShootOnly",autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption(
-            "StartTopToTower",autoSubsystem.StartTopToTower());
-    autoChooser.addOption(
-            "StartMidToTower",autoSubsystem.StartMidToTower());
-    autoChooser.addOption(
-            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    autoChooser.addOption(
-            "StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    autoChooser.addOption(
-            "StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
-
+        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+    autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
     autoChooser.addOption(
