@@ -49,7 +49,7 @@ public class ModuleIOTalonFX implements ModuleIO {
       constants;
 
   // Hardware objects
-  private final TalonFX driveTalon;
+  public final TalonFX driveTalon;
   private final TalonFX turnTalon;
   private final CANcoder cancoder;
 

@@ -10,9 +10,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-  private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
-  private final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
-  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
+  public final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
+  public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
+  public final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {

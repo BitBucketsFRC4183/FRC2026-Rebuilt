@@ -12,7 +12,7 @@ import frc.robot.constants.IntakeConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
-  private final TalonFX motor;
+  public final TalonFX intakeMotor;
 
   // Pneumatics (always actuated together)
   private final DoubleSolenoid leftPiston;
@@ -21,7 +21,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
 
   public IntakeIOTalonFX() {
-    motor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+    intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 
     // Motor output config
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
@@ -37,8 +37,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     currentConfigs.StatorCurrentLimitEnable = true;
     currentConfigs.StatorCurrentLimit = IntakeConstants.STATOR_CURRENT_LIMIT;
 
-    motor.getConfigurator().apply(outputConfigs);
-    motor.getConfigurator().apply(currentConfigs);
+    intakeMotor.getConfigurator().apply(outputConfigs);
+    intakeMotor.getConfigurator().apply(currentConfigs);
 
     // Pistons (mirrored / paired)
     leftPiston =
@@ -58,8 +58,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.motorVelocityRPM = motor.getVelocity().getValueAsDouble() * 60.0;
-    inputs.motorCurrentAmps = motor.getSupplyCurrent().getValueAsDouble();
+    inputs.motorVelocityRPM = intakeMotor.getVelocity().getValueAsDouble() * 60.0;
+    inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
 
     // If either piston disagrees, treat as NOT extended (safe default)
     boolean extended =
@@ -72,7 +72,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setMotorOutput(double percent) {
-    motor.setControl(dutyCycleRequest.withOutput(percent));
+    intakeMotor.setControl(dutyCycleRequest.withOutput(percent));
   }
 
   @Override

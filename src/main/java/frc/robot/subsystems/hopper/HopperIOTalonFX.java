@@ -9,7 +9,7 @@ import frc.robot.constants.HopperConstants;
 
 public class HopperIOTalonFX implements HopperIO {
 
-  private final TalonFX conveyorMotor;
+  public final TalonFX conveyorMotor;
   private final DutyCycleOut percentRequest = new DutyCycleOut(0);
 
   public HopperIOTalonFX() {
