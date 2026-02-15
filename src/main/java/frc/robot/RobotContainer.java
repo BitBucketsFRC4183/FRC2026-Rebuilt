@@ -93,16 +93,21 @@ public class RobotContainer {
             new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
         // register named commands
         NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
-        NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+        NamedCommands.registerCommand(
+            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
         NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
         NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
         NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
         NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
-        NamedCommands.registerCommand("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-        NamedCommands.registerCommand("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-        NamedCommands.registerCommand("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+        NamedCommands.registerCommand(
+            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
         NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-        NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+        NamedCommands.registerCommand(
+            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
         NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
         //        NamedCommands.registerCommand("StartBottomToTower",
@@ -194,32 +199,20 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    //for registered commands
+    // for registered commands
+    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
     autoChooser.addOption(
-            "StartBottomToTower", autoSubsystem.StartBottomToTower());
-    autoChooser.addOption(
-            "bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption(
-            "topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption(
-            "midStartToShootOnly",autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption(
-            "StartTopToTower",autoSubsystem.StartTopToTower());
-    autoChooser.addOption(
-            "StartMidToTower",autoSubsystem.StartMidToTower());
-    autoChooser.addOption(
-            "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    autoChooser.addOption(
-            "StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    autoChooser.addOption(
-            "StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    autoChooser.addOption(
-            "StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
-
+        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+    autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -312,10 +305,11 @@ public class RobotContainer {
     operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
 
     double distance = 5;
-    operatorController.rightTrigger().
-            onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-            .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
-            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+    operatorController
+        .rightTrigger()
+        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
     new Trigger(
             () ->
                 (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())

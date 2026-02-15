@@ -7,7 +7,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -106,18 +105,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    SmartDashboard.putNumber(
-        "Flywheel Motor 1 Speed", finalFlywheel.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 1 Voltage", finalFlywheel.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Intermediate Motor Speed", intermediateMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Intermediate Motor Voltage", intermediateMotor.getMotorVoltage().getValueAsDouble());
+    inputs.flywheelCurrent = finalFlywheel.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage = finalFlywheel.getMotorVoltage().getValueAsDouble();
+    inputs.flywheelCurrent2 = finalFlywheel2.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage2 = finalFlywheel2.getVelocity().getValueAsDouble();
+    inputs.intermediateCurrent = intermediateMotor.getStatorCurrent().getValueAsDouble();
+    inputs.intermediateVoltage = intermediateMotor.getMotorVoltage().getValueAsDouble();
   }
 }
 
