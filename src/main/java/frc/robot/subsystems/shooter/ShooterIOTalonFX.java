@@ -13,7 +13,7 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
   private final TalonFX finalFlywheel2 = new TalonFX(ShooterConstants.flywheelID2);
-  //  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
+  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
@@ -36,12 +36,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // PID and FF Configs
     Slot0Configs slot0 = motorConfig.Slot0;
-    slot0.kP = ShooterConstants.kP;
-    slot0.kI = ShooterConstants.kI;
-    slot0.kD = ShooterConstants.kD;
-    slot0.kA = ShooterConstants.kA;
-    slot0.kV = ShooterConstants.kV;
-    slot0.kS = ShooterConstants.kS;
+    slot0.kP = ShooterConstants.flywheel_kP;
+    slot0.kI = ShooterConstants.flywheel_kI;
+    slot0.kD = ShooterConstants.flywheel_kD;
+    slot0.kA = ShooterConstants.flywheel_kA;
+    slot0.kV = ShooterConstants.flywheel_kV;
+    slot0.kS = ShooterConstants.flywheel_kS;
 
     // Current Limits
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
@@ -56,15 +56,23 @@ public class ShooterIOTalonFX implements ShooterIO {
     finalFlywheel2.getConfigurator().apply(motorConfig);
     finalFlywheel2.getConfigurator().apply(currentConfig);
 
+    // Intermediate Motor Configs
     motorConfig.MotorOutput.Inverted =
-        ShooterConstants.flywheelInverted
+        ShooterConstants.intermediateInverted
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    // Intermediate Motor Configs
+    slot0 = motorConfig.Slot0;
+    slot0.kP = ShooterConstants.intermediate_kP;
+    slot0.kI = ShooterConstants.intermediate_kI;
+    slot0.kD = ShooterConstants.intermediate_kD;
+    slot0.kA = ShooterConstants.intermediate_kA;
+    slot0.kV = ShooterConstants.intermediate_kV;
+    slot0.kS = ShooterConstants.intermediate_kS;
+
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    //    intermediateMotor.getConfigurator().apply(motorConfig);
-    //    intermediateMotor.getConfigurator().apply(currentConfig);
+    intermediateMotor.getConfigurator().apply(motorConfig);
+    intermediateMotor.getConfigurator().apply(currentConfig);
   }
 
   @Override
@@ -76,14 +84,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void startIntermediateMotors() {
-    //    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
+    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
     finalFlywheel.stopMotor();
     finalFlywheel2.stopMotor();
-    // intermediateMotor.stopMotor();
+    intermediateMotor.stopMotor();
   }
 
   @Override
@@ -106,10 +114,10 @@ public class ShooterIOTalonFX implements ShooterIO {
         "Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber(
         "Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
-    // SmartDashboard.putNumber("Intermediate Motor Speed",
-    // intermediateMotor.getVelocity().getValueAsDouble());
-    // SmartDashboard.putNumber("Intermediate Motor Voltage",
-    // intermediateMotor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber("Intermediate Motor Speed",
+            intermediateMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Intermediate Motor Voltage",
+            intermediateMotor.getMotorVoltage().getValueAsDouble());
   }
 }
 
