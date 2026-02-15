@@ -248,10 +248,10 @@ public class RobotContainer {
                             () -> forearmSubsystem.runIntake(ForearmConstants.INTAKE_IN_PERCENT),
                             forearmSubsystem))
             .onFalse(Commands.runOnce(forearmSubsystem::stopIntake, forearmSubsystem));
-    
+
     //climb command
-    operatorController.x().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
-    operatorController.a().onTrue(ClimberCommands.climberToGround(climberSubsystem));
+    operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem));
+    operatorController.a().onTrue(ClimberCommands.decreaseClimberLength(climberSubsystem));
 
     //servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));

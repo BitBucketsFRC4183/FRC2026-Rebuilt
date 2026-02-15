@@ -82,4 +82,12 @@ public class ClimberSubsystem extends SubsystemBase {
     baseServo1.set(servoPosition);
     baseServo2.set(servoPosition);
   }
+  public double getClimbServoPosition(){
+    double climberServo1Position =climbServo1.getPosition();
+    return climberServo1Position;
+  }
+  public double getBaseServoPosition(){
+    double baseServo1Position =climbServo1.getPosition();
+    return baseServo1Position;
+  }
 }

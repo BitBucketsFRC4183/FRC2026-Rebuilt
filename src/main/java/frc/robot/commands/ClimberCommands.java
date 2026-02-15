@@ -41,7 +41,7 @@ public class ClimberCommands {
                 .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
     }
 
-    public static Command climberToLevelOne(ClimberSubsystem climberSubsystem) {
+    public static Command increaseClimberLength(ClimberSubsystem climberSubsystem) {
 
         return Commands.run(
                         () -> {
@@ -67,10 +67,12 @@ public class ClimberCommands {
                             climberSubsystem.setVoltageSupplied(scale);
                         },
                         climberSubsystem)
-                .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
+                .finallyDo(() -> {
+                    climberSubsystem.setVoltageSupplied(0);
+                    climberSubsystem.setClimbServoPosition(1);
+                });
     }
-
-    public static Command climberToGround(ClimberSubsystem climberSubsystem) {
+    public static Command decreaseClimberLength(ClimberSubsystem climberSubsystem) {
 
         return Commands.run(
                         () -> {
