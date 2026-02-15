@@ -176,7 +176,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        climberIO = new ClimberIOSim();
+        climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
 
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
@@ -308,7 +308,28 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // Intake Control Motors
+//Climber Setpoint Commands
+    operatorController.a().onTrue(ClimberCommands.baseServoDown(climberSubsystem)
+            .andThen(ClimberCommands.increaseClimberLength(climberSubsystem)
+                    .andThen(ClimberCommands.climberServoDown(climberSubsystem))));
+    operatorController.x().onTrue(ClimberCommands.increaseClimberLength(climberSubsystem)
+            .andThen(ClimberCommands.climberServoUp(climberSubsystem)
+                    .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem).
+                            andThen(ClimberCommands.baseServoUp(climberSubsystem)))));
+    operatorController.y().onTrue(ClimberCommands.climberServoDown(climberSubsystem)
+            .andThen(ClimberCommands.increaseClimberLength(climberSubsystem)
+                    .andThen(ClimberCommands.climberServoUp(climberSubsystem)
+                            .andThen(ClimberCommands.baseServoDown(climberSubsystem)
+                                    .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)
+                                            .andThen(ClimberCommands.baseServoUp(climberSubsystem)))))));
+    operatorController.b().onTrue(ClimberCommands.climberServoDown(climberSubsystem)
+            .andThen(ClimberCommands.increaseClimberLength(climberSubsystem)
+                    .andThen(ClimberCommands.climberServoUp(climberSubsystem)
+                            .andThen(ClimberCommands.baseServoDown(climberSubsystem)
+                                    .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)
+                                            .andThen(ClimberCommands.baseServoUp(climberSubsystem)))))));
+
+
 
     // servo command
     operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));

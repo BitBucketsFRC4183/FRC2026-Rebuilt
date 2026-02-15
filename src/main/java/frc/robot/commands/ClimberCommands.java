@@ -70,7 +70,6 @@ public class ClimberCommands {
         .finallyDo(
             () -> {
               climberSubsystem.setVoltageSupplied(0);
-              climberSubsystem.setClimbServoPosition(1);
             });
   }
 
