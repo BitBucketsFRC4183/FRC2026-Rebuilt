@@ -26,7 +26,7 @@ public class ShooterCommands {
             .andThen(
                 Commands.parallel(
                     Commands.run(shooterSubsystem::setTargetVelocity),
-                    Commands.run(shooterSubsystem::startIntermediateMotors),
+                    Commands.run(shooterSubsystem::startFeeding),
                     Commands.run(hopperSubsystem::runConveyorForward))));
   }
 

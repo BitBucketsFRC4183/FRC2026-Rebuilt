@@ -15,7 +15,7 @@ public interface ShooterIO {
 
   void setSpeed(double targetSpeed);
 
-  void startIntermediateMotors();
+  void startFeeding();
 
   void stopMotor();
 

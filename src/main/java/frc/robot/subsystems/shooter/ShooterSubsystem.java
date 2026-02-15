@@ -84,8 +84,8 @@ public class ShooterSubsystem extends SubsystemBase {
     io.stopMotor();
   }
 
-  public void startIntermediateMotors() {
-    io.startIntermediateMotors();
+  public void startFeeding() {
+    io.startFeeding();
   }
 
   // insert code for setting hood angle stuff

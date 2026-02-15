@@ -11,19 +11,11 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
-  private final TalonFX finalFlywheel2 = new TalonFX(ShooterConstants.flywheelID2);
+  private final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
   private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
-    Orchestra m_orchestra = new Orchestra();
-
-    m_orchestra.addInstrument(finalFlywheel);
-    m_orchestra.addInstrument(finalFlywheel2);
-
-    m_orchestra.loadMusic("music/blackhole.chrp");
-    m_orchestra.play();
-
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     motorConfig.MotorOutput.Inverted =
         ShooterConstants.flywheelInverted
@@ -57,8 +49,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                     ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
                     : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    finalFlywheel2.getConfigurator().apply(motorConfig);
-    finalFlywheel2.getConfigurator().apply(currentConfig);
+    intakeMotor.getConfigurator().apply(motorConfig);
+    intakeMotor.getConfigurator().apply(currentConfig);
 
     // Intermediate Motor Configs
     motorConfig.MotorOutput.Inverted =
@@ -81,39 +73,35 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setSpeed(double targetSpeed) {
-    // Please be the same radius
     finalFlywheel.setControl(target.withVelocity(targetSpeed));
-    finalFlywheel2.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
-  public void startIntermediateMotors() {
+  public void startFeeding() {
+    intakeMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
     intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
     finalFlywheel.stopMotor();
-    finalFlywheel2.stopMotor();
+    intakeMotor.stopMotor();
     intermediateMotor.stopMotor();
   }
 
   @Override
   public boolean speedReached(double targetSpeed) {
     double currentTopFlywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
-    double currentBottomFlywheelVelocity = finalFlywheel2.getVelocity().getValueAsDouble();
     return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance
-        && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.flywheelCurrent = finalFlywheel.getStatorCurrent().getValueAsDouble();
     inputs.flywheelVoltage = finalFlywheel.getMotorVoltage().getValueAsDouble();
-    inputs.flywheelCurrent2 = finalFlywheel2.getStatorCurrent().getValueAsDouble();
-    inputs.flywheelVoltage2 = finalFlywheel2.getVelocity().getValueAsDouble();
+    inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage2 = intakeMotor.getVelocity().getValueAsDouble();
     inputs.intermediateCurrent = intermediateMotor.getStatorCurrent().getValueAsDouble();
     inputs.intermediateVoltage = intermediateMotor.getMotorVoltage().getValueAsDouble();
   }

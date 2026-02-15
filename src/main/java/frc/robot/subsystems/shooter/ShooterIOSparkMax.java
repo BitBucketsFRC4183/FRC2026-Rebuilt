@@ -39,7 +39,7 @@ public class ShooterIOSparkMax implements ShooterIO {
   }
 
   @Override
-  public void startIntermediateMotors() {
+  public void startFeeding() {
     //    intermediateMotors_controller.setSetpoint(
     //        ShooterConstants.intermediateSpeed, SparkBase.ControlType.kVelocity);
     //    intermediateMotors.set(0.5);
