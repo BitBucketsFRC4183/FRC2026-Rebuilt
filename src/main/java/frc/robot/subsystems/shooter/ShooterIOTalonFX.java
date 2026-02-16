@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.controller.BangBangController;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -13,6 +14,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
   public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
   private final VelocityVoltage target = new VelocityVoltage(0);
+
+  private final BangBangController flywheelController = new BangBangController();
 
   public ShooterIOTalonFX() {
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
