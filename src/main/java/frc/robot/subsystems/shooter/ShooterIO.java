@@ -7,10 +7,10 @@ public interface ShooterIO {
   class ShooterIOInputs {
     public double flywheelVoltage;
     public double flywheelVoltage2;
-    public double intermediateVoltage;
+    public double intakeVoltage;
     public double flywheelCurrent;
     public double flywheelCurrent2;
-    public double intermediateCurrent;
+    public double intakeCurrent;
   }
 
   void setSpeed(double targetSpeed);

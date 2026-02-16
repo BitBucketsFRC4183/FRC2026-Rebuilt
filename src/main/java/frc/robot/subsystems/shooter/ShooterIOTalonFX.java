@@ -12,7 +12,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   public final TalonFX flywheelMotor = new TalonFX(ShooterConstants.flywheelID);
   public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
   public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
-  public final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
@@ -68,10 +67,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     slot0.kA = ShooterConstants.intermediate_kA;
     slot0.kV = ShooterConstants.intermediate_kV;
     slot0.kS = ShooterConstants.intermediate_kS;
-
-    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    intermediateMotor.getConfigurator().apply(motorConfig);
-    intermediateMotor.getConfigurator().apply(currentConfig);
   }
 
   @Override
@@ -82,14 +77,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void startFeeding() {
     intakeMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
-    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
     flywheelMotor.stopMotor();
     intakeMotor.stopMotor();
-    intermediateMotor.stopMotor();
   }
 
   @Override
@@ -107,9 +100,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.flywheelCurrent = flywheelMotor.getStatorCurrent().getValueAsDouble();
     inputs.flywheelVoltage = flywheelMotor.getMotorVoltage().getValueAsDouble();
     inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();
-    inputs.flywheelVoltage2 = intakeMotor.getVelocity().getValueAsDouble();
-    inputs.intermediateCurrent = intermediateMotor.getStatorCurrent().getValueAsDouble();
-    inputs.intermediateVoltage = intermediateMotor.getMotorVoltage().getValueAsDouble();
+    inputs.flywheelVoltage2 = intakeMotor.getMotorVoltage().getValueAsDouble();
+    inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
+    inputs.intakeVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
   }
 }
 
