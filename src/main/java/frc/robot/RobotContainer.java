@@ -297,64 +297,23 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // Climber Setpoint Commands
-    operatorController
-        .a()
-        .onTrue(
-            ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(
-                    ClimberCommands.increaseClimberLength(climberSubsystem)
-                        .andThen(ClimberCommands.climberServoDown(climberSubsystem))));
-    operatorController
-        .x()
-        .onTrue(
-            ClimberCommands.increaseClimberLength(climberSubsystem)
-                .andThen(
-                    ClimberCommands.climberServoUp(climberSubsystem)
-                        .andThen(
-                            ClimberCommands.decreaseClimberLength(climberSubsystem)
-                                .andThen(ClimberCommands.baseServoUp(climberSubsystem)))));
-    operatorController
-        .y()
-        .onTrue(
-            ClimberCommands.climberServoDown(climberSubsystem)
-                .andThen(
-                    ClimberCommands.increaseClimberLength(climberSubsystem)
-                        .andThen(
-                            ClimberCommands.climberServoUp(climberSubsystem)
-                                .andThen(
-                                    ClimberCommands.baseServoDown(climberSubsystem)
-                                        .andThen(
-                                            ClimberCommands.decreaseClimberLength(climberSubsystem)
-                                                .andThen(
-                                                    ClimberCommands.baseServoUp(
-                                                        climberSubsystem)))))));
-    operatorController
-        .b()
-        .onTrue(
-            ClimberCommands.climberServoDown(climberSubsystem)
-                .andThen(
-                    ClimberCommands.increaseClimberLength(climberSubsystem)
-                        .andThen(
-                            ClimberCommands.climberServoUp(climberSubsystem)
-                                .andThen(
-                                    ClimberCommands.baseServoDown(climberSubsystem)
-                                        .andThen(
-                                            ClimberCommands.decreaseClimberLength(climberSubsystem)
-                                                .andThen(
-                                                    ClimberCommands.baseServoUp(
-                                                        climberSubsystem)))))));
-
-    // servo command
-    operatorController.povUp().onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-    operatorController.povDown().onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-
+//shooter Commands
     double distance = 5;
     operatorController
-        .rightTrigger()
-        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
-        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
-        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+            .rightTrigger()
+            .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+            .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
+    // Climber Setpoint Commands
+    operatorController.a().and(operatorController.back()).onTrue(ClimberCommands.climbToGround(climberSubsystem));
+    operatorController.x().and(operatorController.back()).onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+    operatorController.y().and(operatorController.back()).onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+    operatorController.b().and(operatorController.back()).onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+
+    // servo command
+    operatorController.povUp().and(operatorController.back()).onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    operatorController.povDown().and(operatorController.back()).onTrue(ClimberCommands.climberServoDown(climberSubsystem));
     new Trigger(
             () ->
                 (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
