@@ -26,15 +26,15 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double shooterHeight = 21.5 / 39.37;
 
   // Assuming constant hood angle
-  public static final double shooterAngle = 67;
+  public static final double shooterAngle = 72.0;
 
   // Allowed RPS offset before shooting
-  public static final double tolerance = 5.0;
+  public static final double tolerance = 2.0;
 
   // PID Constants for flywheel
   public static final double flywheel_kP = 0.12;
-  public static final double flywheel_kI = 0;
-  public static final double flywheel_kD = 0;
+  public static final double flywheel_kI = 0.0;
+  public static final double flywheel_kD = 0.0;
 
   // FF for flywheel
   public static final double flywheel_kS = 0.2;
@@ -43,8 +43,8 @@ public final class ShooterConstants extends SubsystemBase {
 
   // PID Constants for Intermediate Motor
   public static final double intermediate_kP = 0.12;
-  public static final double intermediate_kI = 0;
-  public static final double intermediate_kD = 0;
+  public static final double intermediate_kI = 0.0;
+  public static final double intermediate_kD = 0.0;
 
   // FF for Intermediate Motor
   public static final double intermediate_kS = 0.2;

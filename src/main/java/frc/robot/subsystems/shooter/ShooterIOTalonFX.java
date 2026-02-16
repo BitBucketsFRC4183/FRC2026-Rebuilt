@@ -94,9 +94,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public boolean speedReached(double targetSpeed) {
-    double currentTopFlywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
-    return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+    double currentFlywheelMotorVelocity = flywheelMotor.getVelocity().getValueAsDouble();
+    double currentFlywheelMotorVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
+    return currentFlywheelMotorVelocity < targetSpeed + ShooterConstants.tolerance
+        && currentFlywheelMotorVelocity > targetSpeed - ShooterConstants.tolerance
+            && currentFlywheelMotorVelocity2 < targetSpeed + ShooterConstants.tolerance
+            && currentFlywheelMotorVelocity2 > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
