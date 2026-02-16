@@ -14,7 +14,7 @@ public class DynamicPowerDistribution extends SubsystemBase {
     private final int voltageMax = 8;
 
     public void periodic(ShooterIOTalonFX shooter, HopperIOTalonFX hopper, IntakeIOTalonFX intake, ModuleIOTalonFX drive) {
-        if(shooter.flywheel.getMotorVoltage().getValueAsDouble() > 0
+        if(shooter.flywheelMotor.getMotorVoltage().getValueAsDouble() > 0
                 || hopper.conveyorMotor.getMotorVoltage().getValueAsDouble() > 0
                 || intake.intakeMotor.getMotorVoltage().getValueAsDouble() > 0
 

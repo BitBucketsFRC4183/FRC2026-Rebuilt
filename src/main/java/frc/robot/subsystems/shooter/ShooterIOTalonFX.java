@@ -9,7 +9,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-  public final TalonFX flywheel = new TalonFX(ShooterConstants.flywheelID);
+  public final TalonFX flywheelMotor = new TalonFX(ShooterConstants.flywheelID);
+  public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
   public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
   public final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
   private final VelocityVoltage target = new VelocityVoltage(0);
@@ -40,8 +41,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     currentConfig.StatorCurrentLimitEnable = true;
     currentConfig.StatorCurrentLimit = 40;
 
-    flywheel.getConfigurator().apply(motorConfig);
-    flywheel.getConfigurator().apply(currentConfig);
+    flywheelMotor.getConfigurator().apply(motorConfig);
+    flywheelMotor.getConfigurator().apply(currentConfig);
+
+    flywheelMotor2.getConfigurator().apply(motorConfig);
+    flywheelMotor2.getConfigurator().apply(motorConfig);
 
     motorConfig.MotorOutput.Inverted =
             !ShooterConstants.flywheelInverted
@@ -72,7 +76,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setSpeed(double targetSpeed) {
-    flywheel.setControl(target.withVelocity(targetSpeed));
+    flywheelMotor.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
@@ -83,22 +87,22 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void stopMotor() {
-    flywheel.stopMotor();
+    flywheelMotor.stopMotor();
     intakeMotor.stopMotor();
     intermediateMotor.stopMotor();
   }
 
   @Override
   public boolean speedReached(double targetSpeed) {
-    double currentTopFlywheelVelocity = flywheel.getVelocity().getValueAsDouble();
+    double currentTopFlywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
     return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
         && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.flywheelCurrent = flywheel.getStatorCurrent().getValueAsDouble();
-    inputs.flywheelVoltage = flywheel.getMotorVoltage().getValueAsDouble();
+    inputs.flywheelCurrent = flywheelMotor.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage = flywheelMotor.getMotorVoltage().getValueAsDouble();
     inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();
     inputs.flywheelVoltage2 = intakeMotor.getVelocity().getValueAsDouble();
     inputs.intermediateCurrent = intermediateMotor.getStatorCurrent().getValueAsDouble();
