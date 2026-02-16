@@ -53,20 +53,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     intakeMotor.getConfigurator().apply(motorConfig);
     intakeMotor.getConfigurator().apply(currentConfig);
-
-    // Intermediate Motor Configs
-    motorConfig.MotorOutput.Inverted =
-        ShooterConstants.intermediateInverted
-            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-
-    slot0 = motorConfig.Slot0;
-    slot0.kP = ShooterConstants.intermediate_kP;
-    slot0.kI = ShooterConstants.intermediate_kI;
-    slot0.kD = ShooterConstants.intermediate_kD;
-    slot0.kA = ShooterConstants.intermediate_kA;
-    slot0.kV = ShooterConstants.intermediate_kV;
-    slot0.kS = ShooterConstants.intermediate_kS;
   }
 
   @Override

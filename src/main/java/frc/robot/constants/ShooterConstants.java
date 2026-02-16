@@ -31,24 +31,14 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double tolerance = 2.0;
 
   // PID Constants for flywheel
-  public static final double flywheel_kP = 0.12;
+  public static final double flywheel_kP = 0.2;
   public static final double flywheel_kI = 0.0;
   public static final double flywheel_kD = 0.0;
 
   // FF for flywheel
   public static final double flywheel_kS = 0.2;
-  public static final double flywheel_kV = 0.12;
+  public static final double flywheel_kV = 0.2;
   public static final double flywheel_kA = 0.1;
-
-  // PID Constants for Intermediate Motor
-  public static final double intermediate_kP = 0.12;
-  public static final double intermediate_kI = 0.0;
-  public static final double intermediate_kD = 0.0;
-
-  // FF for Intermediate Motor
-  public static final double intermediate_kS = 0.2;
-  public static final double intermediate_kV = 0.12;
-  public static final double intermediate_kA = 0.1;
 
   // hood constants lol
   public static final double minHoodAngle = 10.0;
