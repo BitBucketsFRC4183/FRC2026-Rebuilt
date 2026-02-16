@@ -5,6 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   class ShooterIOInputs {
+    public double targetVelocity;
+    public double flywheelVelocity;
     public double flywheelVoltage;
     public double flywheelVoltage2;
     public double intakeVoltage;
