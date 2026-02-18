@@ -14,9 +14,6 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 
 public class AutoSubsystem extends SubsystemBase {
 
@@ -35,6 +32,8 @@ public class AutoSubsystem extends SubsystemBase {
     this.shooter = shooter;
     this.climber = climber;
     this.hopper = hopper;
+    // this.autoFactory = new AutoFactory(drive::getPose, drive::setPose,
+    // drive::followTrajectorySample, false, drive, trajectoryLogger())
     registerNamedCommands();
   }
 
@@ -50,20 +49,6 @@ public class AutoSubsystem extends SubsystemBase {
 
     NamedCommands.registerCommand("Climb", climb());
   }
-
-  //     AutoBuilder.configureHolonomic(
-  //        drive::getPose,
-  //         drive::resetPose,
-  //        drive::getChassisSpeeds,
-  //        drive::drive,
-  //        new HolonomicPathFollowerConfig(
-  //            config.getMaxLinearVelocity(), config.getDriveBaseRadius(), new
-  // ReplanningConfig()),
-  //       () ->
-  //           DriverStation.getAlliance()
-  //               .map(alliance -> alliance == DriverStation.Alliance.Red)
-  //               .orElse(false),
-  //       drive);
 
   /** Stops drivetrain */
   // public Command stop() {
@@ -105,6 +90,7 @@ public class AutoSubsystem extends SubsystemBase {
     // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path1);
   }
+
   public Command goToptoShooterPs() {
     PathPlannerPath path2;
 
@@ -266,6 +252,29 @@ public class AutoSubsystem extends SubsystemBase {
 
   // AUTOROUTINES
 
+  /*public Command bottomStartToShootOnly() {
+    return Commands.sequence(
+        // FIRST: Reset robot pose to the path's starting position
+        new InstantCommand(
+            () -> {
+              try {
+                // Load the path to get its starting pose
+                PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory("BottomStartToShootB");
+                Pose2d startPose = path.getPathPoses().get(0);
+                drive.setPose(startPose);
+                System.out.println("Reset pose to: " + startPose);
+              } catch (Exception e) {
+                System.err.println("Failed to reset pose: " + e.getMessage());
+              }
+            }),
+        new InstantCommand(
+            () -> System.out.println("Moving from bottom position to Bottom shooting position")),
+        goBottomToShootPs(),
+        new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
+        shoot(),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  } */
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
         new InstantCommand(
