@@ -12,13 +12,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX climbMotor;
 
   private final PositionVoltage climbRequest = new PositionVoltage(0);
+  TalonFXConfiguration climbConfig = new TalonFXConfiguration();
 
   public ClimberIOTalonFX() {
 
     // Arm X60 motor
     climbMotor = new TalonFX(ClimberConstants.ARM_MOTOR_CAN_ID, ClimberConstants.climberBus);
 
-    TalonFXConfiguration climbConfig = new TalonFXConfiguration();
     climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 40;
     climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -37,11 +37,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kV = ClimberConstants.ARM_kV;
     climbConfig.Slot0.kS = ClimberConstants.ARM_kS;
 
-    if (climbMotor.getMotorVoltage().getValueAsDouble() < 0){
-      climbConfig.Slot0.kG = 100;
-    } else if (climbMotor.getMotorVoltage().getValueAsDouble() > 0){
-      climbConfig.Slot0.kG = ClimberConstants.ARM_kG;
-    }
 
     climbMotor.getConfigurator().apply(climbConfig);
   }
@@ -54,6 +49,12 @@ public class ClimberIOTalonFX implements ClimberIO {
             * 2
             * Math.PI;
     inputs.currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+    if (climbMotor.getMotorVoltage().getValueAsDouble() < 0) {
+      climbConfig.Slot0.kG = 100;
+    } else if (climbMotor.getMotorVoltage().getValueAsDouble() > 0) {
+      climbConfig.Slot0.kG = ClimberConstants.ARM_kG;
+    }
+    climbMotor.getConfigurator().apply(climbConfig);
   }
 
   // Arm

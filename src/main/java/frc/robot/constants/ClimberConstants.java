@@ -1,8 +1,6 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.CANBus;
-import edu.wpi.first.math.MathSharedStore;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
 
 public final class ClimberConstants {
