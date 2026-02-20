@@ -14,9 +14,6 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 
 public class AutoSubsystem extends SubsystemBase {
 
@@ -68,7 +65,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command climb() {
-    return ClimberCommands.increaseClimberLength(climber)
+    return ClimberCommands.increaseClimberLengthLevelOne(climber)
         .beforeStarting(() -> System.out.println("Climbing!"));
   }
 
@@ -93,6 +90,7 @@ public class AutoSubsystem extends SubsystemBase {
     // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path1);
   }
+
   public Command goToptoShooterPs() {
     PathPlannerPath path2;
 
