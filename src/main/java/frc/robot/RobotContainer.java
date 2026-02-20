@@ -323,8 +323,6 @@ public class RobotContainer {
         .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
-
-
     // servo command
     operatorController
         .povUp()

@@ -75,40 +75,41 @@ public class ClimberCommands {
               climberSubsystem.setVoltageSupplied(0);
             });
   }
-    public static Command increaseClimberLengthLevelTwo(ClimberSubsystem climberSubsystem) {
 
-        return Commands.run(
-                        () -> {
-                            double currentHeight = climberSubsystem.getClimbHeight();
-                            double desiredSpeed =
-                                    (ClimberConstants.rung2Position - climberSubsystem.getClimbHeight())
-                                            * ClimberConstants.speedConstant;
-                            SimpleMotorFeedforward climbFeedForward =
-                                    new SimpleMotorFeedforward(
-                                            ClimberConstants.ARM_kS,
-                                            ClimberConstants.ARM_kV,
-                                            ClimberConstants.ARM_kA,
-                                            0.2);
-                            double scale = climbFeedForward.calculate(desiredSpeed);
+  public static Command increaseClimberLengthLevelTwo(ClimberSubsystem climberSubsystem) {
 
-                            if (currentHeight <= ClimberConstants.minHeight) {
-                                climberSubsystem.setVoltageSupplied(0);
-                            }
-                            if (currentHeight >= ClimberConstants.maxHeight) {
-                                climberSubsystem.setVoltageSupplied(0);
-                            }
+    return Commands.run(
+            () -> {
+              double currentHeight = climberSubsystem.getClimbHeight();
+              double desiredSpeed =
+                  (ClimberConstants.rung2Position - climberSubsystem.getClimbHeight())
+                      * ClimberConstants.speedConstant;
+              SimpleMotorFeedforward climbFeedForward =
+                  new SimpleMotorFeedforward(
+                      ClimberConstants.ARM_kS,
+                      ClimberConstants.ARM_kV,
+                      ClimberConstants.ARM_kA,
+                      0.2);
+              double scale = climbFeedForward.calculate(desiredSpeed);
 
-                            climberSubsystem.setVoltageSupplied(scale);
-                        },
-                        climberSubsystem)
-                .until(
-                        () ->
-                                Math.abs(ClimberConstants.rung2Position - climberSubsystem.getClimbHeight()) < 0.01)
-                .finallyDo(
-                        () -> {
-                            climberSubsystem.setVoltageSupplied(0);
-                        });
-    }
+              if (currentHeight <= ClimberConstants.minHeight) {
+                climberSubsystem.setVoltageSupplied(0);
+              }
+              if (currentHeight >= ClimberConstants.maxHeight) {
+                climberSubsystem.setVoltageSupplied(0);
+              }
+
+              climberSubsystem.setVoltageSupplied(scale);
+            },
+            climberSubsystem)
+        .until(
+            () ->
+                Math.abs(ClimberConstants.rung2Position - climberSubsystem.getClimbHeight()) < 0.01)
+        .finallyDo(
+            () -> {
+              climberSubsystem.setVoltageSupplied(0);
+            });
+  }
 
   public static Command decreaseClimberLength(ClimberSubsystem climberSubsystem) {
 
@@ -153,7 +154,7 @@ public class ClimberCommands {
         () -> {
           double servoPosition = 0;
           climberSubsystem.setClimbServoPosition(servoPosition);
-            Commands.waitSeconds(2);
+          Commands.waitSeconds(2);
         });
   }
 
@@ -162,7 +163,7 @@ public class ClimberCommands {
         () -> {
           double servoPosition = 1.0;
           climberSubsystem.setBaseServoPosition(servoPosition);
-            Commands.waitSeconds(2);
+          Commands.waitSeconds(2);
         });
   }
 
@@ -171,7 +172,7 @@ public class ClimberCommands {
         () -> {
           double servoPosition = 0;
           climberSubsystem.setBaseServoPosition(servoPosition);
-            Commands.waitSeconds(2);
+          Commands.waitSeconds(2);
         });
   }
 
