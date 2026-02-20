@@ -27,6 +27,7 @@ public class VisionIOLimelight implements VisionIO {
 
   // get that pose for me
   public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
+
     this.poseSupplier = poseSupplier;
   }
 
@@ -55,14 +56,16 @@ public class VisionIOLimelight implements VisionIO {
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
   private void readCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {
     /// basics
-    // drive estimation
-    LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-
+    // drive pose
     inputs.estimatedRobotPose = poseSupplier.get();
+
+    LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName)!=null;
     // fiducialid is double
     inputs.aprilTagIDNumber = (int) LimelightHelpers.getFiducialID(cameraName);
+
+    inputs.hasTarget = LimelightHelpers.getTV(cameraName);
 
     inputs.tx = LimelightHelpers.getTX(cameraName);
     inputs.ty = LimelightHelpers.getTY(cameraName);
@@ -75,7 +78,6 @@ public class VisionIOLimelight implements VisionIO {
     inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
     //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
 
-    inputs.hasTarget = LimelightHelpers.getTV(cameraName);
 
 //    var ApriltagResults = LimelightHelpers.getRawFiducials(cameraName);
 
@@ -92,13 +94,12 @@ public class VisionIOLimelight implements VisionIO {
     * 2*/
     var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
-    if (megaTag2Results != null && inputs.tagCount <= 0) {
+    if (megaTag2Results != null && inputs.tagCount >= 0) {
       inputs.hasMegaTag2 = true;
       inputs.megaTagPose = megaTag2Results.pose;
       inputs.tagCount = megaTag2Results.tagCount;
       inputs.timestamp = megaTag2Results.timestampSeconds;
       inputs.latency = megaTag2Results.latency;
-
       return;
 
 

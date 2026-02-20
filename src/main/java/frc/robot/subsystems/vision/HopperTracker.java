@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.AprilTagLabel;
+import frc.robot.constants.VisionConstant;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class HopperTracker {
@@ -14,16 +15,14 @@ public class HopperTracker {
         ? AprilTagLabel.RedHubPose3d.toPose2d()
         : AprilTagLabel.BlueHubPose3d.toPose2d();
   }
-  @AutoLogOutput(key = "Aim/CurrentHubPose")
 
+  @AutoLogOutput(key = "Vision/Aim/CurrentHubPose")
   public static double getDistanceFromRobotToHub(Pose2d robotPose) {
     Pose2d HubPose = getTargetHubPose2d();
     Translation2d diff = HubPose.getTranslation().minus(robotPose.getTranslation());
-    // TODO, need to tune
-
     // -0.677 = from center of hub minus the center robot, it is about this much allowance
     // this is a valid estimation lol
-    if (diff.getX() < -0.677) {
+    if (diff.getX() < VisionConstant.MidGameAllowance) {
       return -1;
     }
     return robotPose.getTranslation().getDistance(HubPose.getTranslation());
@@ -41,12 +40,12 @@ public class HopperTracker {
     // https://maththebeautiful.com/angle-between-points/
     // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
     // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
-
     Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
     Rotation2d fieldAngle = diff.getAngle();
     return fieldAngle;
   }
 
+  @AutoLogOutput
   public static double getAngleToHubRad(Pose2d robotPose) {
     return getAngleToHub(robotPose).getRadians();
   }

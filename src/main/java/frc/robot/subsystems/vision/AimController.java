@@ -44,17 +44,17 @@ public class AimController {
     return aimPID;
   }
 
-  @AutoLogOutput(key = "Aim/Omega")
+  @AutoLogOutput(key = "Vision/Aim/Omega")
   private double getOmegaLog() {
     return lastOmega;
   }
 
-  @AutoLogOutput(key = "Aim/Error")
+  @AutoLogOutput(key = "Vision/Aim/Error")
   private double getErrorLogDeg() {
     return Math.toDegrees(lastError);
   }
 
-  @AutoLogOutput(key = "Aim/atTarget")
+  @AutoLogOutput(key = "Vision/Aim/atTarget")
   public boolean atTarget() {
     return aimPID.atSetpoint();
   }

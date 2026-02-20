@@ -49,12 +49,15 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSim shooterSim;
+
   private VisionSubsystem visionSubsystem;
+  private VisionIO visionIO;
+  private VisionPoseManager visionPoseManager;
+
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
   private ClimberSubsystem climberSubsystem;
-  private VisionIO visionIO;
 
   // Toggle state for left bumper
 
@@ -113,7 +116,8 @@ public class RobotContainer {
         // autoSubystem.StartMidShootEndL1());
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
+//        visionPoseManager = new VisionPoseManager();
+        visionSubsystem = new VisionSubsystem(visionIO);
 
         shooterSim = new ShooterSim();
         break;
@@ -135,13 +139,13 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        visionSubsystem =
-            new VisionSubsystem(
-                new VisionIOPhotonVisionSim(
-                    driveSubsystem.poseSupplierForSim,
-                    VisionConstant.robotToBackCam,
-                    VisionConstant.robotToFrontCam),
-                driveSubsystem);
+//        visionSubsystem =
+//            new VisionSubsystem(
+//                new VisionIOPhotonVisionSim(
+//                    driveSubsystem.poseSupplierForSim,
+//                    VisionConstant.robotToBackCam,
+//                    VisionConstant.robotToFrontCam),
+//                driveSubsystem);
 
         shooterSim = new ShooterSim();
         break;

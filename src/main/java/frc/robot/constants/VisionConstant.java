@@ -36,9 +36,28 @@ public final class VisionConstant {
   //TODO tune them
   //start high values, then slowly lower them
   public static final Matrix<N3, N1> GlobalVisionMeasurementStdDevs = VecBuilder.fill(0.7,0.7, Units.degreesToRadians(180));
+  public static final Matrix<N3, N1> TwoTag_VisionMeasurementStdDevs = VecBuilder.fill(0.4,0.4, Units.degreesToRadians(90));
+  public static final Matrix<N3, N1> ThreeTag_VisionMeasurementStdDevs = VecBuilder.fill(0.3,0.3, Units.degreesToRadians(90));
 
-  public static final Matrix<N3, N1> VeryGood_VisionMeasurementStdDevs = VecBuilder.fill(0.4,0.4, Units.degreesToRadians(90));
-  public static final Matrix<N3, N1> Ish_VisionMeasurementStdDevs = VecBuilder.fill(0.3,0.3, Units.degreesToRadians(90));
+  //TODO Need measure & test
+  //-0.677 = from center of hub minus the center robot, it is about this much allowance
+  // this is a valid estimation lol
+  public static final double MidGameAllowance = -0.677;
+
+  /// TODO Need Distance offset from shooter
+  public static final double baseX = 0.1;
+  public static final double baseY = 0.1;
+  public static final double baseTheta = 5.0;
+
+  //max readable tag
+  public static final double maxDistanceFromRobotToApril = 17.0;
+
+  //TODO Tune them probably
+//  public static final double positionWeight = 1.0;
+//  public static final double rotationWeight = 0.05;
+//  //50*0.05=0.25
+//  public static final double distanceWeight = 0.3;
+//  //whole field => 317.7in (~8.07m) by 651.2in (~16.54m)
 
   private VisionConstant() {}
 }
