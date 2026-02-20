@@ -49,13 +49,16 @@ public class ClimberIOTalonFX implements ClimberIO {
             * 2
             * Math.PI;
     inputs.currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+
     if (climbMotor.getMotorVoltage().getValueAsDouble() < 0) {
       climbConfig.Slot0.kG = 100;
     } else if (climbMotor.getMotorVoltage().getValueAsDouble() > 0) {
       climbConfig.Slot0.kG = ClimberConstants.ARM_kG;
     }
     climbMotor.getConfigurator().apply(climbConfig);
-  }
+
+    }
+
 
   // Arm
 
