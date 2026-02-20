@@ -47,9 +47,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelMotor2.getConfigurator().apply(motorConfig);
 
     motorConfig.MotorOutput.Inverted =
-            !ShooterConstants.flywheelInverted
-                    ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-                    : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+        !ShooterConstants.flywheelInverted
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     intakeMotor.getConfigurator().apply(motorConfig);
     intakeMotor.getConfigurator().apply(currentConfig);
@@ -58,6 +58,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void setSpeed(double targetSpeed) {
     flywheelMotor.setControl(target.withVelocity(targetSpeed));
+    flywheelMotor2.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
@@ -68,6 +69,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void stopMotor() {
     flywheelMotor.stopMotor();
+    flywheelMotor2.stopMotor();
     intakeMotor.stopMotor();
   }
 
@@ -77,8 +79,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     double currentFlywheelMotorVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
     return currentFlywheelMotorVelocity < targetSpeed + ShooterConstants.tolerance
         && currentFlywheelMotorVelocity > targetSpeed - ShooterConstants.tolerance
-            && currentFlywheelMotorVelocity2 < targetSpeed + ShooterConstants.tolerance
-            && currentFlywheelMotorVelocity2 > targetSpeed - ShooterConstants.tolerance;
+        && currentFlywheelMotorVelocity2 < targetSpeed + ShooterConstants.tolerance
+        && currentFlywheelMotorVelocity2 > targetSpeed - ShooterConstants.tolerance;
   }
 
   @Override
