@@ -28,8 +28,8 @@ public final class ClimberConstants {
   // FF (starting values)
   public static final double ARM_kA = 1.0;
   public static final double ARM_kS = 2.0;
-  public static final double ARM_kV = 0.5;
-  public static final double ARM_kG = 100;
+  public static final double ARM_kV = 1.0;
+  public static final double ARM_kG = 1.0;
   public static final double speedConstant = 3;
 
   // target values
