@@ -7,13 +7,13 @@ import edu.wpi.first.math.numbers.N3;
 
 ///data storage
 /// Object-Oriented
-public class VisionPoseFusion {
+public class VisionFusionResults {
     private final Pose2d visionRobotPoseMeters;
     private final double timestampSeconds;
     private final Matrix<N3, N1> visionMeasurementStdDevs;
     private final int numTags;
 
-    public VisionPoseFusion (
+    public VisionFusionResults(
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs,

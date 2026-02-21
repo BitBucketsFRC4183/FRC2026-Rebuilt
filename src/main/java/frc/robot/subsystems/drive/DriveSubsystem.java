@@ -43,7 +43,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.OdometryHistory;
-import frc.robot.subsystems.vision.VisionPoseFusion;
+import frc.robot.subsystems.vision.VisionFusionResults;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.concurrent.locks.Lock;
@@ -54,7 +54,7 @@ import org.littletonrobotics.junction.Logger;
 public class DriveSubsystem extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
   private final OdometryHistory odometryHistory;
-  private final VisionPoseFusion visionPoseFusion;
+  private final VisionFusionResults visionFusionResults;
 
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -115,10 +115,10 @@ public class DriveSubsystem extends SubsystemBase {
       ModuleIO brModuleIO,
 
       OdometryHistory odometryHistory,
-      VisionPoseFusion visionPoseFusion
+      VisionFusionResults visionFusionResults
   ) {
     this.odometryHistory = odometryHistory;
-    this.visionPoseFusion = visionPoseFusion;
+    this.visionFusionResults = visionFusionResults;
 
     this.gyroIO = gyroIO;
 
@@ -228,8 +228,8 @@ public class DriveSubsystem extends SubsystemBase {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    poseEstimator.addVisionMeasurement(visionPoseFusion.getVisionRobotPoseMeters(),
-            visionPoseFusion.getTimestampSeconds(), visionPoseFusion.getVisionMeasurementStdDevs());
+    poseEstimator.addVisionMeasurement(visionFusionResults.getVisionRobotPoseMeters(),
+            visionFusionResults.getTimestampSeconds(), visionFusionResults.getVisionMeasurementStdDevs());
   }
 
   /**

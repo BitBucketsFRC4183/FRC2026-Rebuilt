@@ -52,7 +52,7 @@ public class RobotContainer {
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
  private OdometryHistory odometryHistory;
- private VisionPoseFusion visionPoseFusion;
+ private VisionFusionResults visionFusionResults;
 
 
   // Added missing subsystem fields
@@ -85,7 +85,7 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
 
                     odometryHistory,
-                    visionPoseFusion);
+                    visionFusionResults);
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -119,8 +119,21 @@ public class RobotContainer {
         //        NamedCommands.registerCommand("StartMidShootEndL1",
         // autoSubystem.StartMidShootEndL1());
 
-/// DATA FLOW:
-/// Vision IO (interface) connected VisionIOLimelight
+/* DATA FLOW:
+Vision IO (interface) connected VisionIOLimelight;
+↓
+VisionSubsystem received data from VisionIOLimelight, then do calculations
+wrapped results into VisionFusionResults
+↓
+Drive receive results, then add vision measurement
+
+
+ */
+/*
+ANOTHER DATA FLOW:
+Drive <-> odometry pose history -> provided to vision to help calculation
+
+ */
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
@@ -137,7 +150,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight),
                     odometryHistory,
-                    visionPoseFusion);
+                    visionFusionResults);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -167,7 +180,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                     odometryHistory,
-                    visionPoseFusion);
+                    visionFusionResults);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);

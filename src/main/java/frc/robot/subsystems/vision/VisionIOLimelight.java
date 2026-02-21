@@ -20,7 +20,7 @@ public class VisionIOLimelight implements VisionIO {
   private final NetworkTable limelightTwoTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
   private final Supplier<Pose2d> poseSupplier;
-  private VisionPoseFusion visionPoseFusion;
+  private VisionFusionResults visionFusionResults;
   //define, create a 0.0 double array
   private static final double[] defaultStdDev =
           new double[VisionConstant.kExpectedStdDevArrayLength];

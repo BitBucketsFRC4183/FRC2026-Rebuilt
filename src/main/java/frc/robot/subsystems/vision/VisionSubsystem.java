@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
     /// if we have good estimation from MTA, then use MTA; the other way around for MTB as well
     /// if both does not provide good estimation, then we fuse both results
    // it will be packaged into VisionPoseFusion, and
-    Optional<VisionPoseFusion> acceptedInputs = Optional.empty();
+    Optional<VisionFusionResults> acceptedInputs = Optional.empty();
     if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
       acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
     } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
@@ -72,10 +72,10 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
 
-    private VisionPoseFusion getFuseEstimation (VisionPoseFusion a, VisionPoseFusion b) {
+    private VisionFusionResults getFuseEstimation (VisionFusionResults a, VisionFusionResults b) {
       // Ensure b is the newer measurement
       if (b.getTimestampSeconds() < a.getTimestampSeconds()) {
-        VisionPoseFusion tmp = a;
+        VisionFusionResults tmp = a;
         a = b;
         b = tmp;
       }
@@ -130,7 +130,7 @@ public class VisionSubsystem extends SubsystemBase {
       int numTags = a.getNumTags() + b.getNumTags();
       double time = b.getTimestampSeconds();
 
-      return new VisionPoseFusion(fusedPose, time, fusedStdDev, numTags);
+      return new VisionFusionResults(fusedPose, time, fusedStdDev, numTags);
     }
 
     /// ********************
@@ -139,19 +139,19 @@ public class VisionSubsystem extends SubsystemBase {
     /// ********************
     /// ********************
 
-  public Optional<VisionPoseFusion> processMegaTags(VisionIOInputsAutoLogged inputs){
-    Optional<VisionPoseFusion> estimateOrEmpty = Optional.empty();
+  public Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs){
+    Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
     if (!isValidInputs(inputs)) {
       return Optional.empty();
     }
-    Optional<VisionPoseFusion> mtEstimate = processMTPoseEstimate(inputs);
+    Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
     if (mtEstimate.isPresent()){
       estimateOrEmpty = mtEstimate;
     }
     return estimateOrEmpty;
   }
 
-  private Optional<VisionPoseFusion> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
+  private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
 
     // Single‑tag extra checks
     if (inputs.tagCount < 2) {
@@ -168,7 +168,7 @@ public class VisionSubsystem extends SubsystemBase {
       return Optional.empty();
     }
 
-    return Optional.of(new VisionPoseFusion(
+    return Optional.of(new VisionFusionResults(
       inputs.megaTagPose,
       inputs.timestamp,
             VecBuilder.fill(inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
