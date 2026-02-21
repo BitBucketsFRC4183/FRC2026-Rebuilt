@@ -259,19 +259,19 @@ public class RobotContainer {
     // Climber Setpoint Commands
     operatorController
         .a()
-        .and(operatorController.back())
+        // .and(operatorController.back())
         .onTrue(ClimberCommands.climbToGround(climberSubsystem));
     operatorController
         .x()
-        .and(operatorController.back())
+        // .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
     operatorController
         .y()
-        .and(operatorController.back())
+        // .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
     operatorController
         .b()
-        .and(operatorController.back())
+        //  .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command

@@ -37,43 +37,33 @@ public class ClimberIOSim implements ClimberIO {
 
     simVelocity = (appliedVoltage / 12.0) * maxSpeedMetersPerSec;
 
-    simHeightMeters += simVelocity * dt;
-
-    simHeightMeters = MathUtil.clamp(simHeightMeters, 0, maxHeight);
-
     if ((simHeightMeters == 0 && appliedVoltage < 0)
         || (simHeightMeters == maxHeight && appliedVoltage > 0)) {
       simVelocity = 0;
     }
-
-    climberModel.setLength(simHeightMeters + 0.2);
-    inputs.climberHeight = simHeightMeters;
-    inputs.climberVoltage = appliedVoltage;
-    inputs.climberCurrent = climberSimMotor.getSupplyCurrent();
-
     climberSimMotor.setSupplyVoltage(appliedVoltage);
 
-    //    simHeightMeters += simVelocity * dt;
-    //    simHeightMeters = Math.max(0, Math.min(MAX_HEIGHT, simHeightMeters));
-    //
-    //    climberModel.setLength(simHeightMeters + 0.2);
-    //
-    //    inputs.climberHeight = simHeightMeters;
-    //    double error = targetHeightMeters - simHeightMeters;
-    //    double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
-    //    appliedVoltage = voltageLimiter.calculate(commandedVoltage);
-    //    inputs.currentVoltage = appliedVoltage;
-    //    climberSimMotor.setSupplyVoltage(inputs.currentVoltage);
+    simHeightMeters += simVelocity * dt;
+    climberModel.setLength(simHeightMeters + 0.2);
+
+    inputs.climberHeight = simHeightMeters;
+    double error = targetHeightMeters - simHeightMeters;
+    double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
+    appliedVoltage = voltageLimiter.calculate(commandedVoltage);
+    inputs.climberVoltage = appliedVoltage;
+    inputs.climberCurrent = climberSimMotor.getSupplyCurrent();
+    climberSimMotor.setSupplyVoltage(inputs.climberVoltage);
   }
 
   @Override
   public void setTargetHeight(double height) {
     targetHeightMeters = height;
-    double error = height - simHeightMeters;
   }
 
   @Override
-  public void stopClimb() {climberSimMotor.setSupplyVoltage(0);}
+  public void stopClimb() {
+    climberSimMotor.setSupplyVoltage(0);
+  }
 
   @Override
   public void setVoltage(double voltageSupplied) {

@@ -73,6 +73,4 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kG = kG;
     climbMotor.getConfigurator().apply(climbConfig);
   }
-
-
 }

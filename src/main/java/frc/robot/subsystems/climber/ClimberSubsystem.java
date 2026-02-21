@@ -31,9 +31,9 @@ public class ClimberSubsystem extends SubsystemBase {
       climberIO.setVoltage(-Math.abs(inputs.climberVoltage + 10));
     }
 
-    if((inputs.climberHeight <= ClimberConstants.minHeight && inputs.climberVoltage < 0)){
+    if ((inputs.climberHeight <= ClimberConstants.minHeight && inputs.climberVoltage < 0)) {
       climberIO.stopClimb();
-    } else if ((inputs.climberHeight >= ClimberConstants.maxHeight && inputs.climberVoltage > 0)){
+    } else if ((inputs.climberHeight >= ClimberConstants.maxHeight && inputs.climberVoltage > 0)) {
       climberIO.stopClimb();
     }
   }
