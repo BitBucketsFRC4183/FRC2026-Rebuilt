@@ -66,7 +66,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setTargetHeight(double height) {
     double motorRotations =
-        height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
+        height / ((2 * Math.PI * ClimberConstants.spoolRadius) / ClimberConstants.ARM_GEAR_RATIO);
     climbMotor.setControl(climbRequest.withPosition(motorRotations));
   }
 

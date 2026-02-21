@@ -15,8 +15,8 @@ public final class ClimberConstants {
   public static final boolean ARM_MOTOR_INVERTED = false;
 
   // Gear ratios (MEASURE THESE)
-  public static final double ARM_GEAR_RATIO = 45.0; // motor rotations per arm rotation
-  public static final double spoolRadius = 0.375;
+  public static final double ARM_GEAR_RATIO = 135.0; // motor rotations per arm rotation
+  public static final double spoolRadius = 0.5;
 
   // PID (starting values)
   public static final double ARM_kP = 2.0;
