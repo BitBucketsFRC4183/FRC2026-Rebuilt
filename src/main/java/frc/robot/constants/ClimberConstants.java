@@ -27,7 +27,8 @@ public final class ClimberConstants {
   public static final double ARM_kA = 1.0;
   public static final double ARM_kS = 2.0;
   public static final double ARM_kV = 1.0;
-  public static final double ARM_kG = 1.0;
+  public static final double ARM_kGUp = 1.0;
+  public static final double ARM_kGDown = 100;
   public static final double speedConstant = 3;
 
   // target values

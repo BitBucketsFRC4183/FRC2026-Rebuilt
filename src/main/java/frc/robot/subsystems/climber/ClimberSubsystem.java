@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ClimberConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -24,11 +25,17 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/ClimbingInputs", inputs);
+
     if(climberIO.getCurrentVoltage() > 12){
       climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() - 10));}
     else if (climberIO.getCurrentVoltage() < -12){
       climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() + 10));}
-    }
+
+    if(climbServo1.getPosition() == 1.0){
+      climberIO.setkG(ClimberConstants.ARM_kGDown);
+    } else if (climbServo1.getPosition() == 0){
+      climberIO.setkG(ClimberConstants.ARM_kGUp);
+    }}
 
   /* ================= TELEMETRY ================= */
 
