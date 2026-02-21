@@ -102,7 +102,7 @@ public class TunerConstants {
   // tune later
   private static final Distance kWheelRadius = Inches.of(2.0625);
 
-  private static final boolean kInvertLeftSide = false;
+  private static final boolean kInvertLeftSide = true;
   private static final boolean kInvertRightSide = true;
 
   private static final int kPigeonId = 11;
@@ -146,51 +146,51 @@ public class TunerConstants {
               .withSteerFrictionVoltage(kSteerFrictionVoltage)
               .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
-  // frame dimensions along X is 27, Y is 28
+  // frame dimensions along X is 26.5, Y is 28
   // mk5n dist from center wheel is 2.5in
-  // for swerve pos. 27/2 - 2.5 & 28/2 - 2.5
+  // for swerve pos. 26.5/2 - 2.5 & 28/2 - 2.5
   // Front Left
   private static final int kFrontLeftDriveMotorId = 6;
   private static final int kFrontLeftSteerMotorId = 7;
   private static final int kFrontLeftEncoderId = 3;
-  private static final Angle kFrontLeftEncoderOffset = Rotations.of(0);
-  private static final boolean kFrontLeftSteerMotorInverted = true;
+  private static final Angle kFrontLeftEncoderOffset = Radians.of(-2.210);
+  private static final boolean kFrontLeftSteerMotorInverted = false;
   private static final boolean kFrontLeftEncoderInverted = false;
 
-  private static final Distance kFrontLeftXPos = Inches.of(11);
+  private static final Distance kFrontLeftXPos = Inches.of(10.75);
   private static final Distance kFrontLeftYPos = Inches.of(11.5);
 
   // Front Right
   private static final int kFrontRightDriveMotorId = 8;
   private static final int kFrontRightSteerMotorId = 9;
   private static final int kFrontRightEncoderId = 2;
-  private static final Angle kFrontRightEncoderOffset = Rotations.of(0);
-  private static final boolean kFrontRightSteerMotorInverted = true;
+  private static final Angle kFrontRightEncoderOffset = Radians.of(-4.174);
+  private static final boolean kFrontRightSteerMotorInverted = false;
   private static final boolean kFrontRightEncoderInverted = false;
 
-  private static final Distance kFrontRightXPos = Inches.of(11);
+  private static final Distance kFrontRightXPos = Inches.of(10.75);
   private static final Distance kFrontRightYPos = Inches.of(-11.5);
 
   // Back Left
   private static final int kBackLeftDriveMotorId = 4;
   private static final int kBackLeftSteerMotorId = 5;
   private static final int kBackLeftEncoderId = 0;
-  private static final Angle kBackLeftEncoderOffset = Rotations.of(0);
-  private static final boolean kBackLeftSteerMotorInverted = true;
+  private static final Angle kBackLeftEncoderOffset = Radians.of(-3.270);
+  private static final boolean kBackLeftSteerMotorInverted = false;
   private static final boolean kBackLeftEncoderInverted = false;
 
-  private static final Distance kBackLeftXPos = Inches.of(-11);
+  private static final Distance kBackLeftXPos = Inches.of(-10.75);
   private static final Distance kBackLeftYPos = Inches.of(11.5);
 
   // Back Right
   private static final int kBackRightDriveMotorId = 2;
   private static final int kBackRightSteerMotorId = 3;
   private static final int kBackRightEncoderId = 1;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(0);
-  private static final boolean kBackRightSteerMotorInverted = true;
+  private static final Angle kBackRightEncoderOffset = Radians.of(-2.568);
+  private static final boolean kBackRightSteerMotorInverted = false;
   private static final boolean kBackRightEncoderInverted = false;
 
-  private static final Distance kBackRightXPos = Inches.of(-11);
+  private static final Distance kBackRightXPos = Inches.of(-10.75);
   private static final Distance kBackRightYPos = Inches.of(-11.5);
 
   public static final SwerveModuleConstants<
@@ -229,7 +229,7 @@ public class TunerConstants {
               kBackLeftEncoderOffset,
               kBackLeftXPos,
               kBackLeftYPos,
-              kInvertLeftSide,
+              false,
               kBackLeftSteerMotorInverted,
               kBackLeftEncoderInverted);
   public static final SwerveModuleConstants<
@@ -242,7 +242,7 @@ public class TunerConstants {
               kBackRightEncoderOffset,
               kBackRightXPos,
               kBackRightYPos,
-              kInvertRightSide,
+              false,
               kBackRightSteerMotorInverted,
               kBackRightEncoderInverted);
 

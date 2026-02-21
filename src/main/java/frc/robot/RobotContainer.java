@@ -232,10 +232,11 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+    //    operatorController
+    //        .leftTrigger()
+    //        .whileTrue(
+    //            IntakeCommands.intake(intakeSubsystem).onlyIf(() ->
+    // intakeSubsystem.isExtended()));
 
     // Hopper reverse while right bumper held
     operatorController

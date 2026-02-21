@@ -146,10 +146,14 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
     tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
-    tryUntilOk(5, () -> turnTalon.setPosition(turnEncoder.get(), 0.25));
+    tryUntilOk(
+        5,
+        () ->
+            turnTalon.setPosition(
+                //    //    CANcoderConfiguration cancoderConf
+                turnEncoder.get() + constants.EncoderOffset, 0.25));
     //
-    //    // Configure CANCoder
-    //    CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
+    //    // Configure CANCoderig = constants.EncoderInitialConfigs;
     //    cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
     //    cancoderConfig.MagnetSensor.SensorDirection =
     //        constants.EncoderInverted
