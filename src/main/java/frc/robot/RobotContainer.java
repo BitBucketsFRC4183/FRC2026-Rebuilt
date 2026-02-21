@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
-import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -50,8 +49,7 @@ public class RobotContainer {
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
   private VisionIO visionIO;
-  private VisionPoseManager visionPoseManager;
-
+  // private VisionPoseManager visionPoseManager;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -86,8 +84,8 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-//        visionPoseManager = new VisionPoseManager();
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.getRotation());
+        //        visionPoseManager = new VisionPoseManager();
         visionSubsystem = new VisionSubsystem(visionIO);
 
         break;
@@ -108,13 +106,13 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-//        visionSubsystem =
-//            new VisionSubsystem(
-//                new VisionIOPhotonVisionSim(
-//                    driveSubsystem.poseSupplierForSim,
-//                    VisionConstant.robotToBackCam,
-//                    VisionConstant.robotToFrontCam),
-//                driveSubsystem);
+        //        visionSubsystem =
+        //            new VisionSubsystem(
+        //                new VisionIOPhotonVisionSim(
+        //                    driveSubsystem.poseSupplierForSim,
+        //                    VisionConstant.robotToBackCam,
+        //                    VisionConstant.robotToFrontCam),
+        //                driveSubsystem);
 
         break;
         // thinking to what
