@@ -144,92 +144,36 @@ public class VisionSubsystem extends SubsystemBase {
     if (!isValidInputs(inputs)) {
       return Optional.empty();
     }
-    Optional<VisionPoseFusion> mtEstimate = processMegatagPoseEstimate(inputs);
+    Optional<VisionPoseFusion> mtEstimate = processMTPoseEstimate(inputs);
     if (mtEstimate.isPresent()){
       estimateOrEmpty = mtEstimate;
     }
     return estimateOrEmpty;
   }
 
-  private Optional<VisionPoseFusion> processMegatagPoseEstimate(VisionIOInputsAutoLogged inputs) {
-    if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {
-      return Optional.empty();
-    }
+  private Optional<VisionPoseFusion> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
 
     // Single‑tag extra checks
-    if (poseEstimate.fiducialIds().length < 2) {
-      for (var fiducial : cam.fiducialObservations) {
-        if (fiducial.ambiguity() > VisionConstants.kDefaultAmbiguityThreshold) {
+    if (inputs.tagCount < 2) {
+        if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip){
           return Optional.empty();
         }
-      }
-
-      if (poseEstimate.avgTagArea() < VisionConstants.kTagMinAreaForSingleTagMegatag) {
-        return Optional.empty();
-      }
-
-      var priorPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
-      if (poseEstimate.avgTagArea() < VisionConstants.kTagAreaThresholdForYawCheck
-              && priorPose.isPresent()) {
-        double yawDiff =
-                Math.abs(
-                        MathUtil.angleModulus(
-                                priorPose.get().getRotation().getRadians()
-                                        - poseEstimate
-                                        .fieldToRobot()
-                                        .getRotation()
-                                        .getRadians()));
-
-        if (yawDiff > Units.degreesToRadians(VisionConstants.kDefaultYawDiffThreshold)) {
-          return Optional.empty();
-        }
-      }
     }
 
-    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
-            < VisionConstants.kDefaultNormThreshold) {
+    if (proportionalDistance(inputs)<VisionConstant.maxDistanceFromRobotToApril){
       return Optional.empty();
     }
 
-    if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
+    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
       return Optional.empty();
     }
 
-    // Exclusive‑tag filtering
-    var exclusiveTag = state.getExclusiveTag();
-    boolean hasExclusiveId =
-            exclusiveTag.isPresent()
-                    && java.util.Arrays.stream(poseEstimate.fiducialIds())
-                    .anyMatch(id -> id == exclusiveTag.get());
-
-    if (exclusiveTag.isPresent() && !hasExclusiveId) {
-      return Optional.empty();
-    }
-
-    var loggedPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
-    if (loggedPose.isEmpty()) {
-      return Optional.empty();
-    }
-
-    Pose2d estimatePose = poseEstimate.fieldToRobot();
-
-    double scaleFactor = 1.0 / poseEstimate.quality();
-    double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex] * scaleFactor;
-    double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex] * scaleFactor;
-    double rotStd =
-            cam.standardDeviations[VisionConstants.kMegatag1YawStdDevIndex] * scaleFactor;
-
-    double xyStd = Math.max(xStd, yStd);
-    Matrix<N3, N1> visionStdDevs = VecBuilder.fill(xyStd, xyStd, rotStd);
-
-    return Optional.of(
-            new VisionFieldPoseEstimate(
-                    estimatePose,
-                    poseEstimate.timestampSeconds(),
-                    visionStdDevs,
-                    poseEstimate.fiducialIds().length));
+    return Optional.of(new VisionPoseFusion(
+      inputs.megaTagPose,
+      inputs.timestamp,
+      inputs.visionStdDev,
+      inputs.tagCount));
   }
-
 
   /// are we a valid pose?
   /// yes sir!
@@ -247,7 +191,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     return 1.0 / Math.sqrt(inputs.ta);
   }
-
 }
 
 

@@ -34,6 +34,13 @@ public final class VisionConstant {
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
 
   public static final double kLargeVariance = 1e6;
+  //max readable tag
+
+  //TODO need tune
+  public static final double maxDistanceFromRobotToApril = 17.0;
+  public static final double kTagMinAreaForSingleTagMegatag = 1.0;
+  public static final double kDefaultNormThreshold = 1.0;
+  public static final double kMinAmbiguityToFlip = 666;
 
   //TODO need measure & test
   //-0.677 = from center of hub minus the center robot, it is about this much allowance
@@ -45,8 +52,7 @@ public final class VisionConstant {
   public static final double baseY = 0.1;
   public static final double baseTheta = 5.0;
 
-  //max readable tag
-  public static final double maxDistanceFromRobotToApril = 17.0;
+
 
 
   private VisionConstant() {}

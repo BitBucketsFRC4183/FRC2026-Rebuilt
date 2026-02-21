@@ -31,7 +31,9 @@ public class VisionIOInputs {
   public double latency;
   public Matrix<N3, N1> visionStdDev;
 
-  //  public double poseAmbiguity;
+//from raw fiducial
+
+  public double minAmbiguity;
 
 
 //  public Pose2d TargetHubPose2d;

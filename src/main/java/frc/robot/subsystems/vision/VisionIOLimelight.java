@@ -5,11 +5,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-import frc.robot.subsystems.drive.GyroIO;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
@@ -69,9 +65,13 @@ public class VisionIOLimelight implements VisionIO {
           inputs.timestamp = megaTag2Results.timestampSeconds;
           inputs.latency = megaTag2Results.latency;
           //package them
-          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp, inputs.visionStdDev, inputs.tagCount);
+//          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp, inputs.visionStdDev, inputs.tagCount);
           return;
         }
+
+        var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
+        inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
+
 
         inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
         inputs.tx = LimelightHelpers.getTX(cameraName);
@@ -90,6 +90,15 @@ public class VisionIOLimelight implements VisionIO {
 
     }
 
+  }
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadRadFludicial){
+    /// ambiguity, new!
+
+    double minAmbiguity = 999;
+    for (var readFludicial : UnreadRadFludicial){
+      minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
+    }
+    return minAmbiguity;
   }
 
 }
