@@ -6,7 +6,7 @@ import frc.robot.constants.HopperConstants;
 public class HopperSubsystem extends SubsystemBase {
 
   private final HopperIO io;
-  private final HopperIOInputs inputs = new HopperIOInputs();
+  private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
 
   public HopperSubsystem(HopperIO io) {
     this.io = io;

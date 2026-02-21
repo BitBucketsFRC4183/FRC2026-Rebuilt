@@ -131,7 +131,7 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
 
-        visionSubsystem = null;
+        visionSubsystem = new VisionSubsystem(new VisionIO() {}, driveSubsystem);
 
         break;
     }
