@@ -4,5 +4,6 @@ import java.util.Map;
 
 public interface VisionIO {
   //   METHOD, not API
-  void updateInputs(Map<String, VisionIOInputsAutoLogged> Inputs);
+  //name doesn't matter here
+  default void updateInputs(VisionIOInputs camOne, VisionIOInputs camTwo){}
 }

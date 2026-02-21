@@ -42,12 +42,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
-import frc.robot.subsystems.vision.VisionPoseManager;
-import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.OdometryHistory;
 import frc.robot.util.LocalADStarAK;
 
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -55,6 +52,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 public class DriveSubsystem extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
+  private final OdometryHistory odometryHistory;
+
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
@@ -111,9 +110,11 @@ public class DriveSubsystem extends SubsystemBase {
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO
+      ModuleIO brModuleIO,
+      OdometryHistory odometryHistory
   ) {
     this.gyroIO = gyroIO;
+    this.odometryHistory = odometryHistory;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -186,6 +187,7 @@ public class DriveSubsystem extends SubsystemBase {
         modules[0].getOdometryTimestamps(); // All signals are sampled together
     int sampleCount = sampleTimestamps.length;
     for (int i = 0; i < sampleCount; i++) {
+
       // Read wheel positions and deltas from each module
       SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
       SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
@@ -211,6 +213,9 @@ public class DriveSubsystem extends SubsystemBase {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      //Store history
+      Pose2d currentPose = poseEstimator.getEstimatedPosition();
+      odometryHistory.addPose(sampleTimestamps[i], currentPose);
     }
 
 

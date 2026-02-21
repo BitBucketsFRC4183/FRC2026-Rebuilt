@@ -3,18 +3,17 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.Math.sqrt;
+import java.util.Optional;
 
 /// shooter game 2026: concept & mechanics
 // april tags, hub poses --> given
@@ -33,16 +32,13 @@ public class VisionSubsystem extends SubsystemBase {
   /// ******************************
 
   private final VisionIO visionio;
+  private final OdometryHistory odometryHistory;
+  private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
+  private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
-  // loggable data
-  private final Map<String, VisionIOInputsAutoLogged> cameraInputsAll = new HashMap<>();
-
-  public VisionSubsystem(VisionIO io
-  ) {
+  public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory) {
     this.visionio = io;
-
-    cameraInputsAll.put(VisionConstant.LIMELIGHT_FRONT, new VisionIOInputsAutoLogged());
-    cameraInputsAll.put(VisionConstant.LIMELIGHT_FRONT_SHOOTER, new VisionIOInputsAutoLogged());
+    this.odometryHistory = odometryHistory;
 
 //    LimelightHelpers.SetIMUMode();
 //    LimelightHelpers.setRewindEnabled("", true);
@@ -54,25 +50,203 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    visionio.updateInputs(cameraInputsAll);
-    Logger.processInputs("Vision/front", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT));
-    Logger.processInputs("Vision/front_shooter", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT_SHOOTER));
+    visionio.updateInputs(CamOneInputs, CamTwoInputs);
+
+    /// one
+    var maybeMTA = processMegaTags(CamOneInputs);
+    /// two
+    var maybeMTB = processMegaTags(CamTwoInputs);
+
+    /// if we have good estimation from MTA, then use MTA; the other way around for MTB as well
+    /// if both does not provide good estimation, then we fuse both results
+   // it will be packaged into VisionPoseFusion, and
+    Optional<VisionPoseFusion> acceptedInputs = Optional.empty();
+    if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
+      acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
+    } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
+      acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
     }
-//    public Map<String, VisionIOInputsAutoLogged> getAllCameraDataCopy() {
-//      Map<String, VisionIOInputsAutoLogged> copy = new HashMap<>();
-//      for (var entry : cameraInputsAll.entrySet()) {
-//        copy.put(entry.getKey(), entry.getValue().clone());
-//      }
-//      return copy;
-//    }
+
+    Logger.processInputs("Vision/front", CamOneInputs);
+    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+    }
 
 
-//    Logger.recordOutput("Area of Taget", inputs.ta); how big AprilTag is in the camera frame;
-//    Basically, 3%-> far; 80%-> takes big portion of the frame, AprilTag is near
+    private VisionPoseFusion getFuseEstimation (VisionPoseFusion a, VisionPoseFusion b) {
+      // Ensure b is the newer measurement
+      if (b.getTimestampSeconds() < a.getTimestampSeconds()) {
+        VisionPoseFusion tmp = a;
+        a = b;
+        b = tmp;
+      }
+
+      // Preview both estimates to the same timestamp
+      Transform2d a_T_b =
+              odometryHistory.getPoseAt(b.getTimestampSeconds())
+                      .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
+
+      Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
+      Pose2d poseB = b.getVisionRobotPoseMeters();
+
+      // Inverse‑variance weighting
+      var varianceA =
+              a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
+      var varianceB =
+              b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
+
+      Rotation2d fusedHeading = poseB.getRotation();
+      if (varianceA.get(2, 0) < VisionConstant.kLargeVariance
+              && varianceB.get(2, 0) < VisionConstant.kLargeVariance) {
+        fusedHeading =
+                new Rotation2d(
+                        poseA.getRotation().getCos() / varianceA.get(2, 0)
+                                + poseB.getRotation().getCos() / varianceB.get(2, 0),
+                        poseA.getRotation().getSin() / varianceA.get(2, 0)
+                                + poseB.getRotation().getSin() / varianceB.get(2, 0));
+      }
+
+      double weightAx = 1.0 / varianceA.get(0, 0);
+      double weightAy = 1.0 / varianceA.get(1, 0);
+      double weightBx = 1.0 / varianceB.get(0, 0);
+      double weightBy = 1.0 / varianceB.get(1, 0);
+
+      Pose2d fusedPose =
+              new Pose2d(
+                      new Translation2d(
+                              (poseA.getTranslation().getX() * weightAx
+                                      + poseB.getTranslation().getX() * weightBx)
+                                      / (weightAx + weightBx),
+                              (poseA.getTranslation().getY() * weightAy
+                                      + poseB.getTranslation().getY() * weightBy)
+                                      / (weightAy + weightBy)),
+                      fusedHeading);
+
+      Matrix<N3, N1> fusedStdDev =
+              VecBuilder.fill(
+                      Math.sqrt(1.0 / (weightAx + weightBx)),
+                      Math.sqrt(1.0 / (weightAy + weightBy)),
+                      Math.sqrt(1.0 / (1.0 / varianceA.get(2, 0) + 1.0 / varianceB.get(2, 0))));
+
+      int numTags = a.getNumTags() + b.getNumTags();
+      double time = b.getTimestampSeconds();
+
+      return new VisionPoseFusion(fusedPose, time, fusedStdDev, numTags);
+    }
+
+    /// ********************
+    /// ********************
+    /// ********************
+    /// ********************
+    /// ********************
+
+  public Optional<VisionPoseFusion> processMegaTags(VisionIOInputsAutoLogged inputs){
+    Optional<VisionPoseFusion> estimateOrEmpty = Optional.empty();
+    if (!isValidInputs(inputs)) {
+      return Optional.empty();
+    }
+    Optional<VisionPoseFusion> mtEstimate = processMegatagPoseEstimate(inputs);
+    if (mtEstimate.isPresent()){
+      estimateOrEmpty = mtEstimate;
+    }
+    return estimateOrEmpty;
+  }
+
+  private Optional<VisionPoseFusion> processMegatagPoseEstimate(VisionIOInputsAutoLogged inputs) {
+    if (poseEstimate.timestampSeconds() <= state.lastUsedMegatagTimestamp()) {
+      return Optional.empty();
+    }
+
+    // Single‑tag extra checks
+    if (poseEstimate.fiducialIds().length < 2) {
+      for (var fiducial : cam.fiducialObservations) {
+        if (fiducial.ambiguity() > VisionConstants.kDefaultAmbiguityThreshold) {
+          return Optional.empty();
+        }
+      }
+
+      if (poseEstimate.avgTagArea() < VisionConstants.kTagMinAreaForSingleTagMegatag) {
+        return Optional.empty();
+      }
+
+      var priorPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
+      if (poseEstimate.avgTagArea() < VisionConstants.kTagAreaThresholdForYawCheck
+              && priorPose.isPresent()) {
+        double yawDiff =
+                Math.abs(
+                        MathUtil.angleModulus(
+                                priorPose.get().getRotation().getRadians()
+                                        - poseEstimate
+                                        .fieldToRobot()
+                                        .getRotation()
+                                        .getRadians()));
+
+        if (yawDiff > Units.degreesToRadians(VisionConstants.kDefaultYawDiffThreshold)) {
+          return Optional.empty();
+        }
+      }
+    }
+
+    if (poseEstimate.fieldToRobot().getTranslation().getNorm()
+            < VisionConstants.kDefaultNormThreshold) {
+      return Optional.empty();
+    }
+
+    if (Math.abs(cam.pose3d.getZ()) > VisionConstants.kDefaultZThreshold) {
+      return Optional.empty();
+    }
+
+    // Exclusive‑tag filtering
+    var exclusiveTag = state.getExclusiveTag();
+    boolean hasExclusiveId =
+            exclusiveTag.isPresent()
+                    && java.util.Arrays.stream(poseEstimate.fiducialIds())
+                    .anyMatch(id -> id == exclusiveTag.get());
+
+    if (exclusiveTag.isPresent() && !hasExclusiveId) {
+      return Optional.empty();
+    }
+
+    var loggedPose = state.getFieldToRobot(poseEstimate.timestampSeconds());
+    if (loggedPose.isEmpty()) {
+      return Optional.empty();
+    }
+
+    Pose2d estimatePose = poseEstimate.fieldToRobot();
+
+    double scaleFactor = 1.0 / poseEstimate.quality();
+    double xStd = cam.standardDeviations[VisionConstants.kMegatag1XStdDevIndex] * scaleFactor;
+    double yStd = cam.standardDeviations[VisionConstants.kMegatag1YStdDevIndex] * scaleFactor;
+    double rotStd =
+            cam.standardDeviations[VisionConstants.kMegatag1YawStdDevIndex] * scaleFactor;
+
+    double xyStd = Math.max(xStd, yStd);
+    Matrix<N3, N1> visionStdDevs = VecBuilder.fill(xyStd, xyStd, rotStd);
+
+    return Optional.of(
+            new VisionFieldPoseEstimate(
+                    estimatePose,
+                    poseEstimate.timestampSeconds(),
+                    visionStdDevs,
+                    poseEstimate.fiducialIds().length));
+  }
 
 
-    // log loggable inputs
-    // String key: the path, distinguish where the data wants to go to; custom naming
+  /// are we a valid pose?
+  /// yes sir!
+  private boolean isValidInputs(VisionIOInputsAutoLogged inputs) {
+    if (inputs.tagCount <= 0) return false;
+    if (!inputs.hasMegaTag2) return false;
+    if (inputs.estimatedRobotPose == null) return false;
+    return true;
+  }
+
+  private double proportionalDistance(VisionIOInputsAutoLogged inputs){
+    //if there is no target, or TA is too small (error)
+    if (!inputs.hasTarget || inputs.ta < 0.0001)
+      return 999;
+
+    return 1.0 / Math.sqrt(inputs.ta);
+  }
 
 }
 

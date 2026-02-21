@@ -18,121 +18,79 @@ public class VisionIOLimelight implements VisionIO {
   // "limelight" is Networktables path
 
   // getTable(""), inside the "", is webUI/table name
-//  private final NetworkTable limelight_FrontCam = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
-//
-//  private final NetworkTable limelight_FrontShooterCam = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+  // name doesn't matter here as well
+  private final NetworkTable limelightOneTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+
+  private final NetworkTable limelightTwoTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
   private final Supplier<Pose2d> poseSupplier;
+  private VisionPoseFusion visionPoseFusion;
 
 
   // get that pose for me
-  public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
+  public VisionIOLimelight(Supplier<Pose2d> poseSupplier,
+                           VisionPoseFusion visionPoseFusion) {
 
     this.poseSupplier = poseSupplier;
+    this.visionPoseFusion = visionPoseFusion;
   }
 
   @Override
-  //
-  public void updateInputs(Map<String, VisionIOInputsAutoLogged> cameraInputsAll) {
+  public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
-    for(Map.Entry<String, VisionIOInputsAutoLogged> entry : cameraInputsAll.entrySet()) {
-      String cameraName = entry.getKey();
-      VisionIOInputsAutoLogged inputs = entry.getValue();
-      readCameraData(cameraName, inputs);
-    }
+    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_FRONT);
+    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_FRONT_SHOOTER);
   }
 
-  // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to
-  // write codes.
+  // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to write codes.
   // However, we do receive networktable first
 
-  /// inputs.tx = LimelightHelpers.getTX("FrontCam");
-  // equals
-
-  /// inputs.tx = table.getEntry("tx").getDouble(0);
-
+  /// inputs.tx = LimelightHelpers.getTX("FrontCam"); equals inputs.tx = table.getEntry("tx").getDouble(0);
   // SO, you can choose to do tables, OR limelighthelper. Either way
 
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
-  private void readCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {
+  private void readCameraData(NetworkTable table, VisionIOInputs inputs, String cameraName) {
     /// basics
     // drive pose
-    inputs.estimatedRobotPose = poseSupplier.get();
-
-    LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-
-    inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName)!=null;
-    // fiducialid is double
-    inputs.aprilTagIDNumber = (int) LimelightHelpers.getFiducialID(cameraName);
-
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
 
-    inputs.tx = LimelightHelpers.getTX(cameraName);
-    inputs.ty = LimelightHelpers.getTY(cameraName);
-    inputs.ta = LimelightHelpers.getTA(cameraName);
+    if (inputs.hasTarget) {
+      try {
+        inputs.estimatedRobotPose = poseSupplier.get();
+        LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
-    /// log details for hopperTracker, also for testing
-    inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
-    inputs.DistanceFromRobotToHub =
-        HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
-    inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
-    //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
+        /** MEGA TAG 2 **/
+        var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
+        if (megaTag2Results != null && inputs.tagCount >= 0) {
+          inputs.hasMegaTag2 = true;
+          inputs.megaTagPose = megaTag2Results.pose;
+          inputs.tagCount = megaTag2Results.tagCount;
+          inputs.timestamp = megaTag2Results.timestampSeconds;
+          inputs.latency = megaTag2Results.latency;
+          //package them
+          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp, inputs.visionStdDev, inputs.tagCount);
+          return;
+        }
 
-//    var ApriltagResults = LimelightHelpers.getRawFiducials(cameraName);
+        inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
+        inputs.tx = LimelightHelpers.getTX(cameraName);
+        inputs.ty = LimelightHelpers.getTY(cameraName);
+        inputs.ta = LimelightHelpers.getTA(cameraName);
 
+        /// log details for hopperTracker, also for testing
+//        inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
+//        inputs.DistanceFromRobotToHub = HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
+//        inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
+        //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
 
-
-
-//    if (!inputs.hasTarget) {
-//      inputs.hasMegaTag2 = false;
-//      return;
-//    }
-
-   /**MEGA
-    * TAG
-    * 2*/
-    var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
-
-    if (megaTag2Results != null && inputs.tagCount >= 0) {
-      inputs.hasMegaTag2 = true;
-      inputs.megaTagPose = megaTag2Results.pose;
-      inputs.tagCount = megaTag2Results.tagCount;
-      inputs.timestamp = megaTag2Results.timestampSeconds;
-      inputs.latency = megaTag2Results.latency;
-      return;
-
+      } catch (Exception e) {
+        System.err.println("Error processing Limelight data: " + e.getMessage());
+      }
 
     }
 
-    /**MEGA 
-     * TAG
-     * 1*/
-//    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
-//
-//    if (megaTag1Results != null && megaTag1Results.tagCount >= 1) {
-//      inputs.hasMegaTag2 = false;
-//      inputs.megaTagPose = megaTag1Results.pose;
-//      inputs.tagCount = megaTag1Results.tagCount;
-//      inputs.timestamp = megaTag1Results.timestampSeconds;
-//      inputs.poseAmbiguity = getMinAmbiguity(megaTag1Results);
-//      return;
-//    }
-//
-//    inputs.hasMegaTag2 = false;
-//    return;
-
   }
-//  private static double getMinAmbiguity(LimelightHelpers.PoseEstimate fludicalResults){
-//    /// ambiguity, new!
-//
-//    double minAmbiguity = 999;
-//    for (var UnreadRadFludicial : fludicalResults.rawFiducials){
-//      minAmbiguity = Math.min(minAmbiguity, UnreadRadFludicial.ambiguity);
-//    }
-//    return minAmbiguity;
-//  }
-
 
 }
 

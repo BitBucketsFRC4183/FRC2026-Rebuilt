@@ -22,7 +22,6 @@ import frc.robot.commands.AutoAimCommand;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommands;
-import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -52,7 +51,8 @@ public class RobotContainer {
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
-  private VisionPoseManager visionPoseManager;
+ private OdometryHistory odometryHistory;
+ private VisionPoseFusion visionPoseFusion;
 
 
   // Added missing subsystem fields
@@ -77,11 +77,13 @@ public class RobotContainer {
         // a CANcoder
         driveSubsystem =
             new DriveSubsystem(
+
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+                new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
+                    odometryHistory);
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -115,10 +117,8 @@ public class RobotContainer {
         //        NamedCommands.registerCommand("StartMidShootEndL1",
         // autoSubystem.StartMidShootEndL1());
 
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-//        visionPoseManager = new VisionPoseManager();
-        visionSubsystem = new VisionSubsystem(visionIO);
-
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition(), visionPoseFusion);
+        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
         shooterSim = new ShooterSim();
         break;
 
@@ -130,7 +130,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+                new ModuleIOSim(TunerConstants.BackRight), odometryHistory);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -158,7 +158,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                    odometryHistory);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
