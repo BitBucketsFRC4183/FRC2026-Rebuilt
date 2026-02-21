@@ -1,9 +1,8 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.VisionConstant;
-import java.util.HashMap;
-import java.util.Map;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 /// shooter game 2026: concept & mechanics
@@ -22,24 +21,35 @@ public class VisionSubsystem extends SubsystemBase {
   /// so I'm a data collector
   /// ******************************
 
-  private final VisionIO visionio;
+  private final VisionIO cameraFront;
+  private final VisionIO cameraSide;
+  private final DriveSubsystem drive;
 
   // loggable data
-  private final Map<String, VisionIOInputsAutoLogged> cameraInputsAll = new HashMap<>();
+  private final VisionIOInputsAutoLogged cameraFrontInputs = new VisionIOInputsAutoLogged();
+  private final VisionIOInputsAutoLogged cameraSideInputs = new VisionIOInputsAutoLogged();
 
-  public VisionSubsystem(VisionIO io) {
-    this.visionio = io;
-
-    // cameraInputsAll.put(VisionConstant.LIMELIGHT_FRONT, new VisionIOInputsAutoLogged());
-    cameraInputsAll.put(VisionConstant.LIMELIGHT_FRONT_SHOOTER, new VisionIOInputsAutoLogged());
+  public VisionSubsystem(VisionIO cameraFront, VisionIO cameraSide, DriveSubsystem driveSubsystem) {
+    this.cameraFront = cameraFront;
+    this.cameraSide = cameraSide;
+    this.drive = driveSubsystem;
   }
 
   @Override
   public void periodic() {
-    visionio.updateInputs(cameraInputsAll);
+    cameraFront.updateInputs(cameraFrontInputs);
+    cameraSide.updateInputs(cameraSideInputs);
     // Logger.processInputs("Vision/front", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT));
-    Logger.processInputs(
-        "Vision/front_shooter", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT_SHOOTER));
+    Logger.processInputs("Vision/cameraFront", cameraFrontInputs);
+    Logger.processInputs("Vision/cameraSide", cameraSideInputs);
+
+    // only use cameraFront for now
+    if (cameraFrontInputs.hasMegaTag2) {
+      drive.addVisionMeasurement(
+          cameraFrontInputs.megaTagPose,
+          cameraFrontInputs.timestamp,
+          VecBuilder.fill(.7, .7, 9999999));
+    }
   }
 }
 
