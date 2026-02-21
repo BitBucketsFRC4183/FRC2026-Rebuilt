@@ -1,30 +1,20 @@
 package frc.robot.subsystems.shooter;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
-  private final TalonFX finalFlywheel = new TalonFX(ShooterConstants.flywheelID);
-  private final TalonFX finalFlywheel2 = new TalonFX(ShooterConstants.flywheelID2);
-  //  private final TalonFX intermediateMotor = new TalonFX(ShooterConstants.intermediateID);
+  public final TalonFX flywheelMotor = new TalonFX(ShooterConstants.flywheelID);
+  public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
+  public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
-    Orchestra m_orchestra = new Orchestra();
-
-    m_orchestra.addInstrument(finalFlywheel);
-    m_orchestra.addInstrument(finalFlywheel2);
-
-    m_orchestra.loadMusic("music/blackhole.chrp");
-    m_orchestra.play();
-
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
     motorConfig.MotorOutput.Inverted =
         ShooterConstants.flywheelInverted
@@ -36,12 +26,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // PID and FF Configs
     Slot0Configs slot0 = motorConfig.Slot0;
-    slot0.kP = ShooterConstants.kP;
-    slot0.kI = ShooterConstants.kI;
-    slot0.kD = ShooterConstants.kD;
-    slot0.kA = ShooterConstants.kA;
-    slot0.kV = ShooterConstants.kV;
-    slot0.kS = ShooterConstants.kS;
+    slot0.kP = ShooterConstants.flywheel_kP;
+    slot0.kI = ShooterConstants.flywheel_kI;
+    slot0.kD = ShooterConstants.flywheel_kD;
+    slot0.kA = ShooterConstants.flywheel_kA;
+    slot0.kV = ShooterConstants.flywheel_kV;
+    slot0.kS = ShooterConstants.flywheel_kS;
 
     // Current Limits
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
@@ -50,66 +40,49 @@ public class ShooterIOTalonFX implements ShooterIO {
     currentConfig.StatorCurrentLimitEnable = true;
     currentConfig.StatorCurrentLimit = 40;
 
-    finalFlywheel.getConfigurator().apply(motorConfig);
-    finalFlywheel.getConfigurator().apply(currentConfig);
+    flywheelMotor.getConfigurator().apply(motorConfig);
+    flywheelMotor.getConfigurator().apply(currentConfig);
 
-    finalFlywheel2.getConfigurator().apply(motorConfig);
-    finalFlywheel2.getConfigurator().apply(currentConfig);
+    flywheelMotor2.getConfigurator().apply(motorConfig);
+    flywheelMotor2.getConfigurator().apply(motorConfig);
 
     motorConfig.MotorOutput.Inverted =
-        ShooterConstants.flywheelInverted
+        !ShooterConstants.flywheelInverted
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    // Intermediate Motor Configs
-    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    //    intermediateMotor.getConfigurator().apply(motorConfig);
-    //    intermediateMotor.getConfigurator().apply(currentConfig);
+    intakeMotor.getConfigurator().apply(motorConfig);
+    intakeMotor.getConfigurator().apply(currentConfig);
   }
 
   @Override
   public void setSpeed(double targetSpeed) {
-    // Please be the same radius
-    finalFlywheel.setControl(target.withVelocity(targetSpeed));
-    finalFlywheel2.setControl(target.withVelocity(targetSpeed));
+    flywheelMotor.setControl(target.withVelocity(targetSpeed));
+    flywheelMotor2.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
-  public void startIntermediateMotors() {
-    //    intermediateMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
+  public void startFeeding() {
+    intakeMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
-    finalFlywheel.stopMotor();
-    finalFlywheel2.stopMotor();
-    // intermediateMotor.stopMotor();
-  }
-
-  @Override
-  public boolean speedReached(double targetSpeed) {
-    double currentTopFlywheelVelocity = finalFlywheel.getVelocity().getValueAsDouble();
-    double currentBottomFlywheelVelocity = finalFlywheel2.getVelocity().getValueAsDouble();
-    return currentTopFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentTopFlywheelVelocity > targetSpeed - ShooterConstants.tolerance
-        && currentBottomFlywheelVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentBottomFlywheelVelocity > targetSpeed - ShooterConstants.tolerance;
+    flywheelMotor.stopMotor();
+    flywheelMotor2.stopMotor();
+    intakeMotor.stopMotor();
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    SmartDashboard.putNumber(
-        "Flywheel Motor 1 Speed", finalFlywheel.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 1 Voltage", finalFlywheel.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 2 Speed", finalFlywheel2.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber(
-        "Flywheel Motor 2 Voltage", finalFlywheel2.getMotorVoltage().getValueAsDouble());
-    // SmartDashboard.putNumber("Intermediate Motor Speed",
-    // intermediateMotor.getVelocity().getValueAsDouble());
-    // SmartDashboard.putNumber("Intermediate Motor Voltage",
-    // intermediateMotor.getMotorVoltage().getValueAsDouble());
+    inputs.flywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
+    inputs.flywheelVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
+    inputs.flywheelCurrent = flywheelMotor.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage = flywheelMotor.getMotorVoltage().getValueAsDouble();
+    inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage2 = intakeMotor.getMotorVoltage().getValueAsDouble();
+    inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
+    inputs.intakeVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
   }
 }
 

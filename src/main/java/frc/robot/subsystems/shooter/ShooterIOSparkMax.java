@@ -1,8 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.constants.ShooterConstants;
@@ -11,8 +8,8 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   // private final SparkMax flywheel =
   // new SparkMax(ShooterConstants.flywheelID, SparkLowLevel.MotorType.kBrushless);
-  private final SparkMax intermediateMotors =
-      new SparkMax(ShooterConstants.intermediateID, SparkLowLevel.MotorType.kBrushless);
+  //  private final SparkMax intermediateMotors =
+  //      new SparkMax(ShooterConstants.intermediateID, SparkLowLevel.MotorType.kBrushless);
   // private final SparkRelativeEncoder flywheel_encoder =
   // (SparkRelativeEncoder) flywheel.getEncoder();
   // private final SparkRelativeEncoder intermediateMotors_encoder =
@@ -24,15 +21,16 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   public ShooterIOSparkMax() {
     SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
+    config.closedLoop.pid(
+        ShooterConstants.flywheel_kP, ShooterConstants.flywheel_kI, ShooterConstants.flywheel_kD);
     config.inverted(true);
     config.smartCurrentLimit(40);
     config.idleMode(SparkBaseConfig.IdleMode.kCoast);
 
     //    flywheel.configure(config, ResetMode.kResetSafeParameters,
     // PersistMode.kPersistParameters);
-    intermediateMotors.configure(
-        config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    //    intermediateMotors.configure(
+    //        config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -41,22 +39,16 @@ public class ShooterIOSparkMax implements ShooterIO {
   }
 
   @Override
-  public void startIntermediateMotors() {
+  public void startFeeding() {
     //    intermediateMotors_controller.setSetpoint(
     //        ShooterConstants.intermediateSpeed, SparkBase.ControlType.kVelocity);
-    intermediateMotors.set(0.5);
+    //    intermediateMotors.set(0.5);
   }
 
   @Override
   public void stopMotor() {
     // flywheel.stopMotor();
-    intermediateMotors.stopMotor();
-  }
-
-  @Override
-  public boolean speedReached(double targetSpeed) {
-    return false;
-    //    return flywheel_encoder.getVelocity() == targetSpeed * 60;
+    //    intermediateMotors.stopMotor();
   }
 
   @Override

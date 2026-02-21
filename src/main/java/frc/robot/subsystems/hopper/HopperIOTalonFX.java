@@ -9,7 +9,7 @@ import frc.robot.constants.HopperConstants;
 
 public class HopperIOTalonFX implements HopperIO {
 
-  private final TalonFX conveyorMotor;
+  public final TalonFX conveyorMotor;
   private final DutyCycleOut percentRequest = new DutyCycleOut(0);
 
   public HopperIOTalonFX() {
@@ -26,7 +26,6 @@ public class HopperIOTalonFX implements HopperIO {
     // Current Limits
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
-
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = 80.0;

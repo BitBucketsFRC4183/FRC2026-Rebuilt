@@ -4,16 +4,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-  ShooterIOTalonFX io;
-  ShooterIOSparkMax ioSpark;
+  private final ShooterIO io;
+
+  private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
   private static double targetVelocity = 0;
 
   private double storedDistance = -1;
 
-  public ShooterSubsystem(ShooterIOTalonFX io, ShooterIOSparkMax ioSpark) {
+  public ShooterSubsystem(ShooterIO io) {
     this.io = io;
-    this.ioSpark = ioSpark;
   }
 
   public static double getTargetVelocity() {
@@ -82,12 +82,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // Stops both Intermediate and Flywheel Motors
   public void stop() {
     io.stopMotor();
-    ioSpark.stopMotor();
   }
 
-  public void startIntermediateMotors() {
-    // io.startIntermediateMotors();
-    ioSpark.startIntermediateMotors();
+  public void startFeeding() {
+    io.startFeeding();
   }
 
   // insert code for setting hood angle stuff
@@ -99,6 +97,14 @@ public class ShooterSubsystem extends SubsystemBase {
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    return io.speedReached(targetVelocity);
+    return shooterInputs.flywheelVelocity < (targetVelocity + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity < (targetVelocity - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity - ShooterConstants.tolerance);
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(shooterInputs);
   }
 }

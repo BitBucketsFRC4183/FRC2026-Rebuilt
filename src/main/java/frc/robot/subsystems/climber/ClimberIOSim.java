@@ -48,7 +48,8 @@ public class ClimberIOSim implements ClimberIO {
 
     climberModel.setLength(simHeightMeters + 0.2);
     inputs.climberHeight = simHeightMeters;
-    inputs.currentVoltage = appliedVoltage;
+    inputs.climberVoltage = appliedVoltage;
+    inputs.climberCurrent = climberSimMotor.getSupplyCurrent();
 
     climberSimMotor.setSupplyVoltage(appliedVoltage);
 
@@ -73,16 +74,6 @@ public class ClimberIOSim implements ClimberIO {
 
   @Override
   public void stopClimb() {}
-
-  @Override
-  public double getCurrentHeight() {
-    return simHeightMeters;
-  }
-
-  @Override
-  public double getCurrentVoltage() {
-    return appliedVoltage;
-  }
 
   @Override
   public void setVoltage(double voltageSupplied) {

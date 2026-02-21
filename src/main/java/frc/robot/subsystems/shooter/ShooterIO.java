@@ -1,13 +1,25 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.AutoLog;
+
 public interface ShooterIO {
-  void setSpeed(double targetSpeed);
+  @AutoLog
+  class ShooterIOInputs {
+    public double flywheelVelocity;
+    public double flywheelVelocity2;
+    public double flywheelVoltage;
+    public double flywheelVoltage2;
+    public double intakeVoltage;
+    public double flywheelCurrent;
+    public double flywheelCurrent2;
+    public double intakeCurrent;
+  }
 
-  void startIntermediateMotors();
+  public default void setSpeed(double targetSpeed) {}
 
-  void stopMotor();
+  public default void startFeeding() {}
 
-  boolean speedReached(double targetSpeed);
+  public default void stopMotor() {}
 
-  void updateInputs(ShooterIOInputs inputs);
+  public default void updateInputs(ShooterIOInputs inputs) {}
 }

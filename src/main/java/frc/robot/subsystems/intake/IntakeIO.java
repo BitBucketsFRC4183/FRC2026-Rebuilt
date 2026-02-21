@@ -1,7 +1,16 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.AutoLog;
+
 public interface IntakeIO {
 
+  @AutoLog
+  public class IntakeIOInputs {
+    public double motorVelocityRPM = 0.0;
+    public double motorCurrentAmps = 0.0;
+    public boolean primaryPistonExtended = false;
+    public boolean secondaryPistonExtended = false;
+  }
   /** Updates all sensor inputs */
   default void updateInputs(IntakeIOInputs inputs) {}
 

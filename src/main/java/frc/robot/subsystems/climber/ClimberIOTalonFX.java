@@ -12,13 +12,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX climbMotor;
 
   private final PositionVoltage climbRequest = new PositionVoltage(0);
+  TalonFXConfiguration climbConfig = new TalonFXConfiguration();
 
   public ClimberIOTalonFX() {
 
     // Arm X60 motor
     climbMotor = new TalonFX(ClimberConstants.ARM_MOTOR_CAN_ID, ClimberConstants.climberBus);
 
-    TalonFXConfiguration climbConfig = new TalonFXConfiguration();
     climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 40;
     climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -47,7 +47,9 @@ public class ClimberIOTalonFX implements ClimberIO {
             * ClimberConstants.spoolRadius
             * 2
             * Math.PI;
-    inputs.currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+    inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+    inputs.climberCurrent = climbMotor.getSupplyCurrent().getValueAsDouble();
+    climbMotor.getConfigurator().apply(climbConfig);
   }
 
   // Arm
@@ -55,7 +57,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setTargetHeight(double height) {
     double motorRotations =
-        height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
+        height / ((2 * Math.PI * ClimberConstants.spoolRadius) / ClimberConstants.ARM_GEAR_RATIO);
     climbMotor.setControl(climbRequest.withPosition(motorRotations));
   }
 
@@ -65,23 +67,12 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public double getCurrentHeight() {
-    double climberHeight =
-        (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
-            * ClimberConstants.spoolRadius
-            * 2
-            * Math.PI;
-    return climberHeight;
-  }
-
-  @Override
-  public double getCurrentVoltage() {
-    double currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
-    return currentVoltage;
-  }
-
-  @Override
   public void setVoltage(double volts) {
     climbMotor.setVoltage(volts);
+  }
+
+  @Override
+  public void setkG(double kG) {
+    climbConfig.Slot0.kG = kG;
   }
 }

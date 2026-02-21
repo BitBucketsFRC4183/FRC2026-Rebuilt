@@ -6,7 +6,7 @@ import frc.robot.constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final IntakeIO io;
-  private final IntakeIOInputs inputs = new IntakeIOInputs();
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private IntakeState currentState = IntakeState.STOWED;
 

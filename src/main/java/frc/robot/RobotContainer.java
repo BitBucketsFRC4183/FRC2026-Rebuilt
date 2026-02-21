@@ -12,17 +12,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoAimCommand;
-import frc.robot.commands.ClimberCommands;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IntakeCommands;
+import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
@@ -32,7 +32,6 @@ import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,14 +42,15 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final DriveSubsystem driveSubsystem;
-  // private final AutoSubsystem autoSubsystem;
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSim shooterSim;
+
+   private AutoSubsystem autoSubsystem;
+  private final SendableChooser<Command> autoChooser;
 
   private VisionSubsystem visionSubsystem;
-  private VisionIO visionIO;
+    private VisionIO visionIO;
   private OdometryHistory odometryHistory;
   private VisionFusionResults visionFusionResults;
 
@@ -65,10 +65,10 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -84,37 +84,16 @@ public class RobotContainer {
                 odometryHistory,
                 visionFusionResults);
 
-        climberIO = new ClimberIOTalonFX();
-        climberSubsystem = new ClimberSubsystem(climberIO);
-
+        climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        // register named commands
-
-        //        NamedCommands.registerCommand("StartBottomToTower",
-        // autoSubystem.StartBottomToTower());
-        //        NamedCommands.registerCommand("bottomStartToShootOnly",
-        // autoSubystem.bottomStartToShootOnly());
-        //        NamedCommands.registerCommand("topStartToShootOnly",
-        // autoSubystem.topStartToShootOnly());
-        //        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem.
-        // midStartToShootOnly());
-        //        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-        //        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-        //        NamedCommands.registerCommand("StartBottomShootIntakeEndL1",
-        // autoSubystem.StartBottomShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootIntakeEndL1",
-        // autoSubystem.StartTopShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartMidShootIntakeEndL1",
-        // autoSubystem.StartMidShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootEndL1",
-        // autoSubystem.StartTopShootEndL1());
-        //        NamedCommands.registerCommand("StartBottomShootEndL1",
-        // autoSubystem.StartBottomShootEndL1());
-        //        NamedCommands.registerCommand("StartMidShootEndL1",
-        // autoSubystem.StartMidShootEndL1());
+//        visionSubsystem =
+//            new VisionSubsystem(
+//                new VisionIOLimelight("cameraFront", () -> driveSubsystem.getRotation()),
+//                new VisionIOLimelight("empty", () -> driveSubsystem.getRotation()),
+//                driveSubsystem);
 
         /* DATA FLOW:
         Vision IO (interface) connected VisionIOLimelight;
@@ -151,9 +130,8 @@ public class RobotContainer {
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
-
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
         //        visionSubsystem =
@@ -164,8 +142,8 @@ public class RobotContainer {
         //                    VisionConstant.robotToFrontCam),
         //                driveSubsystem);
 
-        shooterSim = new ShooterSim();
         break;
+        // thinking to what
 
       default:
         // Replayed robot, disable IO implementations
@@ -179,21 +157,40 @@ public class RobotContainer {
                 odometryHistory,
                 visionFusionResults);
 
-        climberIO = new ClimberIOSim();
-        climberSubsystem = new ClimberSubsystem(climberIO);
+        climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
+        intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
+        shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
+        hopperSubsystem = new HopperSubsystem(new HopperIO() {});
+        visionSubsystem = new VisionSubsystem(new VisionIO() {}, new VisionIO() {}, driveSubsystem);
 
-        intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
-        hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-
-        visionSubsystem = null;
-
-        shooterSim = new ShooterSim();
         break;
     }
 
+    autoSubsystem =
+        new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
+
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // building autochooser
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    // putting chooser on dashboard
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // for registered commands
+    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
+    autoChooser.addOption(
+        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+    autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -223,6 +220,8 @@ public class RobotContainer {
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
    * XboxController}), and then passing it to a {@link JoystickButton}.
+   *
+   * @return
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
@@ -250,6 +249,7 @@ public class RobotContainer {
         .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
+    // intake Commands
     operatorController
         .leftBumper()
         .onTrue(
@@ -262,6 +262,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
+    operatorController
+        .leftTrigger()
+        .whileTrue(
+            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
 
     // Hopper reverse while right bumper held
     operatorController
@@ -272,16 +276,55 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // Intake Control Motors
-
+    // shooter Commands
+    double distance = 5;
     operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+        .rightTrigger()
+        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
-    operatorController.povLeft().onTrue(ClimberCommands.climberToLevelOne(climberSubsystem));
-    operatorController.povDown().onTrue(ClimberCommands.climberToGround(climberSubsystem));
-    new Trigger(() -> Math.abs(operatorController.getLeftY()) > 0.1)
+    // Climber Setpoint Commands
+    operatorController
+        .a()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climbToGround(climberSubsystem));
+    operatorController
+        .x()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+    operatorController
+        .y()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+    operatorController
+        .b()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+
+    // servo command
+    operatorController
+        .povUp()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    operatorController
+        .povDown()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    new Trigger(
+            () ->
+                (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
+        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    new Trigger(
+            () ->
+                (operatorController.getRightY()) < -0.1 && operatorController.back().getAsBoolean())
+        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+
+    // manual climb command
+    new Trigger(
+            () ->
+                Math.abs(operatorController.getLeftY()) > 0.1
+                    && operatorController.back().getAsBoolean())
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
@@ -291,6 +334,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooser.getSelected();
   }
 }
