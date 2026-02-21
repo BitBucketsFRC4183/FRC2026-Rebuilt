@@ -34,6 +34,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final OdometryHistory odometryHistory;
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
+  private Optional<VisionFusionResults> latestVisionResult = Optional.empty();
 
   public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory) {
     this.visionio = io;
@@ -65,7 +66,7 @@ public class VisionSubsystem extends SubsystemBase {
     } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
       acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
     }
-
+    latestVisionResult = acceptedInputs;
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
   }
@@ -136,7 +137,7 @@ public class VisionSubsystem extends SubsystemBase {
   /// ********************
   /// ********************
 
-  public Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
+  private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
     Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
     if (!isValidInputs(inputs)) {
       return Optional.empty();
@@ -188,6 +189,10 @@ public class VisionSubsystem extends SubsystemBase {
     if (!inputs.hasTarget || inputs.ta < 0.0001) return 999;
 
     return 1.0 / Math.sqrt(inputs.ta);
+  }
+
+  public Optional<VisionFusionResults> getLatestVisionResult() {
+    return latestVisionResult;
   }
 }
 
