@@ -98,9 +98,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
     return shooterInputs.flywheelVelocity < (targetVelocity + ShooterConstants.tolerance)
-        || shooterInputs.flywheelVelocity < (targetVelocity - ShooterConstants.tolerance)
-        || shooterInputs.flywheelVelocity2 < (targetVelocity + ShooterConstants.tolerance)
-        || shooterInputs.flywheelVelocity2 < (targetVelocity - ShooterConstants.tolerance);
+        && shooterInputs.flywheelVelocity < (targetVelocity - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity - ShooterConstants.tolerance);
   }
 
   @Override
