@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,7 +46,6 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSim shooterSim;
   private VisionSubsystem visionSubsystem;
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
@@ -81,44 +79,14 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
-        climberIO = new ClimberIOTalonFX();
-        climberSubsystem = new ClimberSubsystem(climberIO);
-
+        climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        // register named commands
-
-        // register named commands
-
-        //        NamedCommands.registerCommand("StartBottomToTower",
-        // autoSubystem.StartBottomToTower());
-        //        NamedCommands.registerCommand("bottomStartToShootOnly",
-        // autoSubystem.bottomStartToShootOnly());
-        //        NamedCommands.registerCommand("topStartToShootOnly",
-        // autoSubystem.topStartToShootOnly());
-        //        NamedCommands.registerCommand("midStartToShootOnly", autoSubystem.
-        // midStartToShootOnly());
-        //        NamedCommands.registerCommand("StartTopToTower", autoSubystem.StartTopToTower());
-        //        NamedCommands.registerCommand("StartMidToTower", autoSubystem.StartMidToTower());
-        //        NamedCommands.registerCommand("StartBottomShootIntakeEndL1",
-        // autoSubystem.StartBottomShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootIntakeEndL1",
-        // autoSubystem.StartTopShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartMidShootIntakeEndL1",
-        // autoSubystem.StartMidShootIntakeEndL1());
-        //        NamedCommands.registerCommand("StartTopShootEndL1",
-        // autoSubystem.StartTopShootEndL1());
-        //        NamedCommands.registerCommand("StartBottomShootEndL1",
-        // autoSubystem.StartBottomShootEndL1());
-        //        NamedCommands.registerCommand("StartMidShootEndL1",
-        // autoSubystem.StartMidShootEndL1());
-
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, driveSubsystem);
 
-        shooterSim = new ShooterSim();
         break;
 
       case SIM:
@@ -133,7 +101,6 @@ public class RobotContainer {
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
-
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
@@ -146,7 +113,6 @@ public class RobotContainer {
                     VisionConstant.robotToFrontCam),
                 driveSubsystem);
 
-        shooterSim = new ShooterSim();
         break;
         // thinking to what
 
@@ -160,36 +126,19 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        climberIO = new ClimberIOTalonFX();
-        climberSubsystem = new ClimberSubsystem(climberIO);
-
-        intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
-        hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
+        intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
+        shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
+        hopperSubsystem = new HopperSubsystem(new HopperIO() {});
 
         visionSubsystem = null;
 
-        shooterSim = new ShooterSim();
         break;
     }
+
     autoSubsystem =
         new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
 
-    NamedCommands.registerCommand("StartBottomToTower", autoSubsystem.StartBottomToTower());
-    NamedCommands.registerCommand("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    NamedCommands.registerCommand("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    NamedCommands.registerCommand("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-    NamedCommands.registerCommand("StartTopToTower", autoSubsystem.StartTopToTower());
-    NamedCommands.registerCommand("StartMidToTower", autoSubsystem.StartMidToTower());
-    NamedCommands.registerCommand(
-        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    NamedCommands.registerCommand(
-        "StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    NamedCommands.registerCommand(
-        "StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    NamedCommands.registerCommand("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    NamedCommands.registerCommand("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    NamedCommands.registerCommand("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // building autochooser

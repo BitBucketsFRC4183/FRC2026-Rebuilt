@@ -52,12 +52,6 @@ public class ShooterIOSparkMax implements ShooterIO {
   }
 
   @Override
-  public boolean speedReached(double targetSpeed) {
-    return false;
-    //    return flywheel_encoder.getVelocity() == targetSpeed * 60;
-  }
-
-  @Override
   public void updateInputs(ShooterIOInputs inputs) {
     //  If you close your eyes, this doesn't exist
   }

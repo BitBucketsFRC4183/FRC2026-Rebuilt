@@ -5,8 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   class ShooterIOInputs {
-    public double targetVelocity;
     public double flywheelVelocity;
+    public double flywheelVelocity2;
     public double flywheelVoltage;
     public double flywheelVoltage2;
     public double intakeVoltage;
@@ -15,13 +15,11 @@ public interface ShooterIO {
     public double intakeCurrent;
   }
 
-  void setSpeed(double targetSpeed);
+  public default void setSpeed(double targetSpeed) {}
 
-  void startFeeding();
+  public default void startFeeding() {}
 
-  void stopMotor();
+  public default void stopMotor() {}
 
-  boolean speedReached(double targetSpeed);
-
-  void updateInputs(ShooterIOInputs inputs);
+  public default void updateInputs(ShooterIOInputs inputs) {}
 }

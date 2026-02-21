@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.BangBangController;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -14,8 +13,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
   public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
   private final VelocityVoltage target = new VelocityVoltage(0);
-
-  private final BangBangController flywheelController = new BangBangController();
 
   public ShooterIOTalonFX() {
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
@@ -77,19 +74,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
-  public boolean speedReached(double targetSpeed) {
-    double currentFlywheelMotorVelocity = flywheelMotor.getVelocity().getValueAsDouble();
-    double currentFlywheelMotorVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
-    return currentFlywheelMotorVelocity < targetSpeed + ShooterConstants.tolerance
-        && currentFlywheelMotorVelocity > targetSpeed - ShooterConstants.tolerance
-        && currentFlywheelMotorVelocity2 < targetSpeed + ShooterConstants.tolerance
-        && currentFlywheelMotorVelocity2 > targetSpeed - ShooterConstants.tolerance;
-  }
-
-  @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.targetVelocity = ShooterSubsystem.getTargetVelocity();
     inputs.flywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
+    inputs.flywheelVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
     inputs.flywheelCurrent = flywheelMotor.getStatorCurrent().getValueAsDouble();
     inputs.flywheelVoltage = flywheelMotor.getMotorVoltage().getValueAsDouble();
     inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();

@@ -75,16 +75,6 @@ public class ClimberIOSim implements ClimberIO {
   public void stopClimb() {}
 
   @Override
-  public double getCurrentHeight() {
-    return simHeightMeters;
-  }
-
-  @Override
-  public double getCurrentVoltage() {
-    return appliedVoltage;
-  }
-
-  @Override
   public void setVoltage(double voltageSupplied) {
     if (voltageSupplied > 12.0) {
       appliedVoltage = 12.0;

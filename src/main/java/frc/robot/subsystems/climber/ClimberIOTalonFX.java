@@ -66,22 +66,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public double getCurrentHeight() {
-    double climberHeight =
-        (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
-            * ClimberConstants.spoolRadius
-            * 2
-            * Math.PI;
-    return climberHeight;
-  }
-
-  @Override
-  public double getCurrentVoltage() {
-    double currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
-    return currentVoltage;
-  }
-
-  @Override
   public void setVoltage(double volts) {
     climbMotor.setVoltage(volts);
   }

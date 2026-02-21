@@ -2,15 +2,11 @@ package frc.robot.subsystems.climber;
 
 public interface ClimberIO {
 
-  void updateInputs(ClimberIOInputs inputs);
+  public default void updateInputs(ClimberIOInputs inputs) {}
 
-  void setTargetHeight(double height);
+  public default void setTargetHeight(double height) {}
 
-  void stopClimb();
+  public default void stopClimb() {}
 
-  double getCurrentHeight();
-
-  double getCurrentVoltage();
-
-  void setVoltage(double voltageSupplied);
+  public default void setVoltage(double voltageSupplied) {}
 }
