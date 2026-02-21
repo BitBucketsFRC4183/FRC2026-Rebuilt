@@ -26,6 +26,7 @@ public class VisionIOInputs {
   public double latency;
   public double[] rawStdDev;
 
+  public int aprilTagIDNumber;
   // from raw fiducial
 
   public double minAmbiguity;
