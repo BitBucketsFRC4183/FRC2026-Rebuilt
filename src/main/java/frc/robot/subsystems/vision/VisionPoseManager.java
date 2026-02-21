@@ -12,13 +12,18 @@ import java.util.Map;
 
 public class VisionPoseManager {
 /// gime the best pose in your shop
-
+private final DriveSubsystem driveSubsystem;
+public VisionPoseManager(DriveSubsystem driveSubsystem){
+    this.driveSubsystem = driveSubsystem;
+}
     public void processAllCameraData(Map<String, VisionIOInputsAutoLogged> inputMap){
-        VisionIOInputsAutoLogged bestPose = getBestPoseAtCurrentTime(inputMap);
+        VisionIOInputsAutoLogged bestInputs = getBestPoseAtCurrentTime(inputMap);
 
-        if (bestPose == null)
+        if (bestInputs == null)
             return;
-        Matrix<N3, N1> StdDev = computeVisionStdDev(bestPose.tagCount);
+        Matrix<N3, N1> StdDev = computeVisionStdDev(bestInputs.tagCount);
+
+        driveSubsystem.addVisionMeasurement(bestInputs.megaTagPose, bestInputs.timestamp, computeVisionStdDev());
     }
 
     /// complicated concept
@@ -78,6 +83,7 @@ public class VisionPoseManager {
             if (!isValidPose(inputs))
                 continue;
             double proportionalDistance = proportionalDistance(inputs);
+            double score =
             if (proportionalDistance <maxDistance){
                 maxDistance = proportionalDistance;
                 bestInputs = inputs;

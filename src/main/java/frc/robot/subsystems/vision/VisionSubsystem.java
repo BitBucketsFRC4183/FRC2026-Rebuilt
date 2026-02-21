@@ -58,13 +58,14 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("Vision/front", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT));
     Logger.processInputs("Vision/front_shooter", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT_SHOOTER));
     }
-    public Map<String, VisionIOInputsAutoLogged> getAllCameraDataCopy() {
-      Map<String, VisionIOInputsAutoLogged> copy = new HashMap<>();
-      for (var entry : cameraInputsAll.entrySet()) {
-        copy.put(entry.getKey(), entry.getValue().clone());
-      }
-      return copy;
-    }
+//    public Map<String, VisionIOInputsAutoLogged> getAllCameraDataCopy() {
+//      Map<String, VisionIOInputsAutoLogged> copy = new HashMap<>();
+//      for (var entry : cameraInputsAll.entrySet()) {
+//        copy.put(entry.getKey(), entry.getValue().clone());
+//      }
+//      return copy;
+//    }
+
 
 //    Logger.recordOutput("Area of Taget", inputs.ta); how big AprilTag is in the camera frame;
 //    Basically, 3%-> far; 80%-> takes big portion of the frame, AprilTag is near
