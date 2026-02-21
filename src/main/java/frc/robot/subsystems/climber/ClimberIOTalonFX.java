@@ -12,13 +12,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX climbMotor;
 
   private final PositionVoltage climbRequest = new PositionVoltage(0);
+  TalonFXConfiguration climbConfig = new TalonFXConfiguration();
 
   public ClimberIOTalonFX() {
 
     // Arm X60 motor
     climbMotor = new TalonFX(ClimberConstants.ARM_MOTOR_CAN_ID, ClimberConstants.climberBus);
 
-    TalonFXConfiguration climbConfig = new TalonFXConfiguration();
     climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     climbConfig.CurrentLimits.SupplyCurrentLowerLimit = 40;
     climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -36,7 +36,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kA = ClimberConstants.ARM_kA;
     climbConfig.Slot0.kV = ClimberConstants.ARM_kV;
     climbConfig.Slot0.kS = ClimberConstants.ARM_kS;
-    climbConfig.Slot0.kG = ClimberConstants.ARM_kG;
+
 
     climbMotor.getConfigurator().apply(climbConfig);
   }
@@ -48,15 +48,19 @@ public class ClimberIOTalonFX implements ClimberIO {
             * ClimberConstants.spoolRadius
             * 2
             * Math.PI;
-    inputs.currentVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
-  }
+    inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
+    inputs.climberCurrent =climbMotor.getSupplyCurrent().getValueAsDouble();
+    climbMotor.getConfigurator().apply(climbConfig);
+
+    }
+
 
   // Arm
 
   @Override
   public void setTargetHeight(double height) {
     double motorRotations =
-        height / (2 * Math.PI * ClimberConstants.spoolRadius) * ClimberConstants.ARM_GEAR_RATIO;
+        height / ((2 * Math.PI * ClimberConstants.spoolRadius) / ClimberConstants.ARM_GEAR_RATIO);
     climbMotor.setControl(climbRequest.withPosition(motorRotations));
   }
 
@@ -68,5 +72,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setVoltage(double volts) {
     climbMotor.setVoltage(volts);
+  }
+
+  @Override
+  public void setkG(double kG){
+    climbConfig.Slot0.kG = kG;
   }
 }

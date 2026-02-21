@@ -15,27 +15,30 @@ public class ClimberCommands {
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
               double input = LeftY.getAsDouble();
-              double desiredSpeed =
-                  input
-                      * ((ClimberConstants.maxHeight - currentHeight)
-                          * ClimberConstants.speedConstant);
-              SimpleMotorFeedforward climbFeedForward =
-                  new SimpleMotorFeedforward(
-                      ClimberConstants.ARM_kS,
-                      ClimberConstants.ARM_kV,
-                      ClimberConstants.ARM_kA,
-                      0.2);
-              double scale = climbFeedForward.calculate(desiredSpeed);
 
-              if (currentHeight <= ClimberConstants.minHeight && input < 0) {
-                climberSubsystem.setVoltageSupplied(0);
-              }
-              if (currentHeight >= ClimberConstants.maxHeight && input > 0) {
-                climberSubsystem.setVoltageSupplied(0);
-              }
+                if (Math.abs(input) < 0.05) {
+                    climberSubsystem.setVoltageSupplied(0);
+                    return;}
 
-              double voltageSupplied = input * scale;
-              climberSubsystem.setVoltageSupplied(voltageSupplied);
+                if (currentHeight <= ClimberConstants.minHeight && input < 0) {
+                    climberSubsystem.setVoltageSupplied(0);
+                    return;}
+
+                if (currentHeight >= ClimberConstants.maxHeight && input > 0) {
+                    climberSubsystem.setVoltageSupplied(0);
+                    return;}
+
+                double desiredSpeed = input * ((ClimberConstants.maxHeight - currentHeight) * ClimberConstants.speedConstant);
+
+                SimpleMotorFeedforward climbFeedForward =
+                        new SimpleMotorFeedforward(
+                                ClimberConstants.ARM_kS,
+                                ClimberConstants.ARM_kV,
+                                ClimberConstants.ARM_kA);
+
+                double voltageSupplied = climbFeedForward.calculate(desiredSpeed);
+
+                climberSubsystem.setVoltageSupplied(voltageSupplied);
             },
             climberSubsystem)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
@@ -46,16 +49,7 @@ public class ClimberCommands {
     return Commands.run(
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
-              double desiredSpeed =
-                  (ClimberConstants.rung1Position - climberSubsystem.getClimbHeight())
-                      * ClimberConstants.speedConstant;
-              SimpleMotorFeedforward climbFeedForward =
-                  new SimpleMotorFeedforward(
-                      ClimberConstants.ARM_kS,
-                      ClimberConstants.ARM_kV,
-                      ClimberConstants.ARM_kA,
-                      0.2);
-              double scale = climbFeedForward.calculate(desiredSpeed);
+              climberSubsystem.setTargetHeight(ClimberConstants.rung1Position);
 
               if (currentHeight <= ClimberConstants.minHeight) {
                 climberSubsystem.setVoltageSupplied(0);
@@ -63,8 +57,6 @@ public class ClimberCommands {
               if (currentHeight >= ClimberConstants.maxHeight) {
                 climberSubsystem.setVoltageSupplied(0);
               }
-
-              climberSubsystem.setVoltageSupplied(scale);
             },
             climberSubsystem)
         .until(
@@ -81,16 +73,7 @@ public class ClimberCommands {
     return Commands.run(
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
-              double desiredSpeed =
-                  (ClimberConstants.rung2Position - climberSubsystem.getClimbHeight())
-                      * ClimberConstants.speedConstant;
-              SimpleMotorFeedforward climbFeedForward =
-                  new SimpleMotorFeedforward(
-                      ClimberConstants.ARM_kS,
-                      ClimberConstants.ARM_kV,
-                      ClimberConstants.ARM_kA,
-                      0.2);
-              double scale = climbFeedForward.calculate(desiredSpeed);
+              climberSubsystem.setTargetHeight(ClimberConstants.rung2Position);
 
               if (currentHeight <= ClimberConstants.minHeight) {
                 climberSubsystem.setVoltageSupplied(0);
@@ -98,6 +81,16 @@ public class ClimberCommands {
               if (currentHeight >= ClimberConstants.maxHeight) {
                 climberSubsystem.setVoltageSupplied(0);
               }
+            },
+            climberSubsystem)
+        .until(
+            () ->
+                Math.abs(ClimberConstants.rung2Position - climberSubsystem.getClimbHeight()) < 0.01)
+        .finallyDo(
+            () -> {
+              climberSubsystem.setVoltageSupplied(0);
+            });
+  }
 
               climberSubsystem.setVoltageSupplied(scale);
             },
@@ -116,15 +109,7 @@ public class ClimberCommands {
     return Commands.run(
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
-              double desiredSpeed =
-                  (-climberSubsystem.getClimbHeight()) * ClimberConstants.speedConstant;
-              SimpleMotorFeedforward climbFeedForward =
-                  new SimpleMotorFeedforward(
-                      ClimberConstants.ARM_kS,
-                      ClimberConstants.ARM_kV,
-                      ClimberConstants.ARM_kA,
-                      0.2);
-              double scale = climbFeedForward.calculate(desiredSpeed);
+              climberSubsystem.setTargetHeight(0);
 
               if (currentHeight <= ClimberConstants.minHeight) {
                 climberSubsystem.setVoltageSupplied(0);
@@ -132,11 +117,9 @@ public class ClimberCommands {
               if (currentHeight >= ClimberConstants.maxHeight) {
                 climberSubsystem.setVoltageSupplied(0);
               }
-
-              climberSubsystem.setVoltageSupplied(scale);
             },
             climberSubsystem)
-        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.01)
+        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.1)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
   }
 
@@ -146,7 +129,7 @@ public class ClimberCommands {
           double servoPosition = 1.0;
           climberSubsystem.setClimbServoPosition(servoPosition);
           Commands.waitSeconds(2);
-        });
+        }).finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command climberServoDown(ClimberSubsystem climberSubsystem) {
@@ -155,7 +138,7 @@ public class ClimberCommands {
           double servoPosition = 0;
           climberSubsystem.setClimbServoPosition(servoPosition);
           Commands.waitSeconds(2);
-        });
+        }).finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command baseServoUp(ClimberSubsystem climberSubsystem) {
@@ -163,8 +146,7 @@ public class ClimberCommands {
         () -> {
           double servoPosition = 1.0;
           climberSubsystem.setBaseServoPosition(servoPosition);
-          Commands.waitSeconds(2);
-        });
+        }).finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command baseServoDown(ClimberSubsystem climberSubsystem) {
@@ -173,7 +155,7 @@ public class ClimberCommands {
           double servoPosition = 0;
           climberSubsystem.setBaseServoPosition(servoPosition);
           Commands.waitSeconds(2);
-        });
+        }).finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command climbToGround(ClimberSubsystem climberSubsystem) {
