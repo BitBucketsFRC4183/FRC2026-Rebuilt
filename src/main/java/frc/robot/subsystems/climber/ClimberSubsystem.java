@@ -31,6 +31,11 @@ public class ClimberSubsystem extends SubsystemBase {
       climberIO.setVoltage(-Math.abs(inputs.climberVoltage + 10));
     }
 
+    if((inputs.climberHeight <= ClimberConstants.minHeight && inputs.climberVoltage < 0)){
+      climberIO.stopClimb();
+    } else if ((inputs.climberHeight >= ClimberConstants.maxHeight && inputs.climberVoltage > 0)){
+      climberIO.stopClimb();
+    }
   }
 
   /* ================= TELEMETRY ================= */
@@ -57,7 +62,7 @@ public class ClimberSubsystem extends SubsystemBase {
     climberIO.setTargetHeight(currentPosition);
   }
 
-  public void setkG(double kG){
+  public void setkG(double kG) {
     climberIO.setkG(kG);
   }
 

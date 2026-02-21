@@ -117,20 +117,22 @@ public class ClimberCommands {
 
   public static Command climberServoUp(ClimberSubsystem climberSubsystem) {
     return Commands.runOnce(
-        () -> {
-          double servoPosition = 1.0;
-          climberSubsystem.setClimbServoPosition(servoPosition);
-            climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
-        }).finallyDo(() -> Commands.waitSeconds(2));
+            () -> {
+              double servoPosition = 1.0;
+              climberSubsystem.setClimbServoPosition(servoPosition);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
+            })
+        .finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command climberServoDown(ClimberSubsystem climberSubsystem) {
     return Commands.runOnce(
-        () -> {
-          double servoPosition = 0;
-          climberSubsystem.setClimbServoPosition(servoPosition);
-          climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
-        }).finallyDo(() -> Commands.waitSeconds(2));
+            () -> {
+              double servoPosition = 0;
+              climberSubsystem.setClimbServoPosition(servoPosition);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
+            })
+        .finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command baseServoUp(ClimberSubsystem climberSubsystem) {
@@ -144,10 +146,11 @@ public class ClimberCommands {
 
   public static Command baseServoDown(ClimberSubsystem climberSubsystem) {
     return Commands.runOnce(
-        () -> {
-          double servoPosition = 0;
-          climberSubsystem.setBaseServoPosition(servoPosition);
-        }).finallyDo(() -> Commands.waitSeconds(2));
+            () -> {
+              double servoPosition = 0;
+              climberSubsystem.setBaseServoPosition(servoPosition);
+            })
+        .finallyDo(() -> Commands.waitSeconds(2));
   }
 
   public static Command climbToGround(ClimberSubsystem climberSubsystem) {
