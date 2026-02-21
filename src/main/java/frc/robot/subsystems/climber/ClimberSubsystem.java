@@ -23,49 +23,16 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/ClimbingInputs", inputs);
-    //    if (climberIO.getCurrentHeight() >= ClimberConstants.maxHeight) {
-    //      climberIO.setVoltage(0);
-    //      Commands.waitSeconds(2);
-    //      climberIO.setVoltage(-2);
-    //    }
-    //    if (climberIO.getCurrentHeight() <= ClimberConstants.minHeight) {
-    //      climberIO.setVoltage(0);
-    //      Commands.waitSeconds(2);
-    //      climberIO.setVoltage(2);
-    //    }
-  }
+    if(climberIO.getCurrentVoltage() > 12){
+      climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() - 10));}
+    else if (climberIO.getCurrentVoltage() < -12){
+      climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() + 10));}
+    }
 
-  /* ================= ARM CONTROL ================= */
-
-  public void moveClimbToGround() {
-    climberIO.setTargetHeight(0);
-    //    servo1.setAngle(0);
-    //    servo2.setAngle(0);
-    //    servo3.setAngle(0);
-    //    servo4.setAngle(0);
-    //    Commands.waitSeconds(2);
-    //    servo1.set(0);
-    //    servo2.set(0);
-    //    servo3.set(0);
-    //    servo4.set(0);
-  }
-
-  public void stopRise() {
-    climberIO.stopClimb();
-  }
   /* ================= TELEMETRY ================= */
 
   public double getClimbHeight() {
     return inputs.climberHeight;
-  }
-
-  public void moveClimbToLevel1() {
-    // climberIO.setTargetHeight(ClimberConstants.rung1Position);
-    climberIO.setTargetHeight(0);
-    //    servo1.set(.7);
-    //    servo2.set(.7);
-    //    servo3.set(.7);
-    //    servo4.set(.7)
   }
 
   public void setVoltageSupplied(double voltageSupplied) {
@@ -82,13 +49,17 @@ public class ClimberSubsystem extends SubsystemBase {
     baseServo2.set(servoPosition);
   }
 
+  public void setTargetHeight(double currentPosition) {
+    climberIO.setTargetHeight(currentPosition);
+  }
+
   public double getClimbServoPosition() {
     double climberServo1Position = climbServo1.getPosition();
     return climberServo1Position;
   }
 
   public double getBaseServoPosition() {
-    double baseServo1Position = climbServo1.getPosition();
+    double baseServo1Position = baseServo1.getPosition();
     return baseServo1Position;
   }
 }
