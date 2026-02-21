@@ -63,7 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setTargetVelocity() {
-    io.setSpeed(targetVelocity);
+    io.setSpeed(ShooterConstants.flywheelSpeed);
   }
 
   // Stores a distance to be used calculateTargetVelocity()

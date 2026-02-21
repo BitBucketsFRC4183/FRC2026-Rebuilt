@@ -232,13 +232,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    //    operatorController
-    //        .leftTrigger()
-    //        .whileTrue(
-    //            IntakeCommands.intake(intakeSubsystem).onlyIf(() ->
-    // intakeSubsystem.isExtended()));
+    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
-    // Hopper reverse while right bumper held
+    // Hopper reverse while right bu
+    // mper held
     operatorController
         .rightBumper()
         .whileTrue(
@@ -248,7 +245,7 @@ public class RobotContainer {
                 hopperSubsystem));
 
     // shooter Commands
-    double distance = 5;
+    double distance = 1;
     operatorController
         .rightTrigger()
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
