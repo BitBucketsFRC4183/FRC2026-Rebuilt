@@ -3,13 +3,12 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
+import java.util.List;
+import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 public class VisionIOPhotonVisionSim implements VisionIO {
   // set the stage
@@ -68,7 +67,7 @@ public class VisionIOPhotonVisionSim implements VisionIO {
     backCamSim.enableDrawWireframe(true);
 
     // add properties that's it
-       visionSim.addCamera(frontCamSim, robotToFrontCam);
+    visionSim.addCamera(frontCamSim, robotToFrontCam);
     visionSim.addCamera(backCamSim, robotToBackCam);
   }
 
@@ -82,4 +81,4 @@ public class VisionIOPhotonVisionSim implements VisionIO {
     frontCamInputs.aprilTagIDNumber = PHOTON_FRONT.getPipelineIndex();
     frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
   }
- }
+}

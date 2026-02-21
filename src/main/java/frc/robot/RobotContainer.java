@@ -46,11 +46,11 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
 
-   private AutoSubsystem autoSubsystem;
+  private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
 
   private VisionSubsystem visionSubsystem;
-    private VisionIO visionIO;
+  private VisionIO visionIO;
   private OdometryHistory odometryHistory;
   private VisionFusionResults visionFusionResults;
 
@@ -89,11 +89,11 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-//        visionSubsystem =
-//            new VisionSubsystem(
-//                new VisionIOLimelight("cameraFront", () -> driveSubsystem.getRotation()),
-//                new VisionIOLimelight("empty", () -> driveSubsystem.getRotation()),
-//                driveSubsystem);
+        //        visionSubsystem =
+        //            new VisionSubsystem(
+        //                new VisionIOLimelight("cameraFront", () -> driveSubsystem.getRotation()),
+        //                new VisionIOLimelight("empty", () -> driveSubsystem.getRotation()),
+        //                driveSubsystem);
 
         /* DATA FLOW:
         Vision IO (interface) connected VisionIOLimelight;
@@ -113,7 +113,6 @@ public class RobotContainer {
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
-        shooterSim = new ShooterSim();
         break;
 
       case SIM:
@@ -161,7 +160,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(new VisionIO() {}, new VisionIO() {}, driveSubsystem);
+        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
 
         break;
     }
