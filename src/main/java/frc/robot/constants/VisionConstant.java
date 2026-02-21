@@ -33,10 +33,11 @@ public final class VisionConstant {
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
 
+  public static final int kExpectedStdDevArrayLength = 12;
   public static final double kLargeVariance = 1e6;
-  //max readable tag
 
   //TODO need tune
+  //max readable tag
   public static final double maxDistanceFromRobotToApril = 17.0;
   public static final double kTagMinAreaForSingleTagMegatag = 1.0;
   public static final double kDefaultNormThreshold = 1.0;

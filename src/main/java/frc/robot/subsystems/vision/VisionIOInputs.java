@@ -29,7 +29,7 @@ public class VisionIOInputs {
   public double timestamp;
   public int tagCount;
   public double latency;
-  public Matrix<N3, N1> visionStdDev;
+  public double[] rawStdDev;
 
 //from raw fiducial
 

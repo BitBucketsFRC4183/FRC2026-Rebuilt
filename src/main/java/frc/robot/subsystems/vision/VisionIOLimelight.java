@@ -21,11 +21,13 @@ public class VisionIOLimelight implements VisionIO {
 
   private final Supplier<Pose2d> poseSupplier;
   private VisionPoseFusion visionPoseFusion;
+  //define, create a 0.0 double array
+  private static final double[] defaultStdDev =
+          new double[VisionConstant.kExpectedStdDevArrayLength];
 
 
   // get that pose for me
-  public VisionIOLimelight(Supplier<Pose2d> poseSupplier,
-                           VisionPoseFusion visionPoseFusion) {
+  public VisionIOLimelight(Supplier<Pose2d> poseSupplier, VisionPoseFusion visionPoseFusion) {
 
     this.poseSupplier = poseSupplier;
     this.visionPoseFusion = visionPoseFusion;
@@ -77,6 +79,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
+        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
 
         /// log details for hopperTracker, also for testing
 //        inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
@@ -91,11 +94,11 @@ public class VisionIOLimelight implements VisionIO {
     }
 
   }
-  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadRadFludicial){
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial){
     /// ambiguity, new!
 
     double minAmbiguity = 999;
-    for (var readFludicial : UnreadRadFludicial){
+    for (var readFludicial : UnreadReadFiducial){
       minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
     }
     return minAmbiguity;
