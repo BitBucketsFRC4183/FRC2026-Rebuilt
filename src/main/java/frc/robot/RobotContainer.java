@@ -257,20 +257,16 @@ public class RobotContainer {
 
     // Climber Setpoint Commands
     operatorController
-        .a()
-        .and(operatorController.back())
+        .a().and(operatorController.back())
         .onTrue(ClimberCommands.climbToGround(climberSubsystem));
     operatorController
-        .x()
-        .and(operatorController.back())
+        .x().and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
     operatorController
-        .y()
-        .and(operatorController.back())
+        .y().and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
     operatorController
-        .b()
-        .and(operatorController.back())
+        .b().and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command
@@ -288,7 +284,7 @@ public class RobotContainer {
         .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
     new Trigger(
             () ->
-                (operatorController.getRightY()) < 0.1 && operatorController.back().getAsBoolean())
+                (operatorController.getRightY()) < -0.1 && operatorController.back().getAsBoolean())
         .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
     // manual climb command
