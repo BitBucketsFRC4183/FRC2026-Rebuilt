@@ -83,7 +83,9 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
-                    odometryHistory);
+
+                    odometryHistory,
+                    visionPoseFusion);
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -117,7 +119,10 @@ public class RobotContainer {
         //        NamedCommands.registerCommand("StartMidShootEndL1",
         // autoSubystem.StartMidShootEndL1());
 
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition(), visionPoseFusion);
+/// DATA FLOW:
+/// Vision IO (interface) connected VisionIOLimelight
+
+        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
         shooterSim = new ShooterSim();
         break;
@@ -130,7 +135,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight), odometryHistory);
+                new ModuleIOSim(TunerConstants.BackRight),
+                    odometryHistory,
+                    visionPoseFusion);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -159,7 +166,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                    odometryHistory);
+                    odometryHistory,
+                    visionPoseFusion);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);

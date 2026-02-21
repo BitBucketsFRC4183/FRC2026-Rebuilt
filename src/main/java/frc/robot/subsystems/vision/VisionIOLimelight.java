@@ -27,10 +27,9 @@ public class VisionIOLimelight implements VisionIO {
 
 
   // get that pose for me
-  public VisionIOLimelight(Supplier<Pose2d> poseSupplier, VisionPoseFusion visionPoseFusion) {
+  public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
 
     this.poseSupplier = poseSupplier;
-    this.visionPoseFusion = visionPoseFusion;
   }
 
   @Override

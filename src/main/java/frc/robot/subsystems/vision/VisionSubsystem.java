@@ -171,7 +171,7 @@ public class VisionSubsystem extends SubsystemBase {
     return Optional.of(new VisionPoseFusion(
       inputs.megaTagPose,
       inputs.timestamp,
-            VecBuilder.fill(inputs.rawStdDev[0], inputs.rawStdDev[1], inputs.rawStdDev[2]),
+            VecBuilder.fill(inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
       inputs.tagCount));
   }
 

@@ -39,8 +39,8 @@ public final class VisionConstant {
   //TODO need tune
   //max readable tag
   public static final double maxDistanceFromRobotToApril = 17.0;
-  public static final double kTagMinAreaForSingleTagMegatag = 1.0;
-  public static final double kDefaultNormThreshold = 1.0;
+  public static final double kTagMinAreaForSingleTagMegatag = 3.0;
+//  public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
 
   //TODO need measure & test
