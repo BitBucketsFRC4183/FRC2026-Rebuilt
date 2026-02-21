@@ -9,7 +9,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-
   private final Servo climbServo1 = new Servo(1);
   private final Servo climbServo2 = new Servo(2);
   private final Servo baseServo1 = new Servo(3);
