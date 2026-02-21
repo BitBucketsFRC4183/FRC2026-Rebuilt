@@ -73,7 +73,7 @@ public class ClimberIOSim implements ClimberIO {
   }
 
   @Override
-  public void stopClimb() {}
+  public void stopClimb() {climberSimMotor.setSupplyVoltage(0);}
 
   @Override
   public void setVoltage(double voltageSupplied) {

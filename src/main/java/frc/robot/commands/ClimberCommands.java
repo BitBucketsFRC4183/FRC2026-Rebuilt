@@ -111,7 +111,7 @@ public class ClimberCommands {
               }
             },
             climberSubsystem)
-        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.1)
+        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.5)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
   }
 
