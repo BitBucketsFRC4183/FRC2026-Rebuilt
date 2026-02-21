@@ -85,4 +85,7 @@ public class ClimberIOSim implements ClimberIO {
       appliedVoltage = voltageSupplied;
     }
   }
+
+  @Override
+  public void setkG(double kG){}
 }
