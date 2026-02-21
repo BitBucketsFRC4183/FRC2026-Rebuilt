@@ -51,9 +51,8 @@ public class RobotContainer {
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
- private OdometryHistory odometryHistory;
- private VisionFusionResults visionFusionResults;
-
+  private OdometryHistory odometryHistory;
+  private VisionFusionResults visionFusionResults;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -77,15 +76,13 @@ public class RobotContainer {
         // a CANcoder
         driveSubsystem =
             new DriveSubsystem(
-
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
-
-                    odometryHistory,
-                    visionFusionResults);
+                odometryHistory,
+                visionFusionResults);
 
         climberIO = new ClimberIOTalonFX();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -119,21 +116,21 @@ public class RobotContainer {
         //        NamedCommands.registerCommand("StartMidShootEndL1",
         // autoSubystem.StartMidShootEndL1());
 
-/* DATA FLOW:
-Vision IO (interface) connected VisionIOLimelight;
-↓
-VisionSubsystem received data from VisionIOLimelight, then do calculations
-wrapped results into VisionFusionResults
-↓
-Drive receive results, then add vision measurement
+        /* DATA FLOW:
+        Vision IO (interface) connected VisionIOLimelight;
+        ↓
+        VisionSubsystem received data from VisionIOLimelight, then do calculations
+        wrapped results into VisionFusionResults
+        ↓
+        Drive receive results, then add vision measurement
 
 
- */
-/*
-ANOTHER DATA FLOW:
-Drive <-> odometry pose history -> provided to vision to help calculation
+         */
+        /*
+        ANOTHER DATA FLOW:
+        Drive <-> odometry pose history -> provided to vision to help calculation
 
- */
+         */
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
         visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
@@ -149,8 +146,8 @@ Drive <-> odometry pose history -> provided to vision to help calculation
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight),
-                    odometryHistory,
-                    visionFusionResults);
+                odometryHistory,
+                visionFusionResults);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -159,13 +156,13 @@ Drive <-> odometry pose history -> provided to vision to help calculation
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX(), new ShooterIOSparkMax());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-//        visionSubsystem =
-//            new VisionSubsystem(
-//                new VisionIOPhotonVisionSim(
-//                    driveSubsystem.poseSupplierForSim,
-//                    VisionConstant.robotToBackCam,
-//                    VisionConstant.robotToFrontCam),
-//                driveSubsystem);
+        //        visionSubsystem =
+        //            new VisionSubsystem(
+        //                new VisionIOPhotonVisionSim(
+        //                    driveSubsystem.poseSupplierForSim,
+        //                    VisionConstant.robotToBackCam,
+        //                    VisionConstant.robotToFrontCam),
+        //                driveSubsystem);
 
         shooterSim = new ShooterSim();
         break;
@@ -179,8 +176,8 @@ Drive <-> odometry pose history -> provided to vision to help calculation
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                    odometryHistory,
-                    visionFusionResults);
+                odometryHistory,
+                visionFusionResults);
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -247,11 +244,10 @@ Drive <-> odometry pose history -> provided to vision to help calculation
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-//    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController
-            .x()
-            .whileTrue(new AutoAimCommand(driveSubsystem,
-                    () -> driveSubsystem.getPose()));
+        .x()
+        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
     // Left bumper Intake deployed and stowed
     operatorController
@@ -268,15 +264,15 @@ Drive <-> odometry pose history -> provided to vision to help calculation
                 intakeSubsystem));
 
     // Hopper reverse while right bumper held
-    operatorController.rightBumper().whileTrue(
+    operatorController
+        .rightBumper()
+        .whileTrue(
             Commands.startEnd(
-                    hopperSubsystem::runConveyorReverse,
-                    hopperSubsystem::stopConveyor,
-                    hopperSubsystem
-            )
-    );
+                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::stopConveyor,
+                hopperSubsystem));
 
-    //Intake Control Motors
+    // Intake Control Motors
 
     operatorController
         .leftTrigger()

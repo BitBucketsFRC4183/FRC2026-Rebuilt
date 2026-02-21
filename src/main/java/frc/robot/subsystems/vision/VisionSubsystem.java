@@ -11,9 +11,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 
 /// shooter game 2026: concept & mechanics
 // april tags, hub poses --> given
@@ -40,11 +39,11 @@ public class VisionSubsystem extends SubsystemBase {
     this.visionio = io;
     this.odometryHistory = odometryHistory;
 
-//    LimelightHelpers.SetIMUMode();
-//    LimelightHelpers.setRewindEnabled("", true);
+    //    LimelightHelpers.SetIMUMode();
+    //    LimelightHelpers.setRewindEnabled("", true);
   }
 
-  public void seedInternalIMU(){
+  public void seedInternalIMU() {
     LimelightHelpers.SetIMUMode(VisionConstant.LIMELIGHT_FRONT, 1);
   }
 
@@ -59,7 +58,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     /// if we have good estimation from MTA, then use MTA; the other way around for MTB as well
     /// if both does not provide good estimation, then we fuse both results
-   // it will be packaged into VisionPoseFusion, and
+    // it will be packaged into VisionPoseFusion, and
     Optional<VisionFusionResults> acceptedInputs = Optional.empty();
     if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
       acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
@@ -69,83 +68,81 @@ public class VisionSubsystem extends SubsystemBase {
 
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+  }
+
+  private VisionFusionResults getFuseEstimation(VisionFusionResults a, VisionFusionResults b) {
+    // Ensure b is the newer measurement
+    if (b.getTimestampSeconds() < a.getTimestampSeconds()) {
+      VisionFusionResults tmp = a;
+      a = b;
+      b = tmp;
     }
 
+    // Preview both estimates to the same timestamp
+    Transform2d a_T_b =
+        odometryHistory
+            .getPoseAt(b.getTimestampSeconds())
+            .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
 
-    private VisionFusionResults getFuseEstimation (VisionFusionResults a, VisionFusionResults b) {
-      // Ensure b is the newer measurement
-      if (b.getTimestampSeconds() < a.getTimestampSeconds()) {
-        VisionFusionResults tmp = a;
-        a = b;
-        b = tmp;
-      }
+    Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
+    Pose2d poseB = b.getVisionRobotPoseMeters();
 
-      // Preview both estimates to the same timestamp
-      Transform2d a_T_b =
-              odometryHistory.getPoseAt(b.getTimestampSeconds())
-                      .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
+    // Inverse‑variance weighting
+    var varianceA = a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
+    var varianceB = b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
 
-      Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
-      Pose2d poseB = b.getVisionRobotPoseMeters();
-
-      // Inverse‑variance weighting
-      var varianceA =
-              a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
-      var varianceB =
-              b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
-
-      Rotation2d fusedHeading = poseB.getRotation();
-      if (varianceA.get(2, 0) < VisionConstant.kLargeVariance
-              && varianceB.get(2, 0) < VisionConstant.kLargeVariance) {
-        fusedHeading =
-                new Rotation2d(
-                        poseA.getRotation().getCos() / varianceA.get(2, 0)
-                                + poseB.getRotation().getCos() / varianceB.get(2, 0),
-                        poseA.getRotation().getSin() / varianceA.get(2, 0)
-                                + poseB.getRotation().getSin() / varianceB.get(2, 0));
-      }
-
-      double weightAx = 1.0 / varianceA.get(0, 0);
-      double weightAy = 1.0 / varianceA.get(1, 0);
-      double weightBx = 1.0 / varianceB.get(0, 0);
-      double weightBy = 1.0 / varianceB.get(1, 0);
-
-      Pose2d fusedPose =
-              new Pose2d(
-                      new Translation2d(
-                              (poseA.getTranslation().getX() * weightAx
-                                      + poseB.getTranslation().getX() * weightBx)
-                                      / (weightAx + weightBx),
-                              (poseA.getTranslation().getY() * weightAy
-                                      + poseB.getTranslation().getY() * weightBy)
-                                      / (weightAy + weightBy)),
-                      fusedHeading);
-
-      Matrix<N3, N1> fusedStdDev =
-              VecBuilder.fill(
-                      Math.sqrt(1.0 / (weightAx + weightBx)),
-                      Math.sqrt(1.0 / (weightAy + weightBy)),
-                      Math.sqrt(1.0 / (1.0 / varianceA.get(2, 0) + 1.0 / varianceB.get(2, 0))));
-
-      int numTags = a.getNumTags() + b.getNumTags();
-      double time = b.getTimestampSeconds();
-
-      return new VisionFusionResults(fusedPose, time, fusedStdDev, numTags);
+    Rotation2d fusedHeading = poseB.getRotation();
+    if (varianceA.get(2, 0) < VisionConstant.kLargeVariance
+        && varianceB.get(2, 0) < VisionConstant.kLargeVariance) {
+      fusedHeading =
+          new Rotation2d(
+              poseA.getRotation().getCos() / varianceA.get(2, 0)
+                  + poseB.getRotation().getCos() / varianceB.get(2, 0),
+              poseA.getRotation().getSin() / varianceA.get(2, 0)
+                  + poseB.getRotation().getSin() / varianceB.get(2, 0));
     }
 
-    /// ********************
-    /// ********************
-    /// ********************
-    /// ********************
-    /// ********************
+    double weightAx = 1.0 / varianceA.get(0, 0);
+    double weightAy = 1.0 / varianceA.get(1, 0);
+    double weightBx = 1.0 / varianceB.get(0, 0);
+    double weightBy = 1.0 / varianceB.get(1, 0);
 
-  public Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs){
+    Pose2d fusedPose =
+        new Pose2d(
+            new Translation2d(
+                (poseA.getTranslation().getX() * weightAx
+                        + poseB.getTranslation().getX() * weightBx)
+                    / (weightAx + weightBx),
+                (poseA.getTranslation().getY() * weightAy
+                        + poseB.getTranslation().getY() * weightBy)
+                    / (weightAy + weightBy)),
+            fusedHeading);
+
+    Matrix<N3, N1> fusedStdDev =
+        VecBuilder.fill(
+            Math.sqrt(1.0 / (weightAx + weightBx)),
+            Math.sqrt(1.0 / (weightAy + weightBy)),
+            Math.sqrt(1.0 / (1.0 / varianceA.get(2, 0) + 1.0 / varianceB.get(2, 0))));
+
+    int numTags = a.getNumTags() + b.getNumTags();
+    double time = b.getTimestampSeconds();
+
+    return new VisionFusionResults(fusedPose, time, fusedStdDev, numTags);
+  }
+
+  /// ********************
+  /// ********************
+  /// ********************
+  /// ********************
+  /// ********************
+
+  public Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
     Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
     if (!isValidInputs(inputs)) {
       return Optional.empty();
     }
     Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
-    if (mtEstimate.isPresent()){
+    if (mtEstimate.isPresent()) {
       estimateOrEmpty = mtEstimate;
     }
     return estimateOrEmpty;
@@ -155,12 +152,12 @@ public class VisionSubsystem extends SubsystemBase {
 
     // Single‑tag extra checks
     if (inputs.tagCount < 2) {
-        if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip){
-          return Optional.empty();
-        }
+      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+        return Optional.empty();
+      }
     }
 
-    if (proportionalDistance(inputs)<VisionConstant.maxDistanceFromRobotToApril){
+    if (proportionalDistance(inputs) < VisionConstant.maxDistanceFromRobotToApril) {
       return Optional.empty();
     }
 
@@ -168,11 +165,13 @@ public class VisionSubsystem extends SubsystemBase {
       return Optional.empty();
     }
 
-    return Optional.of(new VisionFusionResults(
-      inputs.megaTagPose,
-      inputs.timestamp,
-            VecBuilder.fill(inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
-      inputs.tagCount));
+    return Optional.of(
+        new VisionFusionResults(
+            inputs.megaTagPose,
+            inputs.timestamp,
+            VecBuilder.fill(
+                inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
+            inputs.tagCount));
   }
 
   /// are we a valid pose?
@@ -184,18 +183,13 @@ public class VisionSubsystem extends SubsystemBase {
     return true;
   }
 
-  private double proportionalDistance(VisionIOInputsAutoLogged inputs){
-    //if there is no target, or TA is too small (error)
-    if (!inputs.hasTarget || inputs.ta < 0.0001)
-      return 999;
+  private double proportionalDistance(VisionIOInputsAutoLogged inputs) {
+    // if there is no target, or TA is too small (error)
+    if (!inputs.hasTarget || inputs.ta < 0.0001) return 999;
 
     return 1.0 / Math.sqrt(inputs.ta);
   }
 }
-
-
-
-
 
 /// +++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++
 /// ++++++++++*@@@@@@@@@@@@@*+++++**#%@@@@@@###@@@@@@@@@@@@@#+++

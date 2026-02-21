@@ -45,12 +45,12 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.OdometryHistory;
 import frc.robot.subsystems.vision.VisionFusionResults;
 import frc.robot.util.LocalADStarAK;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
 public class DriveSubsystem extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
   private final OdometryHistory odometryHistory;
@@ -102,9 +102,8 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition()
       };
   public SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
-              Pose2d.kZero);
-  //sim
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  // sim
   public Supplier<Pose2d> poseSupplierForSim = () -> poseEstimator.getEstimatedPosition();
 
   public DriveSubsystem(
@@ -113,10 +112,8 @@ public class DriveSubsystem extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
-
       OdometryHistory odometryHistory,
-      VisionFusionResults visionFusionResults
-  ) {
+      VisionFusionResults visionFusionResults) {
     this.odometryHistory = odometryHistory;
     this.visionFusionResults = visionFusionResults;
 
@@ -220,7 +217,7 @@ public class DriveSubsystem extends SubsystemBase {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-      //Store history
+      // Store history
       Pose2d currentPose = poseEstimator.getEstimatedPosition();
       odometryHistory.addPose(sampleTimestamps[i], currentPose);
     }
@@ -228,8 +225,10 @@ public class DriveSubsystem extends SubsystemBase {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    poseEstimator.addVisionMeasurement(visionFusionResults.getVisionRobotPoseMeters(),
-            visionFusionResults.getTimestampSeconds(), visionFusionResults.getVisionMeasurementStdDevs());
+    poseEstimator.addVisionMeasurement(
+        visionFusionResults.getVisionRobotPoseMeters(),
+        visionFusionResults.getTimestampSeconds(),
+        visionFusionResults.getVisionMeasurementStdDevs());
   }
 
   /**
@@ -359,11 +358,15 @@ public class DriveSubsystem extends SubsystemBase {
   /** Adds a new timestamped vision measurement. */
 
   // *********
-  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3,N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
-  public final void setVisionMeasurementStdDevs(Matrix<N3,N1> visionMeasurementStdDevs){
+  public final void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
   }
 

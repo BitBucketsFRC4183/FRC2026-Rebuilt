@@ -1,14 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.util.struct.Struct;
-import edu.wpi.first.util.struct.StructSerializable;
-import frc.robot.LimelightHelpers;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Objects;
-
-//public record FiducialResultsAnalyzer
+// public record FiducialResultsAnalyzer
 //        (int id, double ambiguity, double area)
 //        implements StructSerializable {
 //
@@ -22,7 +14,8 @@ import java.util.Objects;
 //                fiducial.id, fiducial.ambiguity, fiducial.ta);
 //    }
 //
-//    public static FiducialResultsAnalyzer[] fromLimelight(LimelightHelpers.RawFiducial[] fiducials) {
+//    public static FiducialResultsAnalyzer[] fromLimelight(LimelightHelpers.RawFiducial[]
+// fiducials) {
 //        if (fiducials == null) {
 //            return new FiducialResultsAnalyzer[0];
 //        }
@@ -31,4 +24,4 @@ import java.util.Objects;
 //                .filter(Objects::nonNull)
 //                .toArray(FiducialResultsAnalyzer[]::new);
 //    }
-//}
+// }

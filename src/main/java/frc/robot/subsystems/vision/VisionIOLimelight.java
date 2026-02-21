@@ -5,7 +5,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-
 import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
@@ -15,16 +14,17 @@ public class VisionIOLimelight implements VisionIO {
 
   // getTable(""), inside the "", is webUI/table name
   // name doesn't matter here as well
-  private final NetworkTable limelightOneTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+  private final NetworkTable limelightOneTable =
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
 
-  private final NetworkTable limelightTwoTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+  private final NetworkTable limelightTwoTable =
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
   private final Supplier<Pose2d> poseSupplier;
   private VisionFusionResults visionFusionResults;
-  //define, create a 0.0 double array
+  // define, create a 0.0 double array
   private static final double[] defaultStdDev =
-          new double[VisionConstant.kExpectedStdDevArrayLength];
-
+      new double[VisionConstant.kExpectedStdDevArrayLength];
 
   // get that pose for me
   public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
@@ -39,10 +39,12 @@ public class VisionIOLimelight implements VisionIO {
     readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_FRONT_SHOOTER);
   }
 
-  // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to write codes.
+  // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to
+  // write codes.
   // However, we do receive networktable first
 
-  /// inputs.tx = LimelightHelpers.getTX("FrontCam"); equals inputs.tx = table.getEntry("tx").getDouble(0);
+  /// inputs.tx = LimelightHelpers.getTX("FrontCam"); equals inputs.tx =
+  // table.getEntry("tx").getDouble(0);
   // SO, you can choose to do tables, OR limelighthelper. Either way
 
   //            METHOD     TYPE     VARIABLES   TYPE         VARIABLES
@@ -54,9 +56,10 @@ public class VisionIOLimelight implements VisionIO {
     if (inputs.hasTarget) {
       try {
         inputs.estimatedRobotPose = poseSupplier.get();
-        LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(
+            cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
-        /** MEGA TAG 2 **/
+        /** MEGA TAG 2 * */
         var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
         if (megaTag2Results != null && inputs.tagCount >= 0) {
@@ -65,14 +68,14 @@ public class VisionIOLimelight implements VisionIO {
           inputs.tagCount = megaTag2Results.tagCount;
           inputs.timestamp = megaTag2Results.timestampSeconds;
           inputs.latency = megaTag2Results.latency;
-          //package them
-//          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp, inputs.visionStdDev, inputs.tagCount);
+          // package them
+          //          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp,
+          // inputs.visionStdDev, inputs.tagCount);
           return;
         }
 
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
         inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
-
 
         inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
         inputs.tx = LimelightHelpers.getTX(cameraName);
@@ -81,34 +84,29 @@ public class VisionIOLimelight implements VisionIO {
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
 
         /// log details for hopperTracker, also for testing
-//        inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
-//        inputs.DistanceFromRobotToHub = HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
-//        inputs.FieldAngleFromHubToRobot = HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
+        //        inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
+        //        inputs.DistanceFromRobotToHub =
+        // HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
+        //        inputs.FieldAngleFromHubToRobot =
+        // HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
         //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
 
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }
-
     }
-
   }
-  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial){
+
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
     /// ambiguity, new!
 
     double minAmbiguity = 999;
-    for (var readFludicial : UnreadReadFiducial){
+    for (var readFludicial : UnreadReadFiducial) {
       minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
     }
     return minAmbiguity;
   }
-
 }
-
-
-
-
-
 
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@++*@@@#+++++++#@@@@@@@@@@@@@@@@@@@@@@@@
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@*+*++#*+++++++*@@@%%@@@@@@@@@@@@@@@@@@@@@

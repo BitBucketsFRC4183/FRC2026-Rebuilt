@@ -1,11 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import frc.robot.LimelightHelpers;
 import org.littletonrobotics.junction.AutoLog;
 
 @AutoLog
@@ -31,13 +26,12 @@ public class VisionIOInputs {
   public double latency;
   public double[] rawStdDev;
 
-//from raw fiducial
+  // from raw fiducial
 
   public double minAmbiguity;
 
-
-//  public Pose2d TargetHubPose2d;
-//  public double DistanceFromRobotToHub;
-//  public Rotation2d FieldAngleFromHubToRobot;
-//  public Rotation2d TurningAngle;
+  //  public Pose2d TargetHubPose2d;
+  //  public double DistanceFromRobotToHub;
+  //  public Rotation2d FieldAngleFromHubToRobot;
+  //  public Rotation2d TurningAngle;
 }
