@@ -101,7 +101,7 @@ public class ClimberCommands {
     return Commands.run(
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
-              climberSubsystem.setTargetHeight(0);
+              climberSubsystem.setTargetHeight(-currentHeight);
 
               if (currentHeight <= ClimberConstants.minHeight) {
                 climberSubsystem.setVoltageSupplied(0);

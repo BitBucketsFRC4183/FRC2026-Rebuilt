@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
@@ -106,5 +107,6 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(shooterInputs);
+    Logger.processInputs("Flywheel", shooterInputs);
   }
 }
