@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision;
 
+import java.util.Map;
+
 public interface VisionIO {
   //   METHOD, not API
-  default void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {}
+  void updateInputs(Map<String, VisionIOInputsAutoLogged> Inputs);
 }
