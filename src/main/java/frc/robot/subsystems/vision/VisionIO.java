@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import java.util.Map;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -42,6 +41,6 @@ public interface VisionIO {
     public Rotation2d TurningAngle;
   }
 
-  default void updateInputs(Map<String, VisionIOInputsAutoLogged> Inputs) {}
+  default void updateInputs(VisionIOInputsAutoLogged inputs) {}
   ;
 }

@@ -37,7 +37,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kV = ClimberConstants.ARM_kV;
     climbConfig.Slot0.kS = ClimberConstants.ARM_kS;
 
-
     climbMotor.getConfigurator().apply(climbConfig);
   }
 
@@ -49,11 +48,9 @@ public class ClimberIOTalonFX implements ClimberIO {
             * 2
             * Math.PI;
     inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
-    inputs.climberCurrent =climbMotor.getSupplyCurrent().getValueAsDouble();
+    inputs.climberCurrent = climbMotor.getSupplyCurrent().getValueAsDouble();
     climbMotor.getConfigurator().apply(climbConfig);
-
-    }
-
+  }
 
   // Arm
 
@@ -75,7 +72,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void setkG(double kG){
+  public void setkG(double kG) {
     climbConfig.Slot0.kG = kG;
   }
 }

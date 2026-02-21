@@ -84,9 +84,11 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.getRotation());
-        //        visionPoseManager = new VisionPoseManager();
-        visionSubsystem = new VisionSubsystem(visionIO);
+        visionSubsystem =
+            new VisionSubsystem(
+                new VisionIOLimelight("cameraFront", () -> driveSubsystem.getRotation()),
+                new VisionIOLimelight("empty", () -> driveSubsystem.getRotation()),
+                driveSubsystem);
 
         break;
 
@@ -131,7 +133,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(new VisionIO() {});
+        visionSubsystem = new VisionSubsystem(new VisionIO() {}, new VisionIO() {}, driveSubsystem);
 
         break;
     }
@@ -254,16 +256,20 @@ public class RobotContainer {
 
     // Climber Setpoint Commands
     operatorController
-        .a().and(operatorController.back())
+        .a()
+        .and(operatorController.back())
         .onTrue(ClimberCommands.climbToGround(climberSubsystem));
     operatorController
-        .x().and(operatorController.back())
+        .x()
+        .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
     operatorController
-        .y().and(operatorController.back())
+        .y()
+        .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
     operatorController
-        .b().and(operatorController.back())
+        .b()
+        .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command
