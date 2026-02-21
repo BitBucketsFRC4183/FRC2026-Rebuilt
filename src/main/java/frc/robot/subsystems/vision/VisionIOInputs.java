@@ -22,7 +22,7 @@ public class VisionIOInputs {
   public Pose2d estimatedRobotPose;
   public double latency;
 
-//  public double poseAmbiguity;
+  //  public double poseAmbiguity;
   public boolean hasMegaTag2;
 
   // this is the estimated vision pose

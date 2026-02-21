@@ -1,14 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
-import frc.robot.constants.VisionConstant;
-import frc.robot.subsystems.drive.GyroIO;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -18,12 +11,13 @@ public class VisionIOLimelight implements VisionIO {
   // "limelight" is Networktables path
 
   // getTable(""), inside the "", is webUI/table name
-//  private final NetworkTable limelight_FrontCam = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
-//
-//  private final NetworkTable limelight_FrontShooterCam = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+  //  private final NetworkTable limelight_FrontCam =
+  // NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+  //
+  //  private final NetworkTable limelight_FrontShooterCam =
+  // NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
   private final Supplier<Pose2d> poseSupplier;
-
 
   // get that pose for me
   public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
@@ -34,7 +28,7 @@ public class VisionIOLimelight implements VisionIO {
   //
   public void updateInputs(Map<String, VisionIOInputsAutoLogged> cameraInputsAll) {
     // we use the method, give it the variable of its wanted type
-    for(Map.Entry<String, VisionIOInputsAutoLogged> entry : cameraInputsAll.entrySet()) {
+    for (Map.Entry<String, VisionIOInputsAutoLogged> entry : cameraInputsAll.entrySet()) {
       String cameraName = entry.getKey();
       VisionIOInputsAutoLogged inputs = entry.getValue();
       readCameraData(cameraName, inputs);
@@ -56,11 +50,12 @@ public class VisionIOLimelight implements VisionIO {
   private void readCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {
     /// basics
     // drive estimation
-    LimelightHelpers.SetRobotOrientation(cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(
+        cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
     inputs.estimatedRobotPose = poseSupplier.get();
 
-    inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName)!=null;
+    inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
     // fiducialid is double
     inputs.aprilTagIDNumber = (int) LimelightHelpers.getFiducialID(cameraName);
 
@@ -77,19 +72,14 @@ public class VisionIOLimelight implements VisionIO {
 
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
 
-//    var ApriltagResults = LimelightHelpers.getRawFiducials(cameraName);
+    //    var ApriltagResults = LimelightHelpers.getRawFiducials(cameraName);
 
+    //    if (!inputs.hasTarget) {
+    //      inputs.hasMegaTag2 = false;
+    //      return;
+    //    }
 
-
-
-//    if (!inputs.hasTarget) {
-//      inputs.hasMegaTag2 = false;
-//      return;
-//    }
-
-   /**MEGA
-    * TAG
-    * 2*/
+    /** MEGA TAG 2 */
     var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
     if (megaTag2Results != null && inputs.tagCount <= 0) {
@@ -100,45 +90,35 @@ public class VisionIOLimelight implements VisionIO {
       inputs.latency = megaTag2Results.latency;
 
       return;
-
-
     }
 
-    /**MEGA 
-     * TAG
-     * 1*/
-//    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
-//
-//    if (megaTag1Results != null && megaTag1Results.tagCount >= 1) {
-//      inputs.hasMegaTag2 = false;
-//      inputs.megaTagPose = megaTag1Results.pose;
-//      inputs.tagCount = megaTag1Results.tagCount;
-//      inputs.timestamp = megaTag1Results.timestampSeconds;
-//      inputs.poseAmbiguity = getMinAmbiguity(megaTag1Results);
-//      return;
-//    }
-//
-//    inputs.hasMegaTag2 = false;
-//    return;
+    /** MEGA TAG 1 */
+    //    var megaTag1Results = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+    //
+    //    if (megaTag1Results != null && megaTag1Results.tagCount >= 1) {
+    //      inputs.hasMegaTag2 = false;
+    //      inputs.megaTagPose = megaTag1Results.pose;
+    //      inputs.tagCount = megaTag1Results.tagCount;
+    //      inputs.timestamp = megaTag1Results.timestampSeconds;
+    //      inputs.poseAmbiguity = getMinAmbiguity(megaTag1Results);
+    //      return;
+    //    }
+    //
+    //    inputs.hasMegaTag2 = false;
+    //    return;
 
   }
-//  private static double getMinAmbiguity(LimelightHelpers.PoseEstimate fludicalResults){
-//    /// ambiguity, new!
-//
-//    double minAmbiguity = 999;
-//    for (var UnreadRadFludicial : fludicalResults.rawFiducials){
-//      minAmbiguity = Math.min(minAmbiguity, UnreadRadFludicial.ambiguity);
-//    }
-//    return minAmbiguity;
-//  }
-
+  //  private static double getMinAmbiguity(LimelightHelpers.PoseEstimate fludicalResults){
+  //    /// ambiguity, new!
+  //
+  //    double minAmbiguity = 999;
+  //    for (var UnreadRadFludicial : fludicalResults.rawFiducials){
+  //      minAmbiguity = Math.min(minAmbiguity, UnreadRadFludicial.ambiguity);
+  //    }
+  //    return minAmbiguity;
+  //  }
 
 }
-
-
-
-
-
 
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@++*@@@#+++++++#@@@@@@@@@@@@@@@@@@@@@@@@
 /// @@@@@@@@@@@@@@@@@@@@@@@@@@@*+*++#*+++++++*@@@%%@@@@@@@@@@@@@@@@@@@@@
