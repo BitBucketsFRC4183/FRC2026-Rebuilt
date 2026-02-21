@@ -6,7 +6,7 @@ import frc.robot.constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final IntakeIO io;
-  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+//  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private IntakeState currentState = IntakeState.STOWED;
 
@@ -16,7 +16,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+//    io.updateInputs(inputs);
 
     switch (currentState) {
       case STOWED:
@@ -78,11 +78,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Telemetry
 
-  public double getMotorCurrent() {
-    return inputs.motorCurrentAmps;
-  }
-
-  public boolean isExtended() {
-    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
-  }
+//  public double getMotorCurrent() {
+//    return inputs.motorCurrentAmps;
+//  }
+//
+//  public boolean isExtended() {
+//    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
+//  }
 }
