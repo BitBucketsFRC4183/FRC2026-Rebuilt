@@ -25,16 +25,18 @@ public class ClimberSubsystem extends SubsystemBase {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/ClimbingInputs", inputs);
 
-    if(climberIO.getCurrentVoltage() > 12){
-      climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() - 10));}
-    else if (climberIO.getCurrentVoltage() < -12){
-      climberIO.setVoltage(-Math.abs(climberIO.getCurrentVoltage() + 10));}
+    if (inputs.climberVoltage > 12) {
+      climberIO.setVoltage(-Math.abs(inputs.climberVoltage - 10));
+    } else if (inputs.climberVoltage < -12) {
+      climberIO.setVoltage(-Math.abs(inputs.climberVoltage + 10));
+    }
 
-    if(climbServo1.getPosition() == 1.0){
+    if (climbServo1.getPosition() == 1.0) {
       climberIO.setkG(ClimberConstants.ARM_kGDown);
-    } else if (climbServo1.getPosition() == 0){
+    } else if (climbServo1.getPosition() == 0) {
       climberIO.setkG(ClimberConstants.ARM_kGUp);
-    }}
+    }
+  }
 
   /* ================= TELEMETRY ================= */
 
