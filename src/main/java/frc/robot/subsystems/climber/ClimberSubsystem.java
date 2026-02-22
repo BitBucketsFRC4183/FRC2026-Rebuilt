@@ -32,12 +32,6 @@ public class ClimberSubsystem extends SubsystemBase {
         climberIO.stopClimb();
       }
     }
-
-    //    if (climbServo1.getPosition() == 1.0) {
-    //      climberIO.setkG(ClimberConstants.ARM_kGDown);
-    //    } else if (climbServo1.getPosition() == 0) {
-    //      climberIO.setkG(ClimberConstants.ARM_kGUp);
-    //    }
   }
 
   /* ================= TELEMETRY ================= */
@@ -66,5 +60,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void setkG(double kG){
     climberIO.setkG(kG);
+  }
+
+  public void resetPosition(){
+    climberIO.resetPosition();
   }
 }

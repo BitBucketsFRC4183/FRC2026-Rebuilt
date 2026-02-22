@@ -122,7 +122,7 @@ public class ClimberCommands {
               climberSubsystem.setClimbServoPosition(servoPosition);
               climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
             })
-        .finallyDo(() -> Commands.waitSeconds(2));
+        .andThen(() -> Commands.waitSeconds(2));
   }
 
   public static Command climberServoDown(ClimberSubsystem climberSubsystem) {
@@ -132,7 +132,7 @@ public class ClimberCommands {
               climberSubsystem.setClimbServoPosition(servoPosition);
              climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
             })
-        .finallyDo(() -> Commands.waitSeconds(2));
+        .andThen(() -> Commands.waitSeconds(2));
   }
 
   public static Command baseServoUp(ClimberSubsystem climberSubsystem) {
@@ -141,7 +141,7 @@ public class ClimberCommands {
               double servoPosition = 1.0;
               climberSubsystem.setBaseServoPosition(servoPosition);
             })
-        .finallyDo(() -> Commands.waitSeconds(2));
+        .andThen(() -> Commands.waitSeconds(2));
   }
 
   public static Command baseServoDown(ClimberSubsystem climberSubsystem) {
@@ -150,7 +150,7 @@ public class ClimberCommands {
               double servoPosition = 0;
               climberSubsystem.setBaseServoPosition(servoPosition);
             })
-        .finallyDo(() -> Commands.waitSeconds(2));
+        .andThen(() -> Commands.waitSeconds(2));
   }
 
   public static Command climbToGround(ClimberSubsystem climberSubsystem) {
@@ -187,7 +187,8 @@ public class ClimberCommands {
   public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.climberServoDown(climberSubsystem)
         .andThen(ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
+                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)).
+                andThen(Commands.runOnce(climberSubsystem::resetPosition)));
 
   }
 }

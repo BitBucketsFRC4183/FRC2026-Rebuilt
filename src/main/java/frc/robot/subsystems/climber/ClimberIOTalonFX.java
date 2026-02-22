@@ -43,10 +43,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     inputs.climberHeight =
-        (climbMotor.getPosition().getValueAsDouble() / ClimberConstants.ARM_GEAR_RATIO)
-            * ClimberConstants.spoolRadius
-            * 2
-            * Math.PI;
+        climbMotor.getPosition().getValueAsDouble() * ClimberConstants.spoolRadius;
     inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
     inputs.climberCurrent = climbMotor.getSupplyCurrent().getValueAsDouble();
     // climbMotor.getConfigurator().apply(climbConfig);
@@ -74,4 +71,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kG = kG;
     climbMotor.getConfigurator().apply(climbConfig);
   }
+
+  @Override
+  public void resetPosition(){
+    climbMotor.setPosition(0);
+  }
+
 }
