@@ -73,19 +73,40 @@ public class AutoSubsystem extends SubsystemBase {
    * YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING AND THEN YOU MUST TEST YOUR PATHS IN SIM!!
    * PLEASSSEE!!!
    */
-  public Command goBottomToShootPs() {
-    PathPlannerPath path1;
+
+  // loads choreo path as an autobuilder command
+  public Command cPath(String trajName, boolean doesReset) {
+    PathPlannerPath path;
 
     try {
       // Load the path from the deploy/pathplanner folder by name
-      path1 = PathPlannerPath.fromChoreoTrajectory("BottomStartToShootB");
+      path = PathPlannerPath.fromChoreoTrajectory(trajName);
     } catch (Exception e) {
       e.printStackTrace();
       return Commands.none();
     }
-
     // Create a path-following command using AutoBuilder
-    return AutoBuilder.followPath(path1);
+    if (doesReset) {
+      return new InstantCommand(() -> drive.setPose(path.getStartingHolonomicPose().get()))
+          .andThen(AutoBuilder.followPath(path));
+    } else {
+      return AutoBuilder.followPath(path);
+    }
+  }
+
+  // loads choreo path as an autobuilder command, does not resetpose
+  public Command cPath(String trajName) {
+    PathPlannerPath path;
+
+    try {
+      // Load the path from the deploy/pathplanner folder by name
+      path = PathPlannerPath.fromChoreoTrajectory(trajName);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
+    }
+    // Create a path-following command using AutoBuilder
+    return AutoBuilder.followPath(path);
   }
 
   public Command goToptoShooterPs() {
@@ -276,7 +297,7 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        goBottomToShootPs(),
+        cPath("BottomStartToShootB", true),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
         new InstantCommand(() -> System.out.println("We will now begin shooting")),
         shoot(),
@@ -285,6 +306,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command topStartToShootOnly() {
+
     return Commands.sequence(
         new InstantCommand(
             () -> System.out.println("Moving from top position to shooting position")),
@@ -311,7 +333,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartBottomToTower() {
     return Commands.sequence(
         new InstantCommand(() -> System.out.println("We will just be climbing")),
-        goBottomTower(),
+        cPath("BottomToTower", true),
         climb(),
         stop(),
         new InstantCommand(() -> System.out.println("bottom to climb routine complete")));
@@ -349,7 +371,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartBottomShootEndL1() {
     return Commands.sequence(
         new InstantCommand(() -> System.out.println("We will move to bottom shooting position")),
-        goBottomToShootPs(),
+        cPath("BottomStartToShootB", true),
         new InstantCommand(() -> System.out.println("Begin shooting")),
         shoot().withTimeout(6),
         new InstantCommand(() -> System.out.println("moving to tower to climb")),
@@ -371,7 +393,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartBottomShootIntakeEndL1() {
     return Commands.sequence(
         new InstantCommand(() -> System.out.println("Routine 1 starting - ")),
-        goBottomToShootPs(),
+        cPath("BottomStartToShootB", true),
         shoot().withTimeout(4),
         goBottomShootertoDepot(),
         new WaitCommand(3),

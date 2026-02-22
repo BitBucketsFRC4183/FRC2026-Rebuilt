@@ -82,7 +82,8 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
+                new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
+                (pose) -> {});
 
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
@@ -120,7 +121,10 @@ public class RobotContainer {
                 new ModuleIOTalonFXSim(TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
                 new ModuleIOTalonFXSim(TunerConstants.FrontRight, driveSimulation.getModules()[1]),
                 new ModuleIOTalonFXSim(TunerConstants.BackLeft, driveSimulation.getModules()[2]),
-                new ModuleIOTalonFXSim(TunerConstants.BackRight, driveSimulation.getModules()[3]));
+                new ModuleIOTalonFXSim(TunerConstants.BackRight, driveSimulation.getModules()[3]),
+                driveSimulation::setSimulationWorldPose);
+
+        driveSubsystem.setPose(new Pose2d(3, 3, new Rotation2d()));
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -148,7 +152,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                (pose) -> {});
 
         climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
@@ -171,7 +176,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     //    // for registered commands
-    //    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    autoChooser.setDefaultOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
     //    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
     //    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
     //    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
@@ -335,13 +340,13 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
     return autoChooser.getSelected();
   }
 
   public void resetSimulation(Pose2d newPose) {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
-    driveSubsystem.setPose(newPose);
     driveSimulation.setSimulationWorldPose(newPose);
     SimulatedArena.getInstance().resetFieldForAuto();
   }
