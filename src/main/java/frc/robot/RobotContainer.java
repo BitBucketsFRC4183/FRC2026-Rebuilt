@@ -82,19 +82,12 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
-                visionSubsystem);
+                new ModuleIOTalonFXAnalog(TunerConstants.BackRight));
 
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-
-        //        visionSubsystem =
-        //            new VisionSubsystem(
-        //                new VisionIOLimelight("cameraFront", () -> driveSubsystem.getRotation()),
-        //                new VisionIOLimelight("empty", () -> driveSubsystem.getRotation()),
-        //                driveSubsystem);
 
         /* DATA FLOW:
         Vision IO (interface) connected VisionIOLimelight;
@@ -104,7 +97,6 @@ public class RobotContainer {
         ↓
         Drive receive results, then add vision measurement
 
-
          */
         /*
         ANOTHER DATA FLOW:
@@ -113,23 +105,22 @@ public class RobotContainer {
          */
 
         visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
+        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         driveSimulation =
-            new SwerveDriveSimulation(
-                Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+            new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d(0, 0)));
         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
         driveSubsystem =
             new Drive(
                 new GyroIOSim(driveSimulation.getGyroSimulation()),
-                new ModuleIOSim(driveSimulation.getModules()[0]),
-                new ModuleIOSim(driveSimulation.getModules()[1]),
-                new ModuleIOSim(driveSimulation.getModules()[2]),
-                new ModuleIOSim(driveSimulation.getModules()[3]));
+                new ModuleIOTalonFXSim(TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
+                new ModuleIOTalonFXSim(TunerConstants.FrontRight, driveSimulation.getModules()[1]),
+                new ModuleIOTalonFXSim(TunerConstants.BackLeft, driveSimulation.getModules()[2]),
+                new ModuleIOTalonFXSim(TunerConstants.BackRight, driveSimulation.getModules()[3]));
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
@@ -137,14 +128,14 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
 
-        resetSimulation(new Pose2d(3, 3, new Rotation2d()));
         visionSubsystem =
             new VisionSubsystem(
                 new VisionIOPhotonVisionSim(
-                    driveSubsystem.poseSupplierForSim,
+                    () -> driveSimulation.getSimulatedDriveTrainPose(),
                     VisionConstant.robotToBackCam,
                     VisionConstant.robotToFrontCam),
-                odometryHistory);
+                odometryHistory,
+                driveSubsystem);
 
         break;
         // thinking to what
@@ -157,14 +148,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {},
-                visionSubsystem);
+                new ModuleIO() {});
 
         climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory);
+        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
 
         break;
     }

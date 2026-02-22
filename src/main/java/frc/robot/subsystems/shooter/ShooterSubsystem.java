@@ -18,7 +18,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    //Use the Lookup table once we have values
+    // Use the Lookup table once we have values
   }
 
   public void setTargetVelocity() {

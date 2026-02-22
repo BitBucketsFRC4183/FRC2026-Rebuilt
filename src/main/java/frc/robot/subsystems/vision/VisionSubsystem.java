@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
+import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
@@ -32,14 +33,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   private final VisionIO visionio;
   private final OdometryHistory odometryHistory;
+  private final Drive drive;
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
   private Optional<VisionFusionResults> latestVisionResult = Optional.empty();
 
-  public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory) {
+  public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory, Drive drive) {
     this.visionio = io;
     this.odometryHistory = odometryHistory;
-
+    this.drive = drive;
     //    LimelightHelpers.SetIMUMode();
     //    LimelightHelpers.setRewindEnabled("", true);
   }
@@ -69,6 +71,13 @@ public class VisionSubsystem extends SubsystemBase {
     latestVisionResult = acceptedInputs;
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+
+    if (latestVisionResult.isPresent()) {
+      drive.addVisionMeasurement(
+          latestVisionResult.get().getVisionRobotPoseMeters(),
+          latestVisionResult.get().getTimestampSeconds(),
+          latestVisionResult.get().getVisionMeasurementStdDevs());
+    }
   }
 
   private VisionFusionResults getFuseEstimation(VisionFusionResults a, VisionFusionResults b) {
