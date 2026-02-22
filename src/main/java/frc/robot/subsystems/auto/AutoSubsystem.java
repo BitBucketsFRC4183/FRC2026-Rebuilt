@@ -68,12 +68,6 @@ public class AutoSubsystem extends SubsystemBase {
 
   // autoroutines
 
-  /**
-   * TODO: NAVYA BELOW IS THE CORRECT WAY TO MAKE A PATHPLANNER COMMAND. YOU NEED TO CHANGE ALL OF
-   * YOUR COMMANDS TO MATCH "goBottomToMid"'S FORMATTING AND THEN YOU MUST TEST YOUR PATHS IN SIM!!
-   * PLEASSSEE!!!
-   */
-
   // loads choreo path as an autobuilder command
   public Command cPath(String trajName, boolean doesReset) {
     PathPlannerPath path;

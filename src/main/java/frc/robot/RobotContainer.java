@@ -268,10 +268,7 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem));
+    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
     // Hopper reverse while right bu
     // mper held

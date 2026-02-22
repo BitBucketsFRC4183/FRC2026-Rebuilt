@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
 import java.util.List;
@@ -73,12 +72,8 @@ public class VisionIOPhotonVisionSim implements VisionIO {
     visionSim.update(poseSupplier.get());
     List<PhotonPipelineResult> visionResult = PHOTON_FRONT.getAllUnreadResults();
 
-    
     frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
     frontCamInputs.aprilTagIDNumber = 0;
     frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
-    
   }
-
-
 }
