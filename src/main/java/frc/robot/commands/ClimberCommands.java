@@ -101,7 +101,7 @@ public class ClimberCommands {
     return Commands.run(
             () -> {
               double currentHeight = climberSubsystem.getClimbHeight();
-              climberSubsystem.setTargetHeight(0);
+              climberSubsystem.setTargetHeight(-currentHeight);
 
               if (currentHeight <= ClimberConstants.minHeight) {
                 climberSubsystem.setVoltageSupplied(0);
@@ -111,7 +111,7 @@ public class ClimberCommands {
               }
             },
             climberSubsystem)
-        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.1)
+        .until(() -> Math.abs(-climberSubsystem.getClimbHeight()) < 0.5)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
   }
 
@@ -120,7 +120,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 1.0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              Commands.waitSeconds(2);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }
@@ -130,7 +130,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              Commands.waitSeconds(2);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }
@@ -149,7 +149,6 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 0;
               climberSubsystem.setBaseServoPosition(servoPosition);
-              Commands.waitSeconds(2);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }

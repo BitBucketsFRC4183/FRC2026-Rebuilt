@@ -27,7 +27,7 @@ public class ShooterCommands {
                 Commands.parallel(
                     Commands.run(shooterSubsystem::setTargetVelocity),
                     Commands.run(shooterSubsystem::startFeeding),
-                    Commands.run(hopperSubsystem::runConveyorForward))));
+                    Commands.run(hopperSubsystem::runConveyorReverse))));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {

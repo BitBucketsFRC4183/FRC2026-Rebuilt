@@ -2,13 +2,14 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-
-  private static double targetVelocity = 0;
+  private final LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Flywheel RPS", 9.0);
 
   private double storedDistance = -1;
 
@@ -16,54 +17,12 @@ public class ShooterSubsystem extends SubsystemBase {
     this.io = io;
   }
 
-  public static double getTargetVelocity() {
-    return targetVelocity;
-  }
-
-  // Changes only the Flywheel Velocity, using storedDistance
   public void calculateVelocity() {
-    double bestRPS = 0;
-    boolean solutionFound = false;
-
-    // Iterate through possible motor speeds (RPS)
-    for (double testRPS = 0; testRPS <= ShooterConstants.maxRPS; testRPS += 0.5) {
-
-      // Conversion to Rad/Sec
-      double omega = testRPS * 2 * Math.PI;
-      double vExit = omega * ShooterConstants.radius;
-
-      double vX = vExit * Math.cos(Math.toRadians(ShooterConstants.shooterAngle));
-      double vY = vExit * Math.sin(Math.toRadians(ShooterConstants.shooterAngle));
-
-      double dy = ShooterConstants.hubHeight - ShooterConstants.shooterHeight;
-      double g = -9.81;
-      double discriminant = Math.pow(vY, 2) + 2 * g * dy;
-
-      if (discriminant >= 0) {
-        double t = (-vY - Math.sqrt(discriminant)) / g;
-        double distanceX = vX * t;
-
-        if (distanceX >= storedDistance) {
-          bestRPS = testRPS;
-          solutionFound = true;
-          break; // Found the minimum speed needed to reach the distance
-        }
-      }
-    }
-
-    if (!solutionFound) {
-      System.out.println("Range Error: Target out of reach!");
-    } else {
-      targetVelocity = bestRPS;
-    }
-
-    if (storedDistance == 0) {
-      targetVelocity = 50;
-    }
+    //Use the Lookup table once we have values
   }
 
   public void setTargetVelocity() {
-    io.setSpeed(targetVelocity);
+    io.setSpeed(targetVelocity.get());
   }
 
   // Stores a distance to be used calculateTargetVelocity()
@@ -97,14 +56,15 @@ public class ShooterSubsystem extends SubsystemBase {
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity < (targetVelocity + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity < (targetVelocity - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity < (targetVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity < (targetVelocity.get() - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   @Override
   public void periodic() {
     io.updateInputs(shooterInputs);
+    Logger.processInputs("Flywheel", shooterInputs);
   }
 }

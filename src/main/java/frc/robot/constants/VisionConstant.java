@@ -10,6 +10,8 @@ public final class VisionConstant {
 
   // We need to change that in the settings
   // not pipeline name!!!!!
+  // 26.5in-12.875in
+  // vertical:10.67
   public static final String LIMELIGHT_FRONT = "limelight-side";
   public static final String LIMELIGHT_FRONT_SHOOTER = "limelight-frontShooter";
 
