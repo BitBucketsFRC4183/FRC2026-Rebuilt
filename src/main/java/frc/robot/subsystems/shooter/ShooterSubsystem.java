@@ -48,7 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setTargetVelocity() {
-    io.setSpeed(testVelocity.get());
+    io.setSpeed(Math.min(testVelocity.get(), ShooterConstants.maxRPS));
   }
 
   // Stores a distance to be used calculateTargetVelocity()
