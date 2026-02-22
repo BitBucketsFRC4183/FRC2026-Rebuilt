@@ -8,7 +8,7 @@ public final class ClimberConstants {
   private ClimberConstants() {}
 
   // CAN IDs
-  public static final int ARM_MOTOR_CAN_ID = 16; // Kraken X60// Kraken X44
+  public static final int ARM_MOTOR_CAN_ID = 17; // Kraken X60// Kraken X44
   public static final CANBus climberBus = new CANBus("rio", "./logs/example.hoot");
 
   // Inversion

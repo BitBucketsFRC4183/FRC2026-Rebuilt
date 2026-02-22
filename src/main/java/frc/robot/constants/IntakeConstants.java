@@ -6,7 +6,7 @@ public final class IntakeConstants {
 
   // Motor
   public static final int INTAKE_MOTOR_ID = 31;
-  public static final boolean MOTOR_INVERTED = false;
+  public static final boolean MOTOR_INVERTED = true;
 
   public static final double INTAKE_SPEED = 1.0;
   public static final double OUTTAKE_SPEED = -0.8;

@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -32,6 +33,9 @@ import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -41,7 +45,7 @@ import frc.robot.subsystems.vision.*;
  */
 public class RobotContainer {
   // Subsystems
-  private final DriveSubsystem driveSubsystem;
+  private final Drive driveSubsystem;
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -55,15 +59,12 @@ public class RobotContainer {
   private ClimberIO climberIO;
   private ClimberSubsystem climberSubsystem;
 
-  // Toggle state for left bumper
-
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
-  // Dashboard inputs
+  private SwerveDriveSimulation driveSimulation = null;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     switch (Constants.currentMode) {
@@ -72,7 +73,7 @@ public class RobotContainer {
         // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
         // a CANcoder
         driveSubsystem =
-            new DriveSubsystem(
+            new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
@@ -94,19 +95,26 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        driveSimulation =
+            new SwerveDriveSimulation(
+                Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+        SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+
         driveSubsystem =
-            new DriveSubsystem(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+            new Drive(
+                new GyroIOSim(driveSimulation.getGyroSimulation()),
+                new ModuleIOSim(driveSimulation.getModules()[0]),
+                new ModuleIOSim(driveSimulation.getModules()[1]),
+                new ModuleIOSim(driveSimulation.getModules()[2]),
+                new ModuleIOSim(driveSimulation.getModules()[3]));
 
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+
+        resetSimulation(new Pose2d(3, 3, new Rotation2d()));
 
         //        visionSubsystem =
         //            new VisionSubsystem(
@@ -122,7 +130,7 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         driveSubsystem =
-            new DriveSubsystem(
+            new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
@@ -149,20 +157,22 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // for registered commands
-    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
-    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
-    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
-    autoChooser.addOption(
-        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
+    //    // for registered commands
+    //    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    //    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    //    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    //    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    //    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    //    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
+    //    autoChooser.addOption(
+    //        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    //    autoChooser.addOption("StartTopShootIntakeEndL1",
+    // autoSubsystem.StartTopShootIntakeEndL1());
+    //    autoChooser.addOption("StartMidShootIntakeEndL1",
+    // autoSubsystem.StartMidShootIntakeEndL1());
+    //    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    //    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    //    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -220,6 +230,14 @@ public class RobotContainer {
         .x()
         .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
 
+    // Reset gyro / odometry
+    final Runnable resetOdometry =
+        Constants.currentMode == Constants.Mode.SIM
+            ? () -> resetSimulation(new Pose2d(3, 3, new Rotation2d()))
+            : () ->
+                driveSubsystem.setPose(
+                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
+    driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
     // Left bumper Intake deployed and stowed
     // intake Commands
     operatorController
@@ -234,12 +252,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    operatorController
-        .leftTrigger()
-        .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
-    // Hopper reverse while right bumper held
+    // Hopper reverse while right bu
+    // mper held
     operatorController
         .rightBumper()
         .whileTrue(
@@ -249,7 +265,7 @@ public class RobotContainer {
                 hopperSubsystem));
 
     // shooter Commands
-    double distance = 5;
+    double distance = 1;
     operatorController
         .rightTrigger()
         .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
@@ -307,5 +323,21 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public void resetSimulation(Pose2d newPose) {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
+
+    driveSubsystem.setPose(newPose);
+    driveSimulation.setSimulationWorldPose(newPose);
+    SimulatedArena.getInstance().resetFieldForAuto();
+  }
+
+  public void updateSimulation() {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
+
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput(
+        "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
   }
 }
