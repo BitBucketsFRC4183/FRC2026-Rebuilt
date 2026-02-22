@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionIOPhotonVisionSim implements VisionIO {
   // set the stage
@@ -41,12 +43,16 @@ public class VisionIOPhotonVisionSim implements VisionIO {
     // sim props
     SimCameraProperties camProps = new SimCameraProperties();
     camProps.setFPS(30);
-    camProps.setAvgLatencyMs(5);
-    camProps.setCalibError(0.25, 0.08);
+    camProps.setAvgLatencyMs(20);
+    camProps.setCalibError(0.35, 0.5);
+    camProps.setLatencyStdDevMs(5);
+    camProps.setExposureTimeMs(0.65);
 
     // lets put "real" camera to the sim construction
     frontCamSim = new PhotonCameraSim(PHOTON_FRONT, camProps);
+    frontCamSim.setMinTargetAreaPixels(1000);
     backCamSim = new PhotonCameraSim(PHOTON_BACK, camProps);
+    backCamSim.setMinTargetAreaPixels(1000);
 
     // streaming
     frontCamSim.enableRawStream(true);
@@ -65,11 +71,14 @@ public class VisionIOPhotonVisionSim implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
     visionSim.update(poseSupplier.get());
-    List visionResult = PHOTON_FRONT.getAllUnreadResults();
+    List<PhotonPipelineResult> visionResult = PHOTON_FRONT.getAllUnreadResults();
 
-    frontCamInputs.estimatedRobotPose = visionSim.getRobotPose().toPose2d();
+    
     frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
     frontCamInputs.aprilTagIDNumber = 0;
     frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
+    
   }
+
+
 }
