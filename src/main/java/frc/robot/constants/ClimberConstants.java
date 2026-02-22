@@ -36,6 +36,6 @@ public final class ClimberConstants {
   public static final double rung2Position = Units.Inch.fromBaseUnits(18);
 
   // Limiters
-  public static final double maxHeight = 5.0;
-  public static final double minHeight = 1.0;
+  public static final double maxHeight = Units.Inch.fromBaseUnits(30);
+  public static final double minHeight = Units.Inch.fromBaseUnits(0.05);
 }

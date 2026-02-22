@@ -49,11 +49,8 @@ public class ClimberIOTalonFX implements ClimberIO {
             * Math.PI;
     inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
     inputs.climberCurrent = climbMotor.getSupplyCurrent().getValueAsDouble();
-    climbMotor.getConfigurator().apply(climbConfig);
   }
-
   // Arm
-
   @Override
   public void setTargetHeight(double height) {
     double motorRotations =
@@ -74,5 +71,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setkG(double kG) {
     climbConfig.Slot0.kG = kG;
+    climbMotor.getConfigurator().apply(climbConfig);
   }
 }
