@@ -13,12 +13,31 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private double storedDistance = -1;
 
+  private final double[][] lookupTable =
+      new double[][] {
+        {0.0, 0.0},
+        {5.0, 9.0},
+        {10.0, 15.0}
+      };
+
   public ShooterSubsystem(ShooterIO io) {
     this.io = io;
+    System.out.println(lookupTable.length);
   }
 
   public void calculateVelocity() {
-    // Use the Lookup table once we have values
+    int index = 0;
+    while(index < lookupTable.length) {
+      if (lookupTable[index][0] >= storedDistance) {
+        break;
+      }
+      index++;
+    }
+    if(lookupTable[index][0] != storedDistance) {
+      //Calculates linear graph between 2 closest distances to estimate the best RPS to output
+      double slope = (lookupTable[index][1] - lookupTable[index - 1][1]) / (lookupTable[index][0] - lookupTable[index - 1][0]);
+      targetVelocity.set(slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]);
+    }
   }
 
   public void setTargetVelocity() {
