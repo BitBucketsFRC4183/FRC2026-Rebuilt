@@ -279,7 +279,7 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(
             Commands.startEnd(
-                hopperSubsystem::runConveyorReverse,
+                hopperSubsystem::runConveyorForward,
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
