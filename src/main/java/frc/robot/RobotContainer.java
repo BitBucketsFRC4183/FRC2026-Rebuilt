@@ -157,20 +157,22 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // for registered commands
-    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
-    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
-    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
-    autoChooser.addOption(
-        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
+    //    // for registered commands
+    //    autoChooser.addOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    //    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    //    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    //    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    //    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    //    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
+    //    autoChooser.addOption(
+    //        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    //    autoChooser.addOption("StartTopShootIntakeEndL1",
+    // autoSubsystem.StartTopShootIntakeEndL1());
+    //    autoChooser.addOption("StartMidShootIntakeEndL1",
+    // autoSubsystem.StartMidShootIntakeEndL1());
+    //    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    //    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    //    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
     autoChooser.addOption(
