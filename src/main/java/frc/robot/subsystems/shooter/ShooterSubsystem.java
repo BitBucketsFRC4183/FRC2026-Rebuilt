@@ -9,7 +9,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private final LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Flywheel RPS", 9.0);
+  private final LoggedNetworkNumber testVelocity = new LoggedNetworkNumber("Flywheel RPS", 9.0);
+  private double targetVelocity;
 
   private double storedDistance = -1;
 
@@ -22,26 +23,32 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem(ShooterIO io) {
     this.io = io;
-    System.out.println(lookupTable.length);
   }
 
   public void calculateVelocity() {
     int index = 0;
-    while(index < lookupTable.length) {
+    while (index < lookupTable.length) {
       if (lookupTable[index][0] >= storedDistance) {
         break;
       }
       index++;
     }
-    if(lookupTable[index][0] != storedDistance) {
-      //Calculates linear graph between 2 closest distances to estimate the best RPS to output
-      double slope = (lookupTable[index][1] - lookupTable[index - 1][1]) / (lookupTable[index][0] - lookupTable[index - 1][0]);
-      targetVelocity.set(slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]);
+    if (lookupTable[index][0] != storedDistance) {
+      // Calculates linear graph between 2 closest distances to estimate the best RPS to output
+      System.out.println(lookupTable[index][1] - lookupTable[index - 1][1]);
+      System.out.println(lookupTable[index][0] - lookupTable[index - 1][0]);
+      double slope =
+          (lookupTable[index][1] - lookupTable[index - 1][1])
+              / (lookupTable[index][0] - lookupTable[index - 1][0]);
+      targetVelocity =
+          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
+    } else {
+      targetVelocity = lookupTable[index][1];
     }
   }
 
   public void setTargetVelocity() {
-    io.setSpeed(targetVelocity.get());
+    io.setSpeed(testVelocity.get());
   }
 
   // Stores a distance to be used calculateTargetVelocity()
@@ -75,10 +82,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity < (targetVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity < (testVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity < (testVelocity.get() - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (testVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (testVelocity.get() - ShooterConstants.tolerance);
   }
 
   @Override
