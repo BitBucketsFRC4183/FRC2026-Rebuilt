@@ -22,14 +22,6 @@ public class VisionIOPhotonVisionSim implements VisionIO {
   private PhotonCameraSim backCamSim;
   private final Supplier<Pose2d> poseSupplier;
 
-  //  DriveSubsystem driveSubsystem =
-  //      new DriveSubsystem(
-  //          new GyroIO() {},
-  //          new ModuleIOSim(TunerConstants.FrontLeft),
-  //          new ModuleIOSim(TunerConstants.FrontRight),
-  //          new ModuleIOSim(TunerConstants.BackLeft),
-  //          new ModuleIOSim(TunerConstants.BackRight));
-
   public VisionIOPhotonVisionSim(
       Supplier<Pose2d> poseSupplier,
       Transform3d robotToFrontCam,
@@ -37,7 +29,6 @@ public class VisionIOPhotonVisionSim implements VisionIO {
       {
     // now create the stage
     this.poseSupplier = poseSupplier;
-    //    poseSupplier = driveSubsystem.poseSupplierForSim;
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");
@@ -50,7 +41,7 @@ public class VisionIOPhotonVisionSim implements VisionIO {
     // sim props
     SimCameraProperties camProps = new SimCameraProperties();
     camProps.setFPS(30);
-    camProps.setAvgLatencyMs(35);
+    camProps.setAvgLatencyMs(5);
     camProps.setCalibError(0.25, 0.08);
 
     // lets put "real" camera to the sim construction
@@ -78,7 +69,7 @@ public class VisionIOPhotonVisionSim implements VisionIO {
 
     frontCamInputs.estimatedRobotPose = visionSim.getRobotPose().toPose2d();
     frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
-    frontCamInputs.aprilTagIDNumber = PHOTON_FRONT.getPipelineIndex();
+    frontCamInputs.aprilTagIDNumber = 0;
     frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
   }
 }
