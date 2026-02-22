@@ -11,20 +11,20 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
 
-  private final DriveSubsystem drive;
+  private final Drive drive;
   private final ShooterSubsystem shooter;
   private final ClimberSubsystem climber;
   private final HopperSubsystem hopper;
   // private ClimberSubsystem climberSubsystem;
 
   public AutoSubsystem(
-      DriveSubsystem drive,
+      Drive drive,
       ShooterSubsystem shooter,
       ClimberSubsystem climber,
       HopperSubsystem hopper) {

@@ -2,7 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
 /// shooter game 2026: concept & mechanics
@@ -23,13 +23,13 @@ public class VisionSubsystem extends SubsystemBase {
 
   private final VisionIO cameraFront;
   private final VisionIO cameraSide;
-  private final DriveSubsystem drive;
+  private final Drive drive;
 
   // loggable data
   private final VisionIOInputsAutoLogged cameraFrontInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged cameraSideInputs = new VisionIOInputsAutoLogged();
 
-  public VisionSubsystem(VisionIO cameraFront, VisionIO cameraSide, DriveSubsystem driveSubsystem) {
+  public VisionSubsystem(VisionIO cameraFront, VisionIO cameraSide, Drive driveSubsystem) {
     this.cameraFront = cameraFront;
     this.cameraSide = cameraSide;
     this.drive = driveSubsystem;

@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AimConstants;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.AimController;
 import frc.robot.subsystems.vision.HopperTracker;
 import java.util.function.Supplier;
@@ -12,11 +12,11 @@ import java.util.function.Supplier;
 /// I just found it is basically same thing in one of the drive command
 /// but that's fine
 public class AutoAimCommand extends Command {
-  private final DriveSubsystem driveSubsystem;
+  private final Drive driveSubsystem;
   private final Supplier<Pose2d> poseSupplier;
   private final AimController aimController;
 
-  public AutoAimCommand(DriveSubsystem driveSubsystem, Supplier<Pose2d> poseSupplier) {
+  public AutoAimCommand(Drive driveSubsystem, Supplier<Pose2d> poseSupplier) {
     this.driveSubsystem = driveSubsystem;
     this.poseSupplier = poseSupplier;
     this.aimController = new AimController(AimConstants.KP, AimConstants.KI, AimConstants.KD);

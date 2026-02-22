@@ -45,7 +45,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class RobotContainer {
   // Subsystems
-  private final DriveSubsystem driveSubsystem;
+  private final Drive driveSubsystem;
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -73,7 +73,7 @@ public class RobotContainer {
         // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
         // a CANcoder
         driveSubsystem =
-            new DriveSubsystem(
+            new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
@@ -97,11 +97,11 @@ public class RobotContainer {
         // Sim robot, instantiate physics sim IO implementations
         driveSimulation =
             new SwerveDriveSimulation(
-                DriveSubsystem.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+                Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
         driveSubsystem =
-            new DriveSubsystem(
+            new Drive(
                 new GyroIOSim(driveSimulation.getGyroSimulation()),
                 new ModuleIOSim(driveSimulation.getModules()[0]),
                 new ModuleIOSim(driveSimulation.getModules()[1]),
@@ -130,7 +130,7 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         driveSubsystem =
-            new DriveSubsystem(
+            new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
