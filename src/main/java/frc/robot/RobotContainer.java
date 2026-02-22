@@ -238,7 +238,7 @@ public class RobotContainer {
     operatorController
         .leftTrigger()
         .whileTrue(
-            IntakeCommands.intake(intakeSubsystem).onlyIf(() -> intakeSubsystem.isExtended()));
+            IntakeCommands.intake(intakeSubsystem));
 
     // Hopper reverse while right bumper held
     operatorController
