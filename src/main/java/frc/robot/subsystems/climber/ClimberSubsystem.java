@@ -56,8 +56,8 @@ public class ClimberSubsystem extends SubsystemBase {
     //    baseServo2.set(servoPosition);
   }
 
-  public void setTargetHeight(double currentPosition) {
-    climberIO.setTargetHeight(currentPosition);
+  public void setTargetHeight(double desiredPosition) {
+    climberIO.setTargetHeight(desiredPosition);
   }
 
   //  public double getClimbServoPosition() {

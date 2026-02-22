@@ -35,21 +35,19 @@ public class ClimberIOSim implements ClimberIO {
     double dt = 0.02;
     double maxSpeedMetersPerSec = 1.5; // tune this
 
-    simVelocity = (appliedVoltage / 12.0) * maxSpeedMetersPerSec;
-
     if ((simHeightMeters == 0 && appliedVoltage < 0)
         || (simHeightMeters == maxHeight && appliedVoltage > 0)) {
       simVelocity = 0;
     }
     climberSimMotor.setSupplyVoltage(appliedVoltage);
 
-    simHeightMeters += simVelocity * dt;
-    climberModel.setLength(simHeightMeters + 0.2);
-
     inputs.climberHeight = simHeightMeters;
     double error = targetHeightMeters - simHeightMeters;
     double commandedVoltage = MathUtil.clamp(error * 6.0, -12.0, 12.0);
     appliedVoltage = voltageLimiter.calculate(commandedVoltage);
+    simHeightMeters += simVelocity * dt;
+    simVelocity = (appliedVoltage / 12.0) * maxSpeedMetersPerSec;
+    climberModel.setLength(simHeightMeters + 0.2);
     inputs.climberVoltage = appliedVoltage;
     inputs.climberCurrent = climberSimMotor.getSupplyCurrent();
     climberSimMotor.setSupplyVoltage(inputs.climberVoltage);
