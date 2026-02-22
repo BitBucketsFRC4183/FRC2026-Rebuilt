@@ -300,11 +300,11 @@ public class RobotContainer {
     operatorController
         .y()
         // .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+        .onTrue(ClimberCommands.climbToLevelTwoAndThree(climberSubsystem));
     operatorController
         .b()
         //.and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
 
     // servo command
     operatorController

@@ -120,7 +120,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 1.0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              // climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }
@@ -130,7 +130,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              // climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
+             climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }
@@ -157,7 +157,8 @@ public class ClimberCommands {
     return ClimberCommands.baseServoDown(climberSubsystem)
         .andThen(
             ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
-                .andThen(ClimberCommands.climberServoDown(climberSubsystem)));
+                .andThen(ClimberCommands.climberServoDown(climberSubsystem))
+                    .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
   }
 
   public static Command climbToLevelOne(ClimberSubsystem climberSubsystem) {
@@ -170,7 +171,7 @@ public class ClimberCommands {
   }
   ;
 
-  public static Command climbToLevelTwo(ClimberSubsystem climberSubsystem) {
+  public static Command climbToLevelTwoAndThree(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.climberServoDown(climberSubsystem)
         .andThen(
             ClimberCommands.increaseClimberLengthLevelTwo(climberSubsystem)
@@ -183,16 +184,10 @@ public class ClimberCommands {
                                         .andThen(ClimberCommands.baseServoUp(climberSubsystem))))));
   }
 
-  public static Command climbToLevelThree(ClimberSubsystem climberSubsystem) {
+  public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.climberServoDown(climberSubsystem)
-        .andThen(
-            ClimberCommands.increaseClimberLengthLevelTwo(climberSubsystem)
-                .andThen(
-                    ClimberCommands.climberServoUp(climberSubsystem)
-                        .andThen(
-                            ClimberCommands.baseServoDown(climberSubsystem)
-                                .andThen(
-                                    ClimberCommands.decreaseClimberLength(climberSubsystem)
-                                        .andThen(ClimberCommands.baseServoUp(climberSubsystem))))));
+        .andThen(ClimberCommands.baseServoDown(climberSubsystem)
+                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
+
   }
 }
