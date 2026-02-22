@@ -6,7 +6,8 @@ public interface ClimberIO {
   @AutoLog
   public class ClimberIOInputs {
     public double climberHeight = 0.0;
-    public double currentVoltage;
+    public double climberVoltage;
+    public double climberCurrent;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}
@@ -16,4 +17,6 @@ public interface ClimberIO {
   public default void stopClimb() {}
 
   public default void setVoltage(double voltageSupplied) {}
+
+  public default void setkG(double kG) {}
 }

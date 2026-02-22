@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -9,10 +8,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private final ClimberIO climberIO;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  private final Servo climbServo1 = new Servo(1);
-  private final Servo climbServo2 = new Servo(2);
-  private final Servo baseServo1 = new Servo(3);
-  private final Servo baseServo2 = new Servo(4);
+  //  private final Servo climbServo1 = new Servo(1);
+  //  private final Servo climbServo2 = new Servo(2);
+  //  private final Servo baseServo1 = new Servo(3);
+  //  private final Servo baseServo2 = new Servo(4);
   DigitalInput L1Switch = new DigitalInput(0);
 
   public ClimberSubsystem(ClimberIO climberIO) {
@@ -23,49 +22,24 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     climberIO.updateInputs(inputs);
     Logger.processInputs("Climber/ClimbingInputs", inputs);
-    //    if (climberIO.getCurrentHeight() >= ClimberConstants.maxHeight) {
-    //      climberIO.setVoltage(0);
-    //      Commands.waitSeconds(2);
-    //      climberIO.setVoltage(-2);
+
+    if (inputs.climberVoltage > 12) {
+      climberIO.setVoltage(-Math.abs(inputs.climberVoltage - 10));
+    } else if (inputs.climberVoltage < -12) {
+      climberIO.setVoltage(-Math.abs(inputs.climberVoltage + 10));
+    }
+
+    //    if (climbServo1.getPosition() == 1.0) {
+    //      climberIO.setkG(ClimberConstants.ARM_kGDown);
+    //    } else if (climbServo1.getPosition() == 0) {
+    //      climberIO.setkG(ClimberConstants.ARM_kGUp);
     //    }
-    //    if (climberIO.getCurrentHeight() <= ClimberConstants.minHeight) {
-    //      climberIO.setVoltage(0);
-    //      Commands.waitSeconds(2);
-    //      climberIO.setVoltage(2);
-    //    }
   }
 
-  /* ================= ARM CONTROL ================= */
-
-  public void moveClimbToGround() {
-    climberIO.setTargetHeight(0);
-    //    servo1.setAngle(0);
-    //    servo2.setAngle(0);
-    //    servo3.setAngle(0);
-    //    servo4.setAngle(0);
-    //    Commands.waitSeconds(2);
-    //    servo1.set(0);
-    //    servo2.set(0);
-    //    servo3.set(0);
-    //    servo4.set(0);
-  }
-
-  public void stopRise() {
-    climberIO.stopClimb();
-  }
   /* ================= TELEMETRY ================= */
 
   public double getClimbHeight() {
     return inputs.climberHeight;
-  }
-
-  public void moveClimbToLevel1() {
-    // climberIO.setTargetHeight(ClimberConstants.rung1Position);
-    climberIO.setTargetHeight(0);
-    //    servo1.set(.7);
-    //    servo2.set(.7);
-    //    servo3.set(.7);
-    //    servo4.set(.7)
   }
 
   public void setVoltageSupplied(double voltageSupplied) {
@@ -73,22 +47,26 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setClimbServoPosition(double servoPosition) {
-    climbServo1.set(servoPosition);
-    climbServo2.set(servoPosition);
+    //    climbServo1.set(servoPosition);
+    //    climbServo2.set(servoPosition);
   }
 
   public void setBaseServoPosition(double servoPosition) {
-    baseServo1.set(servoPosition);
-    baseServo2.set(servoPosition);
+    //    baseServo1.set(servoPosition);
+    //    baseServo2.set(servoPosition);
   }
 
-  public double getClimbServoPosition() {
-    double climberServo1Position = climbServo1.getPosition();
-    return climberServo1Position;
+  public void setTargetHeight(double currentPosition) {
+    climberIO.setTargetHeight(currentPosition);
   }
 
-  public double getBaseServoPosition() {
-    double baseServo1Position = climbServo1.getPosition();
-    return baseServo1Position;
-  }
+  //  public double getClimbServoPosition() {
+  //    double climberServo1Position = climbServo1.getPosition();
+  //    return climberServo1Position;
+  //  }
+  //
+  //  public double getBaseServoPosition() {
+  //    double baseServo1Position = baseServo1.getPosition();
+  //    return baseServo1Position;
+  //  }
 }
