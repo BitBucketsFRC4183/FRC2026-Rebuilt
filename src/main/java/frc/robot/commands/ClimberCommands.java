@@ -120,7 +120,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 1.0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
+              // climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }
@@ -130,7 +130,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-              climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
+              // climberSubsystem.setkG(ClimberConstants.ARM_kGUp);
             })
         .finallyDo(() -> Commands.waitSeconds(2));
   }

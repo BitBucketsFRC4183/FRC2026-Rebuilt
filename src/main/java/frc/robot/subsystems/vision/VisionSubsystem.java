@@ -1,8 +1,18 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
+import frc.robot.constants.VisionConstant;
 import frc.robot.subsystems.drive.Drive;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 /// shooter game 2026: concept & mechanics
@@ -21,35 +31,177 @@ public class VisionSubsystem extends SubsystemBase {
   /// so I'm a data collector
   /// ******************************
 
-  private final VisionIO cameraFront;
-  private final VisionIO cameraSide;
+  private final VisionIO visionio;
+  private final OdometryHistory odometryHistory;
   private final Drive drive;
+  private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
+  private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
+  private Optional<VisionFusionResults> latestVisionResult = Optional.empty();
 
-  // loggable data
-  private final VisionIOInputsAutoLogged cameraFrontInputs = new VisionIOInputsAutoLogged();
-  private final VisionIOInputsAutoLogged cameraSideInputs = new VisionIOInputsAutoLogged();
+  public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory, Drive drive) {
+    this.visionio = io;
+    this.odometryHistory = odometryHistory;
+    this.drive = drive;
+    //    LimelightHelpers.SetIMUMode();
+    //    LimelightHelpers.setRewindEnabled("", true);
+  }
 
-  public VisionSubsystem(VisionIO cameraFront, VisionIO cameraSide, Drive driveSubsystem) {
-    this.cameraFront = cameraFront;
-    this.cameraSide = cameraSide;
-    this.drive = driveSubsystem;
+  public void seedInternalIMU() {
+    LimelightHelpers.SetIMUMode(VisionConstant.LIMELIGHT_FRONT, 1);
   }
 
   @Override
   public void periodic() {
-    cameraFront.updateInputs(cameraFrontInputs);
-    cameraSide.updateInputs(cameraSideInputs);
-    // Logger.processInputs("Vision/front", cameraInputsAll.get(VisionConstant.LIMELIGHT_FRONT));
-    Logger.processInputs("Vision/cameraFront", cameraFrontInputs);
-    Logger.processInputs("Vision/cameraSide", cameraSideInputs);
+    visionio.updateInputs(CamOneInputs, CamTwoInputs);
 
-    // only use cameraFront for now
-    if (cameraFrontInputs.hasMegaTag2) {
-      drive.addVisionMeasurement(
-          cameraFrontInputs.megaTagPose,
-          cameraFrontInputs.timestamp,
-          VecBuilder.fill(.7, .7, 9999999));
+    /// one
+    var maybeMTA = processMegaTags(CamOneInputs);
+    /// two
+    var maybeMTB = processMegaTags(CamTwoInputs);
+
+    /// if we have good estimation from MTA, then use MTA; the other way around for MTB as well
+    /// if both does not provide good estimation, then we fuse both results
+    // it will be packaged into VisionPoseFusion, and
+    Optional<VisionFusionResults> acceptedInputs = Optional.empty();
+    if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
+      acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
+    } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
+      acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
     }
+    latestVisionResult = acceptedInputs;
+    Logger.processInputs("Vision/front", CamOneInputs);
+    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+
+    if (latestVisionResult.isPresent()) {
+      drive.addVisionMeasurement(
+          latestVisionResult.get().getVisionRobotPoseMeters(),
+          latestVisionResult.get().getTimestampSeconds(),
+          latestVisionResult.get().getVisionMeasurementStdDevs());
+    }
+  }
+
+  private VisionFusionResults getFuseEstimation(VisionFusionResults a, VisionFusionResults b) {
+    // Ensure b is the newer measurement
+    if (b.getTimestampSeconds() < a.getTimestampSeconds()) {
+      VisionFusionResults tmp = a;
+      a = b;
+      b = tmp;
+    }
+
+    // Preview both estimates to the same timestamp
+    Transform2d a_T_b =
+        odometryHistory
+            .getPoseAt(b.getTimestampSeconds())
+            .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
+
+    Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
+    Pose2d poseB = b.getVisionRobotPoseMeters();
+
+    // Inverse‑variance weighting
+    var varianceA = a.getVisionMeasurementStdDevs().elementTimes(a.getVisionMeasurementStdDevs());
+    var varianceB = b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
+
+    Rotation2d fusedHeading = poseB.getRotation();
+    if (varianceA.get(2, 0) < VisionConstant.kLargeVariance
+        && varianceB.get(2, 0) < VisionConstant.kLargeVariance) {
+      fusedHeading =
+          new Rotation2d(
+              poseA.getRotation().getCos() / varianceA.get(2, 0)
+                  + poseB.getRotation().getCos() / varianceB.get(2, 0),
+              poseA.getRotation().getSin() / varianceA.get(2, 0)
+                  + poseB.getRotation().getSin() / varianceB.get(2, 0));
+    }
+
+    double weightAx = 1.0 / varianceA.get(0, 0);
+    double weightAy = 1.0 / varianceA.get(1, 0);
+    double weightBx = 1.0 / varianceB.get(0, 0);
+    double weightBy = 1.0 / varianceB.get(1, 0);
+
+    Pose2d fusedPose =
+        new Pose2d(
+            new Translation2d(
+                (poseA.getTranslation().getX() * weightAx
+                        + poseB.getTranslation().getX() * weightBx)
+                    / (weightAx + weightBx),
+                (poseA.getTranslation().getY() * weightAy
+                        + poseB.getTranslation().getY() * weightBy)
+                    / (weightAy + weightBy)),
+            fusedHeading);
+
+    Matrix<N3, N1> fusedStdDev =
+        VecBuilder.fill(
+            Math.sqrt(1.0 / (weightAx + weightBx)),
+            Math.sqrt(1.0 / (weightAy + weightBy)),
+            Math.sqrt(1.0 / (1.0 / varianceA.get(2, 0) + 1.0 / varianceB.get(2, 0))));
+
+    int numTags = a.getNumTags() + b.getNumTags();
+    double time = b.getTimestampSeconds();
+
+    return new VisionFusionResults(fusedPose, time, fusedStdDev, numTags);
+  }
+
+  /// ********************
+  /// ********************
+  /// ********************
+  /// ********************
+  /// ********************
+
+  private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
+    Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
+    if (!isValidInputs(inputs)) {
+      return Optional.empty();
+    }
+    Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
+    if (mtEstimate.isPresent()) {
+      estimateOrEmpty = mtEstimate;
+    }
+    return estimateOrEmpty;
+  }
+
+  private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
+
+    // Single‑tag extra checks
+    if (inputs.tagCount < 2) {
+      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+        return Optional.empty();
+      }
+    }
+
+    if (proportionalDistance(inputs) < VisionConstant.maxDistanceFromRobotToApril) {
+      return Optional.empty();
+    }
+
+    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
+      return Optional.empty();
+    }
+
+    return Optional.of(
+        new VisionFusionResults(
+            inputs.megaTagPose,
+            inputs.timestamp,
+            VecBuilder.fill(
+                inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
+            inputs.tagCount));
+  }
+
+  /// are we a valid pose?
+  /// yes sir!
+  private boolean isValidInputs(VisionIOInputsAutoLogged inputs) {
+    if (inputs.tagCount <= 0) return false;
+    if (!inputs.hasMegaTag2) return false;
+    if (inputs.estimatedRobotPose == null) return false;
+    return true;
+  }
+
+  private double proportionalDistance(VisionIOInputsAutoLogged inputs) {
+    // if there is no target, or TA is too small (error)
+    if (!inputs.hasTarget || inputs.ta < 0.0001) return 999;
+
+    return 1.0 / Math.sqrt(inputs.ta);
+  }
+
+  public Optional<VisionFusionResults> getLatestVisionResult() {
+    return latestVisionResult;
   }
 }
 

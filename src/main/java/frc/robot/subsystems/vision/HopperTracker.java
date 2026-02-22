@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class HopperTracker {
   /// fancy notation
   /// function that give you hub pose based on alliance color
+  @AutoLogOutput(key = "Vision/Aim/TargetHubPose")
   public static Pose2d getTargetHubPose2d() {
     var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
     return (alliance == DriverStation.Alliance.Red)
@@ -28,8 +29,8 @@ public class HopperTracker {
     return robotPose.getTranslation().getDistance(HubPose.getTranslation());
   }
 
-  // from +x to the magnitude line
   /// targetRad
+  @AutoLogOutput(key = "Vision/Aim/AngleToHub")
   public static Rotation2d getAngleToHub(Pose2d robotPose) {
 
     // Vector--> robot to hub; code--> hub - robot
@@ -44,8 +45,8 @@ public class HopperTracker {
     return fieldAngle;
   }
 
-  @AutoLogOutput
   public static double getAngleToHubRad(Pose2d robotPose) {
+
     return getAngleToHub(robotPose).getRadians();
   }
 
