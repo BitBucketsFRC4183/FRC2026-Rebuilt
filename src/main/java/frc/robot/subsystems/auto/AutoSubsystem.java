@@ -3,11 +3,7 @@ package frc.robot.subsystems.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.subsystems.climber.ClimberSubsystem;
@@ -262,6 +258,31 @@ public class AutoSubsystem extends SubsystemBase {
     return AutoBuilder.followPath(ShooterTTower);
   }
 
+  public Command  goBottomToOutpost(){
+    PathPlannerPath BottomOutpost;
+
+    try {
+       BottomOutpost= PathPlannerPath.fromChoreoTrajectory("BottomToOutpost");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(BottomOutpost);
+  }
+  public Command  goOutpostToShootBPs(){
+    PathPlannerPath BottomShootPs;
+
+    try {
+      BottomShootPs= PathPlannerPath.fromChoreoTrajectory("OutpostToShooterB");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
+    }
+
+    return AutoBuilder.followPath(BottomShootPs);
+  }
+
   // AUTOROUTINES
 
   /*public Command bottomStartToShootOnly() {
@@ -425,4 +446,19 @@ public class AutoSubsystem extends SubsystemBase {
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
   }
+
+  public Command StartBottomToOutpostShoot() {
+    return Commands.sequence(
+            new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
+            goBottomToOutpost(),
+            new WaitCommand(6),
+            new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
+            goOutpostToShootBPs(),
+            new InstantCommand(() -> System.out.println("We are going to shoot now")),
+            shoot().withTimeout(4),
+            stop(),
+            new InstantCommand(() -> System.out.println("complete routine")));
+  }
 }
+
+
