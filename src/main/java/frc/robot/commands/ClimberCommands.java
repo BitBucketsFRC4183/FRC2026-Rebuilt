@@ -163,10 +163,8 @@ public class ClimberCommands {
 
   public static Command climbToLevelOne(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
-        .andThen(
-            ClimberCommands.climberServoUp(climberSubsystem)
-                .andThen(
-                    ClimberCommands.decreaseClimberLength(climberSubsystem)
+        .andThen(ClimberCommands.climberServoUp(climberSubsystem)
+                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)
                         .andThen(ClimberCommands.baseServoUp(climberSubsystem))));
   }
   ;
@@ -188,8 +186,8 @@ public class ClimberCommands {
 
     return ClimberCommands.climberServoDown(climberSubsystem)
         .andThen(ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(Commands.runOnce(() ->climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
-                .until(() ->climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight)
+                .andThen(Commands.run(() ->climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
+                .until(() ->climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
             .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
 
   }

@@ -67,10 +67,6 @@ public class ClimberIOSim implements ClimberIO {
   public void setVoltage(double voltageSupplied) {
     if (voltageSupplied > 12.0) {
       appliedVoltage = 12.0;
-    } else if (voltageSupplied < -12.0) {
-      appliedVoltage = -12.0;
-    } else {
-      appliedVoltage = voltageSupplied;
-    }
+    } else appliedVoltage = Math.max(voltageSupplied, -12.0);
   }
 }
