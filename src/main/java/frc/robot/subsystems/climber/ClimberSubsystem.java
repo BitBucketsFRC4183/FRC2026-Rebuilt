@@ -28,7 +28,7 @@ public class ClimberSubsystem extends SubsystemBase {
     } else if (inputs.climberVoltage < -12) {
       climberIO.setVoltage(-Math.abs(inputs.climberVoltage + 10));
 
-      if (L1Switch.get()){
+      if (L1Switch.get()) {
         climberIO.stopClimb();
       }
     }
@@ -55,14 +55,14 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setTargetHeight(double desiredPosition) {
-    climberIO.setTargetHeight(desiredPosition); 
+    climberIO.setTargetHeight(desiredPosition);
   }
 
-  public void setkG(double kG){
+  public void setkG(double kG) {
     climberIO.setkG(kG);
   }
 
-  public void resetPosition(){
+  public void resetPosition() {
     climberIO.resetPosition();
   }
 }

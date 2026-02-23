@@ -2,11 +2,12 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
 
   private final IntakeIO io;
-  // private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private IntakeState currentState = IntakeState.STOWED;
 
@@ -16,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // io.updateInputs(inputs);
+    io.updateInputs(inputs);
 
     switch (currentState) {
       case STOWED:
@@ -44,6 +45,8 @@ public class IntakeSubsystem extends SubsystemBase {
         io.setMotorOutput(IntakeConstants.HOLD_SPEED);
         break;
     }
+
+    Logger.processInputs("Intake", inputs);
   }
 
   // State Control

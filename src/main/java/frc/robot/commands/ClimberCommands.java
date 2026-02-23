@@ -130,7 +130,7 @@ public class ClimberCommands {
             () -> {
               double servoPosition = 0;
               climberSubsystem.setClimbServoPosition(servoPosition);
-             climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
+              climberSubsystem.setkG(ClimberConstants.ARM_kGDown);
             })
         .andThen(() -> Commands.waitSeconds(2));
   }
@@ -158,13 +158,15 @@ public class ClimberCommands {
         .andThen(
             ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
                 .andThen(ClimberCommands.climberServoDown(climberSubsystem))
-                    .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
+                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
   }
 
   public static Command climbToLevelOne(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
-        .andThen(ClimberCommands.climberServoUp(climberSubsystem)
-                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)
+        .andThen(
+            ClimberCommands.climberServoUp(climberSubsystem)
+                .andThen(
+                    ClimberCommands.decreaseClimberLength(climberSubsystem)
                         .andThen(ClimberCommands.baseServoUp(climberSubsystem))));
   }
   ;
@@ -185,10 +187,12 @@ public class ClimberCommands {
   public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
 
     return ClimberCommands.climberServoDown(climberSubsystem)
-        .andThen(ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(Commands.run(() ->climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
-                .until(() ->climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
-            .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
-
+        .andThen(
+            ClimberCommands.baseServoDown(climberSubsystem)
+                .andThen(
+                    Commands.run(
+                        () -> climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
+                .until(() -> climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
+                .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
   }
 }

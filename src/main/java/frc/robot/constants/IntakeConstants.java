@@ -13,7 +13,7 @@ public final class IntakeConstants {
   public static final double HOLD_SPEED = 0.15;
 
   // Current limiting
-  public static final double SUPPLY_CURRENT_LIMIT = 40.0;
+  public static final double SUPPLY_CURRENT_LIMIT = 60.0;
   public static final double STATOR_CURRENT_LIMIT = 60.0;
 
   // Pneumatics

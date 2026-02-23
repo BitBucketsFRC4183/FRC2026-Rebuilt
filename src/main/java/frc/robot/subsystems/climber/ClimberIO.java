@@ -21,7 +21,5 @@ public interface ClimberIO {
 
   public default void setkG(double kG) {}
 
-  public default void resetPosition(){}
-
-
+  public default void resetPosition() {}
 }

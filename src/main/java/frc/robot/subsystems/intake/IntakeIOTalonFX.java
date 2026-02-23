@@ -60,7 +60,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.motorVelocityRPM = intakeMotor.getVelocity().getValueAsDouble() * 60.0;
     inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
-
+    inputs.motorVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
     // If either piston disagrees, treat as NOT extended (safe default)
     boolean extended =
         leftPiston.get() == DoubleSolenoid.Value.kForward
