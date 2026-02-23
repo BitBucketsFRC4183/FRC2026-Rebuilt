@@ -13,6 +13,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private final PositionVoltage climbRequest = new PositionVoltage(0);
   TalonFXConfiguration climbConfig = new TalonFXConfiguration();
+  double desiredHeight= 0;
 
   public ClimberIOTalonFX() {
 
@@ -46,14 +47,17 @@ public class ClimberIOTalonFX implements ClimberIO {
         climbMotor.getPosition().getValueAsDouble() * ClimberConstants.spoolRadius;
     inputs.climberVoltage = climbMotor.getMotorVoltage().getValueAsDouble();
     inputs.climberCurrent = climbMotor.getSupplyCurrent().getValueAsDouble();
+    inputs.setpoint = desiredHeight;
     // climbMotor.getConfigurator().apply(climbConfig);
   }
   // Arm
   @Override
   public void setTargetHeight(double height) {
-    double motorRotations =
+     double motorRotations =
         height / ((2 * Math.PI * ClimberConstants.spoolRadius) / ClimberConstants.ARM_GEAR_RATIO);
     climbMotor.setControl(climbRequest.withPosition(motorRotations));
+    desiredHeight = height;
+
   }
 
   @Override

@@ -55,7 +55,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setTargetHeight(double desiredPosition) {
-    climberIO.setTargetHeight(desiredPosition);
+    climberIO.setTargetHeight(desiredPosition); 
   }
 
   public void setkG(double kG){
