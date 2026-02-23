@@ -185,10 +185,12 @@ public class ClimberCommands {
   }
 
   public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
+
     return ClimberCommands.climberServoDown(climberSubsystem)
         .andThen(ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)).
-                andThen(Commands.runOnce(climberSubsystem::resetPosition)));
+                .andThen(Commands.runOnce(() ->climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
+                .until(() ->climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight)
+            .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
 
   }
 }
