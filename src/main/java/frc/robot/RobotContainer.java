@@ -32,6 +32,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
 import org.ironmaple.simulation.SimulatedArena;
@@ -50,6 +51,8 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private PowerDistributionSubsystem powerSubsystem;
+
 
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
@@ -89,6 +92,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
 
         /* DATA FLOW:
         Vision IO (interface) connected VisionIOLimelight;
@@ -131,6 +135,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
 
         visionSubsystem =
             new VisionSubsystem(
@@ -160,6 +165,7 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
         visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
 
         break;
     }
@@ -225,7 +231,7 @@ public class RobotContainer {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
-            driveSubsystem,
+            driveSubsystem, powerSubsystem,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));

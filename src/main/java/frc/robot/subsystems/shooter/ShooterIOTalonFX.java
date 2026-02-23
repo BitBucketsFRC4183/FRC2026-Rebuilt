@@ -85,5 +85,3 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.intakeVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
   }
 }
-
-// Aidan's Social Security Number: 621 79 0241

@@ -40,6 +40,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 }
 
+  public boolean isRunning() {
+    return currentState == IntakeState.INTAKING
+            || currentState == IntakeState.OUTTAKING;
+  }
+
   // State Control
 
   public void setState(IntakeState state) {
