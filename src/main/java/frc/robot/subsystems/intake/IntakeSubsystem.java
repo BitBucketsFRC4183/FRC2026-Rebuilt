@@ -16,7 +16,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // io.updateInputs(inputs);
 
     switch (currentState) {
       case STOWED:
@@ -31,20 +30,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case INTAKING:
         io.extend();
-        io.setMotorOutput(IntakeConstants.INTAKE_SPEED);
+        io.setVelocity(IntakeConstants.INTAKE_RPM);
         break;
 
       case OUTTAKING:
         io.extend();
-        io.setMotorOutput(IntakeConstants.OUTTAKE_SPEED);
-        break;
-
-      case HOLDING:
-        io.extend();
-        io.setMotorOutput(IntakeConstants.HOLD_SPEED);
+        io.setVelocity(IntakeConstants.OUTTAKE_RPM);
         break;
     }
-  }
+}
 
   // State Control
 
@@ -72,17 +66,4 @@ public class IntakeSubsystem extends SubsystemBase {
     setState(IntakeState.OUTTAKING);
   }
 
-  public void hold() {
-    setState(IntakeState.HOLDING);
-  }
-
-  // Telemetry
-  //
-  //  public double getMotorCurrent() {
-  //    return inputs.motorCurrentAmps;
-  //  }
-  //
-  //  public boolean isExtended() {
-  //    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
-  //  }
 }

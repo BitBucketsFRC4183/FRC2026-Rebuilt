@@ -8,7 +8,6 @@ public class HopperIOSim implements HopperIO {
 
   @Override
   public void updateInputs(HopperIOInputs inputs) {
-    // In sim, applied output is just the commanded percent
     inputs.conveyorAppliedOutput = conveyorPercent;
   }
 

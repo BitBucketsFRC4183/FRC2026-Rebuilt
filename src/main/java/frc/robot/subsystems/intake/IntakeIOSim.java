@@ -31,7 +31,7 @@ public class IntakeIOSim implements IntakeIO {
     double dt = now - lastTimestamp;
     lastTimestamp = now;
 
-    // Target velocity based on motor output
+    // Target velocity
     double targetRPM = motorOutput * FREE_SPEED_RPM;
 
     motorVelocityRPM +=
@@ -50,11 +50,6 @@ public class IntakeIOSim implements IntakeIO {
     inputs.motorCurrentAmps = motorCurrentAmps;
     inputs.primaryPistonExtended = piston1Extended;
     inputs.secondaryPistonExtended = piston2Extended;
-  }
-
-  @Override
-  public void setMotorOutput(double percent) {
-    motorOutput = MathUtil.clamp(percent, -1.0, 1.0);
   }
 
   @Override
