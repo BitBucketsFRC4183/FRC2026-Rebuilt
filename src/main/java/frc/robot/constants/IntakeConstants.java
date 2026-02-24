@@ -8,9 +8,9 @@ public final class IntakeConstants {
   public static final int INTAKE_MOTOR_ID = 31;
   public static final boolean MOTOR_INVERTED = true;
 
-  // Velocity targets (RPM)
-  public static final double INTAKE_RPM = 5000.0;
-  public static final double OUTTAKE_RPM = -4000.0;
+  public static final double INTAKE_SPEED = 70.0;
+  public static final double OUTTAKE_SPEED = -8;
+  public static final double HOLD_SPEED = 1;
 
   // PID & Feedforward control
   public static final double kP = 0.12;
@@ -21,6 +21,14 @@ public final class IntakeConstants {
   // Current limiting
   public static final double SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double STATOR_CURRENT_LIMIT = 50.0;
+
+  // Control Constants
+  public static final double kS = 0;
+  public static final double kV = 1.3;
+  public static final double kA = 0.1;
+  public static final double kP = 0;
+  public static final double kI = 0;
+  public static final double kD = 0;
 
   // Pneumatics
   public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;

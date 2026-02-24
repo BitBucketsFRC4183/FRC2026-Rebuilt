@@ -5,8 +5,10 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
 
   @AutoLog
-  class IntakeIOInputs {
-    public double motorVelocityRPM = 0.0;
+  public class IntakeIOInputs {
+    public double motorVelocityRPS = 0.0;
+    public double motorTargetVelocityRPS = 0.0;
+    public double motorVoltage = 0.0;
     public double motorCurrentAmps = 0.0;
     public boolean primaryPistonExtended = false;
     public boolean secondaryPistonExtended = false;
