@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -84,8 +83,12 @@ public class DriveCommands {
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  linearVelocity.getX() * driveSubsystem.getMaxLinearSpeedMetersPerSec() * powerSubsystem.getDriveFactor(),
-                  linearVelocity.getY() * driveSubsystem.getMaxLinearSpeedMetersPerSec() * powerSubsystem.getDriveFactor(),
+                  linearVelocity.getX()
+                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                      * powerSubsystem.getDriveFactor(),
+                  linearVelocity.getY()
+                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                      * powerSubsystem.getDriveFactor(),
                   omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
