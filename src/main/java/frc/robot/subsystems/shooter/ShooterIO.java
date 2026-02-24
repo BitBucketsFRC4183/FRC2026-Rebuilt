@@ -19,8 +19,8 @@ public interface ShooterIO {
     public double flywheelCurrent;
     public double flywheelCurrent2;
 
-    public double intakeVoltage;
-    public double intakeCurrent;
+    public double interVoltage;
+    public double interCurrent;
   }
 
   public default void setFlywheelVoltage(double voltage) {}

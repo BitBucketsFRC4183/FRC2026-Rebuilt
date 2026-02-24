@@ -13,7 +13,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private final LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Flywheel RPS", 9.0);
+  private final LoggedNetworkNumber targetVelocity =
+      new LoggedNetworkNumber("Flywheel RPS", ShooterConstants.flywheelDefaultSpeed);
   private final SysIdRoutine sysId;
   private double storedDistance = -1;
 
