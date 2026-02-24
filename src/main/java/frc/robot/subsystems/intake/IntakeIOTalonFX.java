@@ -85,9 +85,10 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setMotorOutput(double velocity) {
+  public void setVelocity(double velocity) {
     targetVelocityRPS = velocity;
-    intakeMotor.setControl(velocityRequest.withVelocity(velocity));
+    // intakeMotor.setControl(velocityRequest.withVelocity(velocity));
+    intakeMotor.setVoltage(-10);
   }
 
   @Override

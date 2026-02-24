@@ -17,8 +17,8 @@ public interface IntakeIO {
   /** Updates all sensor inputs */
   default void updateInputs(IntakeIOInputs inputs) {}
 
-  /** Sets intake velocity in RPM */
-  default void setVelocity(double rpm) {}
+  /** Sets intake velocity in RPS */
+  default void setVelocity(double rps) {}
 
   /** Stops the intake motor */
   default void stopMotor() {

@@ -9,7 +9,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  private IntakeState currentState = IntakeState.STOWED;
+  private IntakeState currentState = IntakeState.DEPLOYED;
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
@@ -32,17 +32,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case INTAKING:
         io.extend();
-        io.setVelocity(IntakeConstants.INTAKE_RPM);
+        io.setVelocity(IntakeConstants.INTAKE_SPEED);
         break;
 
       case OUTTAKING:
         io.extend();
-        io.setVelocity(IntakeConstants.OUTTAKE_RPM);
-        break;
-
-      case HOLDING:
-        io.extend();
-        io.stopMotor();
+        io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
         break;
     }
 
