@@ -46,7 +46,7 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     // inputs
-    inputs.motorVelocityRPM = motorVelocityRPM;
+    inputs.motorVelocityRPS = motorVelocityRPM / 60;
     inputs.motorCurrentAmps = motorCurrentAmps;
     inputs.primaryPistonExtended = piston1Extended;
     inputs.secondaryPistonExtended = piston2Extended;

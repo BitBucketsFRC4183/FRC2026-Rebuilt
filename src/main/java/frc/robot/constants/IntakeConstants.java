@@ -8,13 +8,21 @@ public final class IntakeConstants {
   public static final int INTAKE_MOTOR_ID = 31;
   public static final boolean MOTOR_INVERTED = true;
 
-  public static final double INTAKE_SPEED = 1.0;
-  public static final double OUTTAKE_SPEED = -0.8;
-  public static final double HOLD_SPEED = 0.15;
+  public static final double INTAKE_SPEED = 9.0;
+  public static final double OUTTAKE_SPEED = -8;
+  public static final double HOLD_SPEED = 1;
 
   // Current limiting
   public static final double SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double STATOR_CURRENT_LIMIT = 60.0;
+
+  // Control Constants
+  public static final double kS = 0.2;
+  public static final double kV = 0.11;
+  public static final double kA = 0.1;
+  public static final double kP = 0.2;
+  public static final double kI = 0;
+  public static final double kD = 0;
 
   // Pneumatics
   public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;

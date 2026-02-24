@@ -4,7 +4,9 @@ import static frc.robot.constants.IntakeConstants.PNEUMATICS_HUB_CANID;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -18,27 +20,36 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final DoubleSolenoid leftPiston;
   private final DoubleSolenoid rightPiston;
 
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
+  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
   public IntakeIOTalonFX() {
     intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+    TalonFXConfiguration motorConfig = new TalonFXConfiguration();
 
     // Motor output config
-    MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
+    MotorOutputConfigs outputConfigs = motorConfig.MotorOutput;
     outputConfigs.Inverted =
         IntakeConstants.MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
+    // PID and FF Configs
+    Slot0Configs slot0 = motorConfig.Slot0;
+    slot0.kP = IntakeConstants.kP;
+    slot0.kI = IntakeConstants.kI;
+    slot0.kD = IntakeConstants.kD;
+    slot0.kA = IntakeConstants.kA;
+    slot0.kV = IntakeConstants.kV;
+    slot0.kS = IntakeConstants.kS;
+
     // Current limits
-    CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
+    CurrentLimitsConfigs currentConfigs = motorConfig.CurrentLimits;
     currentConfigs.SupplyCurrentLimitEnable = true;
     currentConfigs.SupplyCurrentLimit = IntakeConstants.SUPPLY_CURRENT_LIMIT;
     currentConfigs.StatorCurrentLimitEnable = true;
     currentConfigs.StatorCurrentLimit = IntakeConstants.STATOR_CURRENT_LIMIT;
 
-    intakeMotor.getConfigurator().apply(outputConfigs);
-    intakeMotor.getConfigurator().apply(currentConfigs);
+    intakeMotor.getConfigurator().apply(motorConfig);
 
     // Pistons (mirrored / paired)
     leftPiston =
@@ -58,7 +69,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.motorVelocityRPM = intakeMotor.getVelocity().getValueAsDouble() * 60.0;
+    inputs.motorVelocityRPS = intakeMotor.getVelocity().getValueAsDouble();
     inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
 
     // If either piston disagrees, treat as NOT extended (safe default)
@@ -71,8 +82,8 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setMotorOutput(double percent) {
-    intakeMotor.setControl(dutyCycleRequest.withOutput(percent));
+  public void setMotorOutput(double velocity) {
+    intakeMotor.setControl(velocityRequest.withVelocity(velocity));
   }
 
   @Override
