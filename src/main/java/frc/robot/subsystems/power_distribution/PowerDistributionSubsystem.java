@@ -7,62 +7,59 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class PowerDistributionSubsystem extends SubsystemBase {
 
-    private final IntakeSubsystem intake;
-    private final ShooterSubsystem shooter;
+  private final IntakeSubsystem intake;
+  private final ShooterSubsystem shooter;
 
-    private PowerState currentState = PowerState.FULL_DRIVE;
-    public double driveFactor = 1.0;
+  private PowerState currentState = PowerState.FULL_DRIVE;
+  public double driveFactor = 1.0;
 
-    public PowerDistributionSubsystem(
-            IntakeSubsystem intake,
-            ShooterSubsystem shooter) {
-        this.intake = intake;
-        this.shooter = shooter;
+  public PowerDistributionSubsystem(IntakeSubsystem intake, ShooterSubsystem shooter) {
+    this.intake = intake;
+    this.shooter = shooter;
+  }
+
+  @Override
+  public void periodic() {
+    boolean intakeRunning = intake.isRunning();
+    boolean shooterRunning = shooter.isFlywheelRunning();
+
+    // State switching
+    if (intakeRunning && shooterRunning) {
+      currentState = PowerState.INTAKE_AND_SHOOT_NO_DRIVE;
+    } else if (shooterRunning) {
+      currentState = PowerState.SHOOTING_NO_DRIVE;
+    } else if (intakeRunning) {
+      currentState = PowerState.INTAKE_DRIVE;
+    } else {
+      currentState = PowerState.FULL_DRIVE;
     }
 
-    @Override
-    public void periodic() {
-        boolean intakeRunning = intake.isRunning();
-        boolean shooterRunning = shooter.isFlywheelRunning();
+    // Apply drive factor
+    switch (currentState) {
+      case INTAKE_DRIVE:
+        driveFactor = 0.7;
+        break;
 
-        // State switching
-        if (intakeRunning && shooterRunning) {
-            currentState = PowerState.INTAKE_AND_SHOOT_NO_DRIVE;
-        } else if (shooterRunning) {
-            currentState = PowerState.SHOOTING_NO_DRIVE;
-        } else if (intakeRunning) {
-            currentState = PowerState.INTAKE_DRIVE;
-        } else {
-            currentState = PowerState.FULL_DRIVE;
-        }
+      case SHOOTING_NO_DRIVE:
+      case INTAKE_AND_SHOOT_NO_DRIVE:
+        driveFactor = 0.0;
+        break;
 
-        // Apply drive factor
-        switch (currentState) {
-            case INTAKE_DRIVE:
-                driveFactor = 0.7;
-                break;
-
-            case SHOOTING_NO_DRIVE:
-            case INTAKE_AND_SHOOT_NO_DRIVE:
-                driveFactor = 0.0;
-                break;
-
-            case FULL_DRIVE:
-            default:
-                driveFactor = 1.0;
-                break;
-        }
-
-        SmartDashboard.putString("PowerState", currentState.name());
-        SmartDashboard.putNumber("DriveFactor", driveFactor);
-
+      case FULL_DRIVE:
+      default:
+        driveFactor = 1.0;
+        break;
     }
 
-    public double getDriveFactor() {
-        return driveFactor;
-    }
+    SmartDashboard.putString("PowerState", currentState.name());
+    SmartDashboard.putNumber("DriveFactor", driveFactor);
+  }
 
-    public PowerState getState() {
-        return currentState;
-    }
+  public double getDriveFactor() {
+    return driveFactor;
+  }
+
+  public PowerState getState() {
+    return currentState;
+  }
 }

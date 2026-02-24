@@ -38,11 +38,10 @@ public class IntakeSubsystem extends SubsystemBase {
         io.setVelocity(IntakeConstants.OUTTAKE_RPM);
         break;
     }
-}
+  }
 
   public boolean isRunning() {
-    return currentState == IntakeState.INTAKING
-            || currentState == IntakeState.OUTTAKING;
+    return currentState == IntakeState.INTAKING || currentState == IntakeState.OUTTAKING;
   }
 
   // State Control
@@ -70,5 +69,4 @@ public class IntakeSubsystem extends SubsystemBase {
   public void outtake() {
     setState(IntakeState.OUTTAKING);
   }
-
 }

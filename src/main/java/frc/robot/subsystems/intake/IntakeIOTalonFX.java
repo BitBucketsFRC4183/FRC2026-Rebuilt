@@ -26,9 +26,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     // Motor inversion
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.Inverted =
-            IntakeConstants.MOTOR_INVERTED
-                    ? InvertedValue.Clockwise_Positive
-                    : InvertedValue.CounterClockwise_Positive;
+        IntakeConstants.MOTOR_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
     // Current limits
     CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
@@ -50,18 +50,18 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     // Pneumatics
     leftPiston =
-            new DoubleSolenoid(
-                    PNEUMATICS_HUB_CANID,
-                    IntakeConstants.PNEUMATICS_TYPE,
-                    IntakeConstants.LEFT_PISTON_FORWARD_CHANNEL,
-                    IntakeConstants.LEFT_PISTON_REVERSE_CHANNEL);
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
+            IntakeConstants.PNEUMATICS_TYPE,
+            IntakeConstants.LEFT_PISTON_FORWARD_CHANNEL,
+            IntakeConstants.LEFT_PISTON_REVERSE_CHANNEL);
 
     rightPiston =
-            new DoubleSolenoid(
-                    PNEUMATICS_HUB_CANID,
-                    IntakeConstants.PNEUMATICS_TYPE,
-                    IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
-                    IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
+            IntakeConstants.PNEUMATICS_TYPE,
+            IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
+            IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);
   }
 
   @Override
@@ -70,8 +70,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
 
     boolean extended =
-            leftPiston.get() == DoubleSolenoid.Value.kForward
-                    && rightPiston.get() == DoubleSolenoid.Value.kForward;
+        leftPiston.get() == DoubleSolenoid.Value.kForward
+            && rightPiston.get() == DoubleSolenoid.Value.kForward;
 
     inputs.primaryPistonExtended = extended;
     inputs.secondaryPistonExtended = extended;

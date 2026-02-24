@@ -53,7 +53,6 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private PowerDistributionSubsystem powerSubsystem;
 
-
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
 
@@ -231,7 +230,8 @@ public class RobotContainer {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
-            driveSubsystem, powerSubsystem,
+            driveSubsystem,
+            powerSubsystem,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));

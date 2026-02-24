@@ -5,7 +5,6 @@ import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
   private boolean flywheelsRunning = false;
