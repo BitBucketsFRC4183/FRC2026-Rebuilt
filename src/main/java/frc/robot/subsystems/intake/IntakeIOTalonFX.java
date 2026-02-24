@@ -19,7 +19,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   // Pneumatics (always actuated together)
   private final DoubleSolenoid leftPiston;
   private final DoubleSolenoid rightPiston;
-
+  private double targetVelocityRPS;
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
   public IntakeIOTalonFX() {
@@ -70,8 +70,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.motorVelocityRPS = intakeMotor.getVelocity().getValueAsDouble();
+    inputs.motorVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
     inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
-
+    inputs.motorTargetVelocityRPS = targetVelocityRPS;
     // If either piston disagrees, treat as NOT extended (safe default)
     boolean extended =
         leftPiston.get() == DoubleSolenoid.Value.kForward
@@ -83,6 +84,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setMotorOutput(double velocity) {
+    targetVelocityRPS = velocity;
     intakeMotor.setControl(velocityRequest.withVelocity(velocity));
   }
 

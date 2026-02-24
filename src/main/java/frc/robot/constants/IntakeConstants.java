@@ -8,7 +8,7 @@ public final class IntakeConstants {
   public static final int INTAKE_MOTOR_ID = 31;
   public static final boolean MOTOR_INVERTED = true;
 
-  public static final double INTAKE_SPEED = 9.0;
+  public static final double INTAKE_SPEED = 75.0;
   public static final double OUTTAKE_SPEED = -8;
   public static final double HOLD_SPEED = 1;
 
@@ -18,9 +18,9 @@ public final class IntakeConstants {
 
   // Control Constants
   public static final double kS = 0.2;
-  public static final double kV = 0.11;
+  public static final double kV = 1.4;
   public static final double kA = 0.1;
-  public static final double kP = 0.2;
+  public static final double kP = 0;
   public static final double kI = 0;
   public static final double kD = 0;
 
