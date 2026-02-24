@@ -38,6 +38,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     slot0.kP = IntakeConstants.kP;
     slot0.kI = IntakeConstants.kI;
     slot0.kD = IntakeConstants.kD;
+
     slot0.kA = IntakeConstants.kA;
     slot0.kV = IntakeConstants.kV;
     slot0.kS = IntakeConstants.kS;
@@ -65,6 +66,8 @@ public class IntakeIOTalonFX implements IntakeIO {
             IntakeConstants.PNEUMATICS_TYPE,
             IntakeConstants.RIGHT_PISTON_FORWARD_CHANNEL,
             IntakeConstants.RIGHT_PISTON_REVERSE_CHANNEL);
+
+    intakeMotor.stopMotor();
   }
 
   @Override

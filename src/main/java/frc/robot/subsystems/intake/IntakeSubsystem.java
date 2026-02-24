@@ -42,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case HOLDING:
         io.extend();
-        io.setMotorOutput(IntakeConstants.HOLD_SPEED);
+        io.stopMotor();
         break;
     }
 
