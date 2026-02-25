@@ -304,7 +304,7 @@ public class RobotContainer {
     operatorController
         .b()
         // .and(operatorController.back())
-        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
+        .onTrue(Commands.runOnce(() -> climberSubsystem.resetPosition()));
 
     // servo command
     operatorController

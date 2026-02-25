@@ -12,7 +12,7 @@ public final class ClimberConstants {
   public static final CANBus climberBus = new CANBus("rio", "./logs/example.hoot");
 
   // Inversion
-  public static final boolean ARM_MOTOR_INVERTED = false;
+  public static final boolean ARM_MOTOR_INVERTED = true;
 
   // Gear ratios (MEASURE THESE)
   public static final double ARM_GEAR_RATIO = 135.0; // motor rotations per arm rotation
