@@ -31,18 +31,10 @@ public class ClimberCommands {
                 return;
               }
 
-              double desiredSpeed =
-                  input
-                      * ((ClimberConstants.maxHeight - currentHeight)
-                          * ClimberConstants.speedConstant);
+              double desiredSpeed = input * ((ClimberConstants.maxHeight - currentHeight) * ClimberConstants.speedConstant);
 
-              SimpleMotorFeedforward climbFeedForward =
-                  new SimpleMotorFeedforward(
-                      ClimberConstants.ARM_kS, ClimberConstants.ARM_kV, ClimberConstants.ARM_kA);
+              climberSubsystem.setTargetHeight(desiredSpeed);
 
-              double voltageSupplied = climbFeedForward.calculate(desiredSpeed);
-
-              climberSubsystem.setVoltageSupplied(voltageSupplied);
             },
             climberSubsystem)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
