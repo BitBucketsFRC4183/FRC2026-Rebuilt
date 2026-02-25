@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.ClimberConstants;
@@ -21,20 +20,12 @@ public class ClimberCommands {
                 return;
               }
 
-              if (currentHeight <= ClimberConstants.minHeight && input < 0) {
-                climberSubsystem.setVoltageSupplied(0);
-                return;
-              }
-
-              if (currentHeight >= ClimberConstants.maxHeight && input > 0) {
-                climberSubsystem.setVoltageSupplied(0);
-                return;
-              }
-
-              double desiredSpeed = input * ((ClimberConstants.maxHeight - currentHeight) * ClimberConstants.speedConstant);
+              double desiredSpeed =
+                  input
+                      * (ClimberConstants.maxHeight - currentHeight)
+                      * ClimberConstants.speedConstant;
 
               climberSubsystem.setTargetHeight(desiredSpeed);
-
             },
             climberSubsystem)
         .finallyDo(() -> climberSubsystem.setVoltageSupplied(0));
