@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstant;
 import frc.robot.subsystems.drive.Drive;
@@ -33,13 +35,21 @@ public class VisionSubsystem extends SubsystemBase {
     private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
     private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
-    private VisionMode currentState = VisionMode.DISABLED;
+    private VisionMode defaultMode = null;
+    private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
 
     public VisionSubsystem(VisionIO visionio, Supplier<Pose2d> pose2dSupplier, OdometryHistory odometryHistory, Drive drive) {
         this.visionio = visionio;
         this.pose2dSupplier = pose2dSupplier;
         this.odometryHistory = odometryHistory;
         this.drive = drive;
+
+        visionModeChooser.setDefaultOption("DISABLED", VisionMode.DISABLED);
+        visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
+        visionModeChooser.addOption("TELEOP", VisionMode.TELEOP);
+
+        SmartDashboard.putData("Vision/Vision Mode Chooser", visionModeChooser);
+
     }
 
     @Override
@@ -48,6 +58,16 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.processInputs("Vision/front", CamOneInputs);
         Logger.processInputs("Vision/front_shooter", CamTwoInputs);
 
+        VisionMode manualSelectMode = visionModeChooser.getSelected();
+        VisionMode finalMode = (manualSelectMode!=null)
+                ?manualSelectMode:decideVisionMode();
+
+        //only if there is a change, we apply network table changes
+        if (defaultMode == null || finalMode != defaultMode){
+            defaultMode = finalMode;
+            applyVisionMode(finalMode);
+            Logger.recordOutput("Vision/CurrentVisionMode", defaultMode.toString());
+        }
 
         /// one
         var maybeMTA = processMegaTags(CamOneInputs);
@@ -163,7 +183,7 @@ public class VisionSubsystem extends SubsystemBase {
         return 1.0 / Math.sqrt(inputs.ta);
     }
 
-    private VisionMode DecideVisionMode() {
+    private VisionMode decideVisionMode() {
         if (DriverStation.isDisabled()) {
             return VisionMode.DISABLED;
         } else if (DriverStation.isAutonomous()) {
