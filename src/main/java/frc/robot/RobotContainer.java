@@ -309,12 +309,12 @@ public class RobotContainer {
     // servo command
     operatorController
         .povUp()
-        .and(operatorController.back())
+        .and(operatorController.povDown())
         .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-    operatorController
-        .povDown()
-        .and(operatorController.back())
-        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+//    operatorController
+//        .povDown()
+//        .and(operatorController.back())
+//        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
     new Trigger(
             () ->
                 (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
@@ -328,7 +328,7 @@ public class RobotContainer {
     new Trigger(
             () ->
                 Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.back().getAsBoolean())
+                    && operatorController.povDown().getAsBoolean())
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
