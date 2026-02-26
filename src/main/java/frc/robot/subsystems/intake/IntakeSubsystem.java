@@ -39,6 +39,11 @@ public class IntakeSubsystem extends SubsystemBase {
         io.extend();
         io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
         break;
+
+      case HOLD:
+        io.extend();
+        io.stopMotor();
+        break;
     }
 
     Logger.processInputs("Intake", inputs);

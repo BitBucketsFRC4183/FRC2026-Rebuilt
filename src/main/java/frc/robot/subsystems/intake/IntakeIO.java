@@ -14,20 +14,15 @@ public interface IntakeIO {
     public boolean secondaryPistonExtended = false;
   }
 
-  /** Updates all sensor inputs */
   default void updateInputs(IntakeIOInputs inputs) {}
 
-  /** Sets intake velocity in RPS */
   default void setVelocity(double rps) {}
 
-  /** Stops the intake motor */
   default void stopMotor() {
     setVelocity(0.0);
   }
 
-  /** Extends the intake piston */
   default void extend() {}
 
-  /** Retracts the intake piston */
   default void retract() {}
 }
