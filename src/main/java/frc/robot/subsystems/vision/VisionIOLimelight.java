@@ -5,6 +5,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
 
+import java.util.function.Consumer;
+
 public class VisionIOLimelight implements VisionIO {
 
     // LIMELIGHT is constant
@@ -52,9 +54,6 @@ public class VisionIOLimelight implements VisionIO {
                     inputs.tagCount = megaTag2Results.tagCount;
                     inputs.timestamp = megaTag2Results.timestampSeconds;
                     inputs.latency = megaTag2Results.latency;
-                    // package them
-                    //          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp,
-                    // inputs.visionStdDev, inputs.tagCount);
                     return;
                 }
 
@@ -73,21 +72,36 @@ public class VisionIOLimelight implements VisionIO {
         }
     }
 
+    private static final String[] CAMERAS = {
+            VisionConstant.LIMELIGHT_FRONT,
+            VisionConstant.LIMELIGHT_FRONT_SHOOTER
+    };
+
+    private void forAllCameras(Consumer<String> action) {
+        for (String cameraName : CAMERAS) {
+            action.accept(cameraName);
+        }
+    }
+
+    @Override
     public void setPipeline(String cameraName, int pipelineNumber) {
         NetworkTableInstance.getDefault().getTable(cameraName).getEntry("pipeline").setNumber(pipelineNumber);
     }
 
+    @Override
     public void setRobotOrientation(String cameraName, double headingDegs) {
         LimelightHelpers.SetRobotOrientation(
                 cameraName, headingDegs, 0, 0, 0, 0, 0);
     }
 
+    @Override
     public void setIMUMode(String cameraName, int mode) {
         LimelightHelpers.SetIMUMode(cameraName, mode);
     }
 
-    public void setIMUAssistAlpha(String cameraName, double alpha){
-      LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
+    @Override
+    public void setIMUAssistAlpha(String cameraName, double alpha) {
+        LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
     }
 
     private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {

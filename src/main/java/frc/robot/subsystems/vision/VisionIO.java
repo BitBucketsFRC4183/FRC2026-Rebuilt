@@ -4,43 +4,53 @@ import edu.wpi.first.math.geometry.Pose2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
-  @AutoLog
-  public class VisionIOInputs {
-    public boolean cameraConnected;
-    public boolean hasTarget;
+    @AutoLog
+    public class VisionIOInputs {
+        public boolean cameraConnected;
+        public boolean hasTarget;
 
-    public double tx;
-    public double ty;
-    public double ta;
+        public double tx;
+        public double ty;
+        public double ta;
 
-    // remember, estimatedRobotPose origin from poseEstimator
-    // vision use this data (robot orientation/robot pose), so the estimate will not too off
-    // add vision measurement(vision pose, timestamp), then provide a new estimated robot pose
-    public Pose2d estimatedRobotPose;
+        // remember, estimatedRobotPose origin from poseEstimator
+        // vision use this data (robot orientation/robot pose), so the estimate will not too off
+        // add vision measurement(vision pose, timestamp), then provide a new estimated robot pose
+        public Pose2d estimatedRobotPose;
 
-    public boolean hasMegaTag2;
+        public boolean hasMegaTag2;
 
-    // this is the estimated vision pose
-    public Pose2d megaTagPose; // can be either megatag 1 or 2
-    public double timestamp;
-    public int tagCount;
-    public double latency;
-    public double[] rawStdDev;
+        // this is the estimated vision pose
+        public Pose2d megaTagPose; // can be either megatag 1 or 2
+        public double timestamp;
+        public int tagCount;
+        public double latency;
+        public double[] rawStdDev;
 
-    public int aprilTagIDNumber;
-    // from raw fiducial
+        public int aprilTagIDNumber;
+        // from raw fiducial
 
-    public double minAmbiguity;
+        public double minAmbiguity;
 
-    //  public Pose2d TargetHubPose2d;
-    //  public double DistanceFromRobotToHub;
-    //  public Rotation2d FieldAngleFromHubToRobot;
-    //  public Rotation2d TurningAngle;
-  }
-  // name doesn't matter here
-  void setPipeline(String cameraName, int pipelineNumber);
-  void setRobotOrientation(String cameraName, double headingDegs);
-  void setIMUMode(String cameraName, int mode);
-  void setIMUAssistAlpha(String cameraName, double alpha);
-  default void updateInputs(VisionIOInputs camOne, VisionIOInputs camTwo) {}
+        //  public Pose2d TargetHubPose2d;
+        //  public double DistanceFromRobotToHub;
+        //  public Rotation2d FieldAngleFromHubToRobot;
+        //  public Rotation2d TurningAngle;
+    }
+
+    // name doesn't matter here
+    default void setPipeline(String cameraName, int pipelineNumber) {
+    }
+
+    default void setRobotOrientation(String cameraName, double headingDegs) {
+    }
+
+    default void setIMUMode(String cameraName, int mode) {
+    }
+
+    default void setIMUAssistAlpha(String cameraName, double alpha) {
+    }
+
+    default void updateInputs(VisionIOInputs camOne, VisionIOInputs camTwo) {
+    }
 }

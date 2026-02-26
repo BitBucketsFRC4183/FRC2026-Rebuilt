@@ -46,6 +46,10 @@ public final class VisionConstant {
     public static final int PIPELINE_DEFAULT_DriverCamera = 1;
     public static final int PIPELINE_DEFAULT_OFF = 2;
 
+    public static final int PIPELINE_Autonomous = 3;
+    public static final int PIPELINE_Teleop = 4;
+
+
     public static AprilTagFieldLayout aprilTagFieldLayout;
 
     static {

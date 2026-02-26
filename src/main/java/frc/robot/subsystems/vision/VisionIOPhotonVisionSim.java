@@ -11,7 +11,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-public class VisionIOPhotonVisionSim implements VisionIO {
+public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   // set the stage
   // this is basically allinone yooo
   private VisionSystemSim visionSim;
