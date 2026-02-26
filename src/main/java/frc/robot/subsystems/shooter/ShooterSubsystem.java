@@ -106,10 +106,10 @@ public class ShooterSubsystem extends SubsystemBase {
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity < (testVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity < (testVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (testVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (testVelocity.get() - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity < (targetVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity < (targetVelocity.get() - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   @Override
