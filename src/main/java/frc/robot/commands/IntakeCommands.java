@@ -24,12 +24,12 @@ public final class IntakeCommands {
 
   // Runs Intake in while being held out
   public static Command intake(IntakeSubsystem intake) {
-    return Commands.startEnd(intake::intake, intake::deploy, intake).withName("Intake.Intake");
+    return Commands.startEnd(intake::intake, intake::hold, intake).withName("Intake.Intake");
   }
 
   // Runs Intake Out whilst held
   public static Command outtake(IntakeSubsystem intake) {
-    return Commands.startEnd(intake::outtake, intake::deploy, intake).withName("Intake.Outtake");
+    return Commands.startEnd(intake::outtake, intake::hold, intake).withName("Intake.Outtake");
   }
 
   // holds forebar out

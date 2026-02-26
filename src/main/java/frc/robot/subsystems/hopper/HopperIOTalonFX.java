@@ -26,14 +26,6 @@ public class HopperIOTalonFX implements HopperIO {
                     ? InvertedValue.Clockwise_Positive
                     : InvertedValue.CounterClockwise_Positive;
 
-    Slot0Configs slot0 = config.Slot0;
-    slot0.kP = HopperConstants.kP;
-    slot0.kI = HopperConstants.kI;
-    slot0.kD = HopperConstants.kD;
-    slot0.kS = HopperConstants.kS;
-    slot0.kV = HopperConstants.kV;
-    slot0.kA = HopperConstants.kA;
-
     CurrentLimitsConfigs current = config.CurrentLimits;
     current.SupplyCurrentLimitEnable = true;
     current.SupplyCurrentLimit = HopperConstants.SUPPLY_CURRENT_LIMIT;

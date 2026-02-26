@@ -299,10 +299,9 @@ public class RobotContainer {
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     // Climber Setpoint Commands
-//    operatorController
-//        .a()
-//        // .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToGround(climberSubsystem));
+    operatorController
+        .a()
+        .whileTrue(IntakeCommands.outtake(intakeSubsystem));
 //    operatorController
 //        .x()
 //        // .and(operatorController.back())
