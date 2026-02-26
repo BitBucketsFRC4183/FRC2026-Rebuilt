@@ -17,17 +17,6 @@ public final class ShooterConstants extends SubsystemBase {
   public static final boolean flywheelInverted = true;
   public static final boolean interInverted = true;
 
-  // In Inches por favor, to calculate tangential velocity
-  public static final double radius = 1 / 39.37;
-  public static final double multiplier = 0.9;
-
-  // Arena Constants (Inches)
-  public static final double hubHeight = 72 / 39.37;
-  public static final double shooterHeight = 21.5 / 39.37;
-
-  // Assuming constant hood angle
-  public static final double shooterAngle = 80.0;
-
   // Allowed RPS offset before shooting
   public static final double tolerance = 0.0;
 
