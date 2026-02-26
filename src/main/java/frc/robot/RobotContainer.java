@@ -260,8 +260,13 @@ public class RobotContainer {
                 driveSubsystem.setPose(
                     new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
-    // Left bumper Intake deployed and stowed
-    // intake Commands
+
+    //Overrides the DPD Subsystem
+    driverController
+            .back()
+            .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
+            .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
+
     operatorController
         .leftBumper()
         .onTrue(
@@ -276,8 +281,7 @@ public class RobotContainer {
                 intakeSubsystem));
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
-    // Hopper reverse while right bu
-    // mper held
+    // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
         .whileTrue(

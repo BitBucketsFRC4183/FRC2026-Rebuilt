@@ -11,6 +11,7 @@ public class PowerDistributionSubsystem extends SubsystemBase {
   private final ShooterSubsystem shooter;
 
   private PowerState currentState = PowerState.FULL_DRIVE;
+  private boolean overrideActive = false;
   public double driveFactor = 1.0;
 
   public PowerDistributionSubsystem(IntakeSubsystem intake, ShooterSubsystem shooter) {
@@ -23,18 +24,20 @@ public class PowerDistributionSubsystem extends SubsystemBase {
     boolean intakeRunning = intake.isRunning();
     boolean shooterRunning = shooter.isFlywheelRunning();
 
-    // State switching
-    if (intakeRunning && shooterRunning) {
-      currentState = PowerState.INTAKE_AND_SHOOT_NO_DRIVE;
-    } else if (shooterRunning) {
-      currentState = PowerState.SHOOTING_NO_DRIVE;
-    } else if (intakeRunning) {
-      currentState = PowerState.INTAKE_DRIVE;
+    if (!overrideActive) {
+      if (intakeRunning && shooterRunning) {
+        currentState = PowerState.INTAKE_AND_SHOOT_NO_DRIVE;
+      } else if (shooterRunning) {
+        currentState = PowerState.SHOOTING_NO_DRIVE;
+      } else if (intakeRunning) {
+        currentState = PowerState.INTAKE_DRIVE;
+      } else {
+        currentState = PowerState.FULL_DRIVE;
+      }
     } else {
-      currentState = PowerState.FULL_DRIVE;
+      currentState = PowerState.DRIVE_OVERRIDE;
     }
 
-    // Apply drive factor
     switch (currentState) {
       case INTAKE_DRIVE:
         driveFactor = 0.7;
@@ -45,6 +48,10 @@ public class PowerDistributionSubsystem extends SubsystemBase {
         driveFactor = 0.0;
         break;
 
+      case DRIVE_OVERRIDE:
+        driveFactor = 1.0;
+        break;
+
       case FULL_DRIVE:
       default:
         driveFactor = 1.0;
@@ -53,6 +60,10 @@ public class PowerDistributionSubsystem extends SubsystemBase {
 
     SmartDashboard.putString("PowerState", currentState.name());
     SmartDashboard.putNumber("DriveFactor", driveFactor);
+  }
+
+  public void setOverride(boolean enabled) {
+    overrideActive = enabled;
   }
 
   public double getDriveFactor() {
