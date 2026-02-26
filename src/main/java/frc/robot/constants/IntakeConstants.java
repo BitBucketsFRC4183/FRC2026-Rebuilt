@@ -12,12 +12,6 @@ public final class IntakeConstants {
   public static final double OUTTAKE_SPEED = -8;
   public static final double HOLD_SPEED = 1;
 
-  // PID & Feedforward control
-  public static final double kP = 0.12;
-  public static final double kI = 0.0;
-  public static final double kD = 0.0;
-  public static final double kV = 0.1;
-
   // Current limiting
   public static final double SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double STATOR_CURRENT_LIMIT = 50.0;
