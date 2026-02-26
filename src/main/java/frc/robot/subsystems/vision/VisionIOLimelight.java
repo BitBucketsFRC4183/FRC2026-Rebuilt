@@ -86,6 +86,10 @@ public class VisionIOLimelight implements VisionIO {
         LimelightHelpers.SetIMUMode(cameraName, mode);
     }
 
+    public void setIMUAssistAlpha(String cameraName, double alpha){
+      LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
+    }
+
     private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
         /// ambiguity, new!
 

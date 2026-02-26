@@ -9,24 +9,24 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class HopperTracker {
   /// fancy notation
   /// function that give you hub pose based on alliance color
-  @AutoLogOutput(key = "Vision/Aim/TargetHubPose")
-  public static Pose2d getTargetHubPose2d() {
-    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
-    return (alliance == DriverStation.Alliance.Red)
-        ? AprilTagLabel.RedHubPose3d.toPose2d()
-        : AprilTagLabel.BlueHubPose3d.toPose2d();
-  }
+//  @AutoLogOutput(key = "Vision/Aim/TargetHubPose")
+//  public static Pose2d getTargetHubPose2d() {
+//    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+//    return (alliance == DriverStation.Alliance.Red)
+//        ? AprilTagLabel.RedHubPose3d.toPose2d()
+//        : AprilTagLabel.BlueHubPose3d.toPose2d();
+//  }
 
   @AutoLogOutput(key = "Vision/Aim/CurrentHubPose")
   public static double getDistanceFromRobotToHub(Pose2d robotPose) {
-    Pose2d HubPose = getTargetHubPose2d();
-    Translation2d diff = HubPose.getTranslation().minus(robotPose.getTranslation());
+//    Pose2d HubPose = getTargetHubPose2d();
+    Translation2d diff = AprilTagLabel.BlueHubPose2d.getTranslation().minus(robotPose.getTranslation());
     // -0.677 = from center of hub minus the center robot, it is about this much allowance
     // this is a valid estimation lol
     if (diff.getX() < VisionConstant.MidGameAllowance) {
       return -1;
     }
-    return robotPose.getTranslation().getDistance(HubPose.getTranslation());
+    return robotPose.getTranslation().getDistance(AprilTagLabel.BlueHubPose2d.getTranslation());
   }
 
   /// targetRad
@@ -40,7 +40,7 @@ public class HopperTracker {
     // https://maththebeautiful.com/angle-between-points/
     // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
     // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
-    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
+    Translation2d diff = AprilTagLabel.BlueHubPose2d.getTranslation().minus(robotPose.getTranslation());
     Rotation2d fieldAngle = diff.getAngle();
     return fieldAngle;
   }

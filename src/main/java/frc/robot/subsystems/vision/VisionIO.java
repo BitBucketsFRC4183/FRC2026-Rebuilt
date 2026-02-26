@@ -38,5 +38,9 @@ public interface VisionIO {
     //  public Rotation2d TurningAngle;
   }
   // name doesn't matter here
+  void setPipeline(String cameraName, int pipelineNumber);
+  void setRobotOrientation(String cameraName, double headingDegs);
+  void setIMUMode(String cameraName, int mode);
+  void setIMUAssistAlpha(String cameraName, double alpha);
   default void updateInputs(VisionIOInputs camOne, VisionIOInputs camTwo) {}
 }
