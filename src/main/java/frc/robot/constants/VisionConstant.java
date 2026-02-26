@@ -34,13 +34,17 @@ public final class VisionConstant {
 
   DEFAULT_AprilTagTuning = 2.7432m; SHOULD COVER WHOLE ALLIANCE ZONE; 60.2%ish
   DEFAULT_DriverCamera; 22.7% - 25%
-  DEFAULT_OFF; lower frame rate; 6%
+  DEFAULT_OFF; technically not off, but close to off; lower frame rate; 6%
 
  */
     /// **********
     /// **********
     public static final String LIMELIGHT_FRONT = "limelight-side";
     public static final String LIMELIGHT_FRONT_SHOOTER = "limelight-frontShooter";
+
+    public static final int PIPELINE_DEFAULT_AprilTagTuning = 0;
+    public static final int PIPELINE_DEFAULT_DriverCamera = 1;
+    public static final int PIPELINE_DEFAULT_OFF = 2;
 
     public static AprilTagFieldLayout aprilTagFieldLayout;
 
@@ -59,22 +63,19 @@ public final class VisionConstant {
     public static final int kExpectedStdDevArrayLength = 12;
     public static final double kLargeVariance = 1e6;
 
-    // TODO need tune
-    // max readable tag
+    // TODO need tune: max readable tag
+    public static final double complementaryFilterAlphaIMU = 0.001;
     public static final double maxDistanceFromRobotToApril = 17.0;
     public static final double kTagMinAreaForSingleTagMegatag = 3.0;
-    //  public static final double kDefaultNormThreshold = 1.0;
+    public static final double kDefaultNormThreshold = 1.0;
     public static final double kMinAmbiguityToFlip = 666;
 
     // TODO need measure & test
-    // -0.677 = from center of hub minus the center robot, it is about this much allowance
-    // this is a valid estimation lol
+    /*
+     -0.677 = from center of hub minus the center robot, it is about this much allowance.
+     this is a valid estimation lol
+     */
     public static final double MidGameAllowance = -0.677;
-
-    /// TODO need Distance offset from shooter
-    public static final double baseX = 0.1;
-    public static final double baseY = 0.1;
-    public static final double baseTheta = 5.0;
 
     private VisionConstant() {
     }

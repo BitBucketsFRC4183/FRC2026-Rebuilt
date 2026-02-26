@@ -105,8 +105,7 @@ public class RobotContainer {
 
          */
 
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
+        visionSubsystem = new VisionSubsystem(visionIO, () -> driveSubsystem.poseEstimator.getEstimatedPosition(), odometryHistory, driveSubsystem);
         break;
 
       case SIM:
@@ -138,6 +137,7 @@ public class RobotContainer {
                     () -> driveSimulation.getSimulatedDriveTrainPose(),
                     VisionConstant.robotToBackCam,
                     VisionConstant.robotToFrontCam),
+                    () -> driveSimulation.getSimulatedDriveTrainPose(),
                 odometryHistory,
                 driveSubsystem);
 
@@ -159,7 +159,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
+        visionSubsystem = new VisionSubsystem(visionIO,() -> driveSimulation.getSimulatedDriveTrainPose(), odometryHistory, driveSubsystem);
 
         break;
     }
