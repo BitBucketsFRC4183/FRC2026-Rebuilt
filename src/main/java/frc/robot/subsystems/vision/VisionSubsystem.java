@@ -55,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         visionio.updateInputs(CamOneInputs, CamTwoInputs);
-        Logger.processInputs("Vision/front", CamOneInputs);
+        Logger.processInputs("Vision/side", CamOneInputs);
         Logger.processInputs("Vision/front_shooter", CamTwoInputs);
 
         VisionMode manualSelectMode = visionModeChooser.getSelected();
@@ -194,7 +194,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     private static final String[] CAMERAS = {
-            VisionConstant.LIMELIGHT_FRONT,
+            VisionConstant.LIMELIGHT_SIDE,
             VisionConstant.LIMELIGHT_FRONT_SHOOTER
     };
 

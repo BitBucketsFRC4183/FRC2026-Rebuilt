@@ -14,7 +14,7 @@ public class VisionIOLimelight implements VisionIO {
 
     // getTable(""), inside the "", is webUI/table name
     // name doesn't matter here as well
-    private final NetworkTable limelightOneTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+    private final NetworkTable limelightOneTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_SIDE);
 
     private final NetworkTable limelightTwoTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
@@ -25,7 +25,7 @@ public class VisionIOLimelight implements VisionIO {
     @Override
     public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
         // we use the method, give it the variable of its wanted type
-        readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_FRONT);
+        readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_SIDE);
         readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_FRONT_SHOOTER);
     }
 
@@ -69,17 +69,6 @@ public class VisionIOLimelight implements VisionIO {
             } catch (Exception e) {
                 System.err.println("Error processing Limelight data: " + e.getMessage());
             }
-        }
-    }
-
-    private static final String[] CAMERAS = {
-            VisionConstant.LIMELIGHT_FRONT,
-            VisionConstant.LIMELIGHT_FRONT_SHOOTER
-    };
-
-    private void forAllCameras(Consumer<String> action) {
-        for (String cameraName : CAMERAS) {
-            action.accept(cameraName);
         }
     }
 
