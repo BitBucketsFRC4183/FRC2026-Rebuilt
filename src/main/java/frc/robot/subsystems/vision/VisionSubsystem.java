@@ -59,11 +59,10 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.processInputs("Vision/front_shooter", CamTwoInputs);
 
         VisionMode manualSelectMode = visionModeChooser.getSelected();
-        VisionMode finalMode = (manualSelectMode!=null)
-                ?manualSelectMode:decideVisionMode();
+        VisionMode finalMode = (manualSelectMode != null) ? manualSelectMode : decideVisionMode();
 
         //only if there is a change, we apply network table changes
-        if (defaultMode == null || finalMode != defaultMode){
+        if (defaultMode == null || finalMode != defaultMode) {
             defaultMode = finalMode;
             applyVisionMode(finalMode);
             Logger.recordOutput("Vision/CurrentVisionMode", defaultMode.toString());
@@ -193,10 +192,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    private static final String[] CAMERAS = {
-            VisionConstant.LIMELIGHT_SIDE,
-            VisionConstant.LIMELIGHT_FRONT_SHOOTER
-    };
+    private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_SIDE, VisionConstant.LIMELIGHT_FRONT_SHOOTER};
 
     private void forAllCameras(Consumer<String> action) {
         for (String cameraName : CAMERAS) {
@@ -210,6 +206,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     private void applyAllIMU(int mode) {
         forAllCameras(cam -> visionio.setIMUMode(cam, mode));
+    }
+
+    private void applyAllIMUAlphaAssist() {
+        forAllCameras(cam -> visionio.setIMUAssistAlpha(cam, VisionConstant.complementaryFilterAlphaIMU));
     }
 
     private void applyVisionMode(VisionMode visionMode) {
@@ -228,6 +228,7 @@ public class VisionSubsystem extends SubsystemBase {
             case TELEOP -> {
                 applyAllPipeline(VisionConstant.PIPELINE_Teleop);
                 applyAllIMU(4);
+                applyAllIMUAlphaAssist();
             }
         }
     }

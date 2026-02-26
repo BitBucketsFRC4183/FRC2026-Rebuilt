@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
     @AutoLog
-    public class VisionIOInputs {
+    class VisionIOInputs {
         public boolean cameraConnected;
         public boolean hasTarget;
 
@@ -31,11 +31,6 @@ public interface VisionIO {
         // from raw fiducial
 
         public double minAmbiguity;
-
-        //  public Pose2d TargetHubPose2d;
-        //  public double DistanceFromRobotToHub;
-        //  public Rotation2d FieldAngleFromHubToRobot;
-        //  public Rotation2d TurningAngle;
     }
 
     // name doesn't matter here

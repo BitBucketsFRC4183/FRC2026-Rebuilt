@@ -5,8 +5,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
 
-import java.util.function.Consumer;
-
 public class VisionIOLimelight implements VisionIO {
 
     // LIMELIGHT is constant
@@ -18,7 +16,6 @@ public class VisionIOLimelight implements VisionIO {
 
     private final NetworkTable limelightTwoTable = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
 
-    private VisionFusionResults visionFusionResults;
     // define, create a 0.0 double array
     private static final double[] defaultStdDev = new double[VisionConstant.kExpectedStdDevArrayLength];
 
