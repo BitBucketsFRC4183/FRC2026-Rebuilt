@@ -25,7 +25,6 @@ public class AimController {
   // enter drive's maxSpeed setting
   public double shapeOutput(double omega, double maxOmega) {
     if (Math.abs(omega) < AimConstants.OUTPUT_DEADBAND) return 0.0;
-    // Math.copySign(magnitude, signSource)
     if (Math.abs(omega) < AimConstants.MINIMUM_OUTPUT) {
       omega = Math.copySign(AimConstants.MINIMUM_OUTPUT, omega);
     }

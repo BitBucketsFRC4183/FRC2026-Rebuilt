@@ -36,6 +36,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final Drive drive;
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
+
   private Optional<VisionFusionResults> latestVisionResult = Optional.empty();
 
   public VisionSubsystem(VisionIO io, OdometryHistory odometryHistory, Drive drive) {
