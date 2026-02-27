@@ -31,30 +31,23 @@ public class IntakeIOSim implements IntakeIO {
     double dt = now - lastTimestamp;
     lastTimestamp = now;
 
-    // Target velocity based on motor output
     double targetRPM = motorOutput * FREE_SPEED_RPM;
 
     motorVelocityRPM +=
         (targetRPM - motorVelocityRPM) * MathUtil.clamp(dt * VELOCITY_RESPONSE, 0.0, 1.0);
 
-    // Current draw
     motorCurrentAmps = Math.abs(motorOutput) * MAX_CURRENT_AMPS;
 
-    // Add intake load if extended and spinning inward
     if (piston1Extended && piston2Extended && motorOutput > 0.1) {
       motorCurrentAmps += INTAKE_LOAD_CURRENT;
     }
 
-    // inputs
-    inputs.motorVelocityRPM = motorVelocityRPM;
+    inputs.motorVelocityRPS = motorVelocityRPM / 60.0;
+    inputs.motorTargetVelocityRPS = targetRPM / 60.0;
+    inputs.motorVoltage = motorOutput * 12.0;
     inputs.motorCurrentAmps = motorCurrentAmps;
     inputs.primaryPistonExtended = piston1Extended;
     inputs.secondaryPistonExtended = piston2Extended;
-  }
-
-  @Override
-  public void setMotorOutput(double percent) {
-    motorOutput = MathUtil.clamp(percent, -1.0, 1.0);
   }
 
   @Override

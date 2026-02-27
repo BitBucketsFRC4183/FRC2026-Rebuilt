@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.ShooterConstants;
@@ -11,7 +12,8 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterIOTalonFX implements ShooterIO {
   public final TalonFX flywheelMotor = new TalonFX(ShooterConstants.flywheelID);
   public final TalonFX flywheelMotor2 = new TalonFX(ShooterConstants.flywheelID2);
-  public final TalonFX intakeMotor = new TalonFX(ShooterConstants.intakeID);
+
+  public final TalonFX interMotor = new TalonFX(ShooterConstants.intakeID);
   private final VelocityVoltage target = new VelocityVoltage(0);
 
   public ShooterIOTalonFX() {
@@ -29,6 +31,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     slot0.kP = ShooterConstants.flywheel_kP;
     slot0.kI = ShooterConstants.flywheel_kI;
     slot0.kD = ShooterConstants.flywheel_kD;
+
     slot0.kA = ShooterConstants.flywheel_kA;
     slot0.kV = ShooterConstants.flywheel_kV;
     slot0.kS = ShooterConstants.flywheel_kS;
@@ -36,54 +39,64 @@ public class ShooterIOTalonFX implements ShooterIO {
     // Current Limits
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
     currentConfig.SupplyCurrentLimitEnable = true;
-    currentConfig.SupplyCurrentLimit = 40;
+    currentConfig.SupplyCurrentLimit = ShooterConstants.supplyCurrentLimit;
     currentConfig.StatorCurrentLimitEnable = true;
-    currentConfig.StatorCurrentLimit = 40;
+    currentConfig.StatorCurrentLimit = ShooterConstants.statorCurrentLimit;
 
     flywheelMotor.getConfigurator().apply(motorConfig);
     flywheelMotor.getConfigurator().apply(currentConfig);
 
     flywheelMotor2.getConfigurator().apply(motorConfig);
-    flywheelMotor2.getConfigurator().apply(motorConfig);
+    flywheelMotor2.getConfigurator().apply(currentConfig);
 
     motorConfig.MotorOutput.Inverted =
-        !ShooterConstants.flywheelInverted
+        !ShooterConstants.interInverted
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    intakeMotor.getConfigurator().apply(motorConfig);
-    intakeMotor.getConfigurator().apply(currentConfig);
+    interMotor.getConfigurator().apply(motorConfig);
+    interMotor.getConfigurator().apply(currentConfig);
   }
 
   @Override
-  public void setSpeed(double targetSpeed) {
+  public void setFlywheelSpeed(double targetSpeed) {
     flywheelMotor.setControl(target.withVelocity(targetSpeed));
     flywheelMotor2.setControl(target.withVelocity(targetSpeed));
   }
 
   @Override
+  public void setFlywheelVoltage(double voltage) {
+    flywheelMotor.setControl(new VoltageOut(voltage));
+    flywheelMotor2.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
   public void startFeeding() {
-    intakeMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
+    interMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
   }
 
   @Override
   public void stopMotor() {
     flywheelMotor.stopMotor();
     flywheelMotor2.stopMotor();
-    intakeMotor.stopMotor();
+    interMotor.stopMotor();
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.flywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
     inputs.flywheelVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
+
+    inputs.flywheelPosition = flywheelMotor.getPosition().getValueAsDouble();
+    inputs.flywheelPosition2 = flywheelMotor.getPosition().getValueAsDouble();
+
     inputs.flywheelCurrent = flywheelMotor.getStatorCurrent().getValueAsDouble();
     inputs.flywheelVoltage = flywheelMotor.getMotorVoltage().getValueAsDouble();
-    inputs.flywheelCurrent2 = intakeMotor.getStatorCurrent().getValueAsDouble();
-    inputs.flywheelVoltage2 = intakeMotor.getMotorVoltage().getValueAsDouble();
-    inputs.intakeCurrent = intakeMotor.getStatorCurrent().getValueAsDouble();
-    inputs.intakeVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
+
+    inputs.flywheelCurrent2 = flywheelMotor2.getStatorCurrent().getValueAsDouble();
+    inputs.flywheelVoltage2 = flywheelMotor2.getMotorVoltage().getValueAsDouble();
+
+    inputs.interCurrent = interMotor.getStatorCurrent().getValueAsDouble();
+    inputs.interVoltage = interMotor.getMotorVoltage().getValueAsDouble();
   }
 }
-
-// Aidan's Social Security Number: 621 79 0241

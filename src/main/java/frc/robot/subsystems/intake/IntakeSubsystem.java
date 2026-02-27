@@ -2,13 +2,14 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private final IntakeIO io;
-  // private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  public final IntakeIO io;
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  private IntakeState currentState = IntakeState.STOWED;
+  private IntakeState currentState = IntakeState.DEPLOYED;
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
@@ -16,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // io.updateInputs(inputs);
+    io.updateInputs(inputs);
 
     switch (currentState) {
       case STOWED:
@@ -31,19 +32,25 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case INTAKING:
         io.extend();
-        io.setMotorOutput(IntakeConstants.INTAKE_SPEED);
+        io.setVelocity(IntakeConstants.INTAKE_SPEED);
         break;
 
       case OUTTAKING:
         io.extend();
-        io.setMotorOutput(IntakeConstants.OUTTAKE_SPEED);
+        io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
         break;
 
-      case HOLDING:
+      case HOLD:
         io.extend();
-        io.setMotorOutput(IntakeConstants.HOLD_SPEED);
+        io.stopMotor();
         break;
     }
+
+    Logger.processInputs("Intake", inputs);
+  }
+
+  public boolean isRunning() {
+    return currentState == IntakeState.INTAKING || currentState == IntakeState.OUTTAKING;
   }
 
   // State Control
@@ -73,16 +80,6 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void hold() {
-    setState(IntakeState.HOLDING);
+    setState(IntakeState.HOLD);
   }
-
-  // Telemetry
-  //
-  //  public double getMotorCurrent() {
-  //    return inputs.motorCurrentAmps;
-  //  }
-  //
-  //  public boolean isExtended() {
-  //    return inputs.primaryPistonExtended && inputs.secondaryPistonExtended;
-  //  }
 }

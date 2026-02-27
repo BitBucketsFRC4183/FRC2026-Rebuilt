@@ -31,6 +31,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
 import org.ironmaple.simulation.SimulatedArena;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final HopperSubsystem hopperSubsystem;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private PowerDistributionSubsystem powerSubsystem;
 
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
@@ -95,6 +97,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
 
         /* DATA FLOW:
         Vision IO (interface) connected VisionIOLimelight;
@@ -141,7 +144,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         break;
         // thinking to what
 
@@ -160,6 +163,7 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
+        powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         visionSubsystem =
             new VisionSubsystem(
                 visionIO,
@@ -232,6 +236,7 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         DriveCommands.joystickDrive(
             driveSubsystem,
+            powerSubsystem,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
@@ -258,8 +263,13 @@ public class RobotContainer {
                 driveSubsystem.setPose(
                     new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
-    // Left bumper Intake deployed and stowed
-    // intake Commands
+
+    // Overrides the DPD Subsystem
+    driverController
+        .back()
+        .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
+        .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
+
     operatorController
         .leftBumper()
         .onTrue(
@@ -274,8 +284,10 @@ public class RobotContainer {
                 intakeSubsystem));
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
-    // Hopper reverse while right bu
-    // mper held
+    operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
+    operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
+
+    // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
         .whileTrue(
@@ -293,46 +305,45 @@ public class RobotContainer {
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     // Climber Setpoint Commands
-    operatorController
-        .a()
-        // .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToGround(climberSubsystem));
-    operatorController
-        .x()
-        // .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
-    operatorController
-        .y()
-        // .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-    operatorController
-        .b()
-        //  .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+    operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+    //    operatorController
+    //        .x()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+    //    operatorController
+    //        .y()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+    //    operatorController
+    //        .b()
+    //        //  .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command
-    operatorController
-        .povUp()
-        .and(operatorController.back())
-        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-    operatorController
-        .povDown()
-        .and(operatorController.back())
-        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-    new Trigger(
-            () ->
-                (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
-        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-    new Trigger(
-            () ->
-                (operatorController.getRightY()) < -0.1 && operatorController.back().getAsBoolean())
-        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    //    operatorController
+    //        .povUp()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    //    operatorController
+    //        .povDown()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) > 0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) < -0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
     // manual climb command
     new Trigger(
             () ->
                 Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.back().getAsBoolean())
+                    && (operatorController.povDown()).getAsBoolean())
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 

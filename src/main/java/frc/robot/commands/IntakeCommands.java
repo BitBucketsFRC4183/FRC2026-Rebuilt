@@ -24,7 +24,7 @@ public final class IntakeCommands {
 
   // Runs Intake in while being held out
   public static Command intake(IntakeSubsystem intake) {
-    return Commands.startEnd(intake::intake, intake::deploy, intake).withName("Intake.Intake");
+    return Commands.startEnd(intake::intake, intake::hold, intake).withName("Intake.Intake");
   }
 
   // Runs Intake Out whilst held
@@ -34,7 +34,7 @@ public final class IntakeCommands {
 
   // holds forebar out
   public static Command hold(IntakeSubsystem intake) {
-    return Commands.runOnce(intake::hold, intake).withName("Intake.Hold");
+    return Commands.runOnce(intake::deploy, intake).withName("Intake.Hold");
   }
 
   // Stops intake and retracts forebar
@@ -45,5 +45,15 @@ public final class IntakeCommands {
   // Instant deploy and intake
   public static Command deployAndIntake(IntakeSubsystem intake) {
     return Commands.sequence(deploy(intake), intake(intake)).withName("Intake.DeployAndIntake");
+  }
+
+  public static Command moveServoTo0(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoAngle(0.0), intake)
+        .withName("Intake.MoveServo0");
+  }
+
+  public static Command moveServoTo90(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoAngle(90.0), intake)
+        .withName("Intake.MoveServo90");
   }
 }
