@@ -301,20 +301,20 @@ public class RobotContainer {
         .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
-    // Climber Setpoint Commands
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
-    //    operatorController
-    //        .x()
-    //        // .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+//     Climber Setpoint Commands
+        operatorController
+            .x()
+            .and(operatorController.back())
+            .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
     //    operatorController
     //        .y()
     //        // .and(operatorController.back())
     //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-    //    operatorController
-    //        .b()
-    //        //  .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+        operatorController
+            .b()
+            //  .and(operatorController.back())
+            .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
 
     // servo command
     //    operatorController

@@ -65,4 +65,6 @@ public class ClimberSubsystem extends SubsystemBase {
   public void resetPosition() {
     climberIO.resetPosition();
   }
+
+  public void setInverted() {climberIO.setInverted();}
 }

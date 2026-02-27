@@ -146,11 +146,10 @@ public class ClimberCommands {
 
   public static Command climbToLevelOne(ClimberSubsystem climberSubsystem) {
     return ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
-        .andThen(
-            ClimberCommands.climberServoUp(climberSubsystem)
+        .andThen(Commands.deadline(Commands.waitSeconds(3))
                 .andThen(
                     ClimberCommands.decreaseClimberLength(climberSubsystem)
-                        .andThen(ClimberCommands.baseServoUp(climberSubsystem))));
+                        .andThen()));
   }
   ;
 
@@ -169,13 +168,9 @@ public class ClimberCommands {
 
   public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
 
-    return ClimberCommands.climberServoDown(climberSubsystem)
-        .andThen(
-            ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(
-                    Commands.run(
-                        () -> climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
-                .until(() -> climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
-                .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
+    return Commands.run(() -> climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)).until(() -> climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
+            .andThen(Commands.runOnce(climberSubsystem::resetPosition)
+                    .andThen(Commands.runOnce(climberSubsystem::setInverted)));
+
   }
 }
