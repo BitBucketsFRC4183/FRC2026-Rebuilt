@@ -12,6 +12,7 @@ public interface IntakeIO {
     public double motorCurrentAmps = 0.0;
     public boolean primaryPistonExtended = false;
     public boolean secondaryPistonExtended = false;
+    public double servoAngleDegrees = 0.0;
   }
 
   default void updateInputs(IntakeIOInputs inputs) {}
@@ -25,4 +26,6 @@ public interface IntakeIO {
   default void extend() {}
 
   default void retract() {}
+
+  default void setServoAngle(double angleDegrees) {}
 }
