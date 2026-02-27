@@ -1,52 +1,50 @@
 package frc.robot.subsystems.hopper;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.HopperConstants;
 
 public class HopperIOTalonFX implements HopperIO {
 
-  private final TalonFX hopperMotor;
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-  private double targetVelocityRPS = 0.0;
+  public final TalonFX conveyorMotor;
+  private final DutyCycleOut percentRequest = new DutyCycleOut(0);
 
   public HopperIOTalonFX() {
-    hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID);
+
+    conveyorMotor = new TalonFX(HopperConstants.HOPPER_CONVEYOR_MOTOR_CAN_ID);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.Inverted =
+            HopperConstants.HOPPER_CONVEYOR_MOTOR_INVERTED
+                    ? InvertedValue.Clockwise_Positive
+                    : InvertedValue.CounterClockwise_Positive;
 
-    MotorOutputConfigs output = config.MotorOutput;
-    output.Inverted =
-        HopperConstants.MOTOR_INVERTED
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
+    // Current Limits
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 40.0;
 
-    CurrentLimitsConfigs current = config.CurrentLimits;
-    current.SupplyCurrentLimitEnable = true;
-    current.SupplyCurrentLimit = HopperConstants.SUPPLY_CURRENT_LIMIT;
-    current.StatorCurrentLimitEnable = true;
-    current.StatorCurrentLimit = HopperConstants.STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 80.0;
 
-    hopperMotor.getConfigurator().apply(config);
-
-    hopperMotor.stopMotor();
+    conveyorMotor.getConfigurator().apply(config);
   }
 
   @Override
   public void updateInputs(HopperIOInputs inputs) {
-    inputs.motorVelocityRPS = hopperMotor.getVelocity().getValueAsDouble();
-    inputs.motorVoltage = hopperMotor.getMotorVoltage().getValueAsDouble();
-    inputs.motorCurrentAmps = hopperMotor.getSupplyCurrent().getValueAsDouble();
-    inputs.motorTargetVelocityRPS = targetVelocityRPS;
+    inputs.conveyorAppliedOutput = conveyorMotor.getDutyCycle().getValueAsDouble();
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    targetVelocityRPS = velocity;
-    hopperMotor.setControl(velocityRequest.withVelocity(velocity));
+  public void setConveyorPercent(double percent) {
+    conveyorMotor.setControl(percentRequest.withOutput(percent));
+  }
+
+  @Override
+  public void stopConveyor() {
+    conveyorMotor.stopMotor();
   }
 }
