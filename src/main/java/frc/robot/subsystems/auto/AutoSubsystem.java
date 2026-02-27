@@ -109,10 +109,6 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("ShootBtoDepot", true);
   }
 
-  public Command goTopShootertoDepot() {
-    return choreoPath("ShooterTtoDepot", true);
-  }
-
   public Command goDepotToMid() {
     return choreoPath("DepotToMid", true);
   }
@@ -155,6 +151,10 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command goBottomStartToShootB() {
     return choreoPath("BottomStartToShootB", true);
+  }
+
+  public Command goTopShootertoDepot() {
+    return choreoPath("ShootTtoDepot", true);
   }
   // AUTOROUTINES
 
@@ -366,39 +366,39 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  public Command StartBottomShootOutpost(){
-      return Commands.sequence(
-         extendKickerbar(),
-         new InstantCommand(()->System.out.println("Moving from bottom start to shoot ps")),
-         goBottomStartToShootB(),
-         shoot().withTimeout(6),
-         new InstantCommand(()->System.out.println("We are moving to the outpost now")),
-         goBottomShootertoDepot(),
-         stop(),
-         new InstantCommand(()->System.out.println("routine complete")));
+  public Command StartBottomShootOutpost() {
+    return Commands.sequence(
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
+        goBottomStartToShootB(),
+        shoot().withTimeout(6),
+        new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
+        goBottomShootertoDepot(),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  public Command StartMidShootDepot(){
-      return Commands.sequence(
-          extendKickerbar(),
-          new InstantCommand(()->System.out.println("Moving from mid start to shooting ps")),
-          goMidToShooterPs(),
-          shoot().withTimeout(6),
-          new InstantCommand(()->System.out.println("We are moving to the depot now")),
-          goMidShootertoDepot(),
-          stop(),
-          new InstantCommand(()->System.out.println("routine complete")));
+  public Command StartMidShootDepot() {
+    return Commands.sequence(
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
+        goMidToShooterPs(),
+        shoot().withTimeout(6),
+        new InstantCommand(() -> System.out.println("We are moving to the depot now")),
+        goMidShootertoDepot(),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  public Command StartTopShootDepot(){
-      return Commands.sequence(
-           extendKickerbar(),
-           new InstantCommand(()->System.out.println("Moving from top start to shooting ps")),
-           goToptoShooterPs(),
-           shoot().withTimeout(6),
-           new InstantCommand(()->System.out.println("we are moving to depot now")),
-           goTopShootertoDepot(),
-           stop(),
-           new InstantCommand(()->System.out.println("routine complete")));
+  public Command StartTopShootDepot() {
+    return Commands.sequence(
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
+        goToptoShooterPs(),
+        shoot().withTimeout(6),
+        new InstantCommand(() -> System.out.println("we are moving to depot now")),
+        goTopShootertoDepot(),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 }
