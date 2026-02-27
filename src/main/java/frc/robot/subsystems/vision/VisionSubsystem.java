@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +33,10 @@ public class VisionSubsystem extends SubsystemBase {
     private final Supplier<Pose2d> pose2dSupplier;
     private final Drive drive;
 
+    //need to be non static
+    private double lastGyroTimestamp;
+    private double lastGyroDegs;
+
     private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
     private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
@@ -43,6 +48,8 @@ public class VisionSubsystem extends SubsystemBase {
         this.pose2dSupplier = pose2dSupplier;
         this.odometryHistory = odometryHistory;
         this.drive = drive;
+        this.lastGyroTimestamp = Timer.getFPGATimestamp();
+        this.lastGyroDegs = pose2dSupplier.get().getRotation().getDegrees();
 
         visionModeChooser.setDefaultOption("DISABLED", VisionMode.DISABLED);
         visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
@@ -164,6 +171,10 @@ public class VisionSubsystem extends SubsystemBase {
             return Optional.empty();
         }
 
+        if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
+            return Optional.empty();
+        }
+
         return Optional.of(new VisionFusionResults(inputs.megaTagPose, inputs.timestamp, VecBuilder.fill(inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance), inputs.tagCount));
     }
 
@@ -172,7 +183,7 @@ public class VisionSubsystem extends SubsystemBase {
     private boolean isValidInputs(VisionIOInputsAutoLogged inputs) {
         if (inputs.tagCount <= 0) return false;
         if (!inputs.hasMegaTag2) return false;
-        return inputs.estimatedRobotPose != null;
+        return inputs.megaTagPose != null;
     }
 
     private double proportionalDistance(VisionIOInputsAutoLogged inputs) {
@@ -180,6 +191,21 @@ public class VisionSubsystem extends SubsystemBase {
         if (!inputs.hasTarget || inputs.ta < 0.0001) return 999;
 
         return 1.0 / Math.sqrt(inputs.ta);
+    }
+
+    private double getGyroChange(Supplier<Pose2d> supplier) {
+        double currentTime = Timer.getFPGATimestamp();
+        double currentGyroDegs = supplier.get().getRotation().getDegrees();
+        double deltaTime = currentTime - lastGyroTimestamp;
+        double deltaGryoDegs = currentGyroDegs - lastGyroDegs;
+
+        lastGyroTimestamp = currentTime;
+        lastGyroDegs = currentGyroDegs;
+
+        //ignore this gyro change result
+        if (deltaTime < 1e-6) return 0;
+
+        return Math.abs(deltaGryoDegs / deltaTime);
     }
 
     private VisionMode decideVisionMode() {
@@ -232,12 +258,6 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
     }
-
-//    private static boolean GyroIsDrasticallyChanging(Supplier<Pose2d> supplier) {
-//        double gyroTimeChange = double gyroDegsChange = supplier.get().getRotation().getDegrees() - lastGyro_degs;
-//        double rate = Math.abs(dd / dt);
-//        if return false;
-//    }
 
     /*
     ********************

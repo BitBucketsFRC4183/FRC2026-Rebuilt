@@ -134,7 +134,6 @@ public class RobotContainer {
         visionSubsystem =
             new VisionSubsystem(
                 new VisionIOPhotonVisionSim(
-                    () -> driveSimulation.getSimulatedDriveTrainPose(),
                     VisionConstant.robotToBackCam,
                     VisionConstant.robotToFrontCam),
                     () -> driveSimulation.getSimulatedDriveTrainPose(),
