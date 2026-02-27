@@ -26,8 +26,11 @@ public class ShooterCommands {
             .andThen(
                 Commands.parallel(
                     Commands.run(shooterSubsystem::setTargetVelocity),
-                    Commands.run(shooterSubsystem::startFeeding),
-                    Commands.run(hopperSubsystem::runConveyorForward))));
+                    feed(shooterSubsystem, hopperSubsystem))));
+  }
+
+  public static Command feed(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+      return Commands.parallel(Commands.run(shooterSubsystem::startFeeding), Commands.run(hopperSubsystem::runConveyorForward));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
