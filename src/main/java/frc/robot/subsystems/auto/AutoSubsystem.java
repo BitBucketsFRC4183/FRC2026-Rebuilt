@@ -62,8 +62,26 @@ public class AutoSubsystem extends SubsystemBase {
         .beforeStarting(() -> System.out.println("Climbing!"));
   }
 
-  // autoroutines
+  // loading autoroutines from choreo to pathplanner
+  public Command choreoPath(String trajName, boolean resetPose) {
+    try {
+      // Loading the path from the deploy/choreo folder
+      PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(trajName);
 
+      Command followCommand = AutoBuilder.followPath(path);
+
+      if (resetPose) {
+        return new InstantCommand(() -> drive.setPose(path.getStartingHolonomicPose().get()))
+            .andThen(followCommand);
+      } else {
+        return followCommand;
+      }
+    } catch (Exception e) {
+      System.err.println("Failed to load Choreo trajectory: " + trajName);
+      e.printStackTrace();
+      return Commands.none();
+    }
+  }
   // loads choreo path as an autobuilder command
   public Command cPath(String trajName, boolean doesReset) {
     PathPlannerPath path;
@@ -98,189 +116,242 @@ public class AutoSubsystem extends SubsystemBase {
     // Create a path-following command using AutoBuilder
     return AutoBuilder.followPath(path);
   }
+  /*
+    public Command goToptoShooterPs() {
+      PathPlannerPath path2;
 
-  public Command goToptoShooterPs() {
-    PathPlannerPath path2;
+      try {
+        // Load the path from the deploy/pathplanner folder by name
+        path2 = PathPlannerPath.fromChoreoTrajectory("TopStartToShootT");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
 
-    try {
-      // Load the path from the deploy/pathplanner folder by name
-      path2 = PathPlannerPath.fromChoreoTrajectory("TopStartToShootT");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
+      // Create a path-following command using AutoBuilder
+      return AutoBuilder.followPath(path2);
     }
 
-    // Create a path-following command using AutoBuilder
-    return AutoBuilder.followPath(path2);
+    public Command goMidToShooterPs() {
+      PathPlannerPath path3;
+
+      try {
+        path3 = PathPlannerPath.fromChoreoTrajectory("MidStartToShootM");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path3);
+    }
+
+    // climbing only
+    public Command goMidtoTower() {
+      PathPlannerPath path4;
+
+      try {
+        path4 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path4);
+    }
+
+    public Command goBottomShootertoDepot() {
+      PathPlannerPath path5;
+
+      try {
+        path5 = PathPlannerPath.fromChoreoTrajectory("ShootMtoDepot");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path5);
+    }
+
+    public Command goMidShootertoDepot() {
+      PathPlannerPath path6;
+
+      try {
+        path6 = PathPlannerPath.fromChoreoTrajectory("ShootBtoDepot");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path6);
+    }
+
+    public Command goTopShootertoDepot() {
+      PathPlannerPath path7;
+
+      try {
+        path7 = PathPlannerPath.fromChoreoTrajectory("ShootTtoDepot");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path7);
+    }
+  goDepotToMid
+    public Command () {
+      PathPlannerPath path8;
+
+      try {
+        path8 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(path8);
+    }
+
+    public Command goMidTower() {
+      PathPlannerPath MdTower;
+
+      try {
+        MdTower = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(MdTower);
+    }
+
+    public Command goBottomTower() {
+      PathPlannerPath BtTower;
+
+      try {
+        BtTower = PathPlannerPath.fromChoreoTrajectory("BottomToTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(BtTower);
+    }
+
+    public Command goTopTower() {
+      PathPlannerPath TpTower;
+
+      try {
+        TpTower = PathPlannerPath.fromChoreoTrajectory("TopToTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(TpTower);
+    }
+
+    public Command goShooterBtoTower() {
+      PathPlannerPath ShooterBTower;
+
+      try {
+        ShooterBTower = PathPlannerPath.fromChoreoTrajectory("ShootBtoTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(ShooterBTower);
+    }
+
+    public Command goShooterTtoTower() {
+      PathPlannerPath ShooterTTower;
+
+      try {
+        ShooterTTower = PathPlannerPath.fromChoreoTrajectory("ShootTtoTower");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(ShooterTTower);
+    }
+
+    public Command goBottomToOutpost() {
+      PathPlannerPath BottomOutpost;
+
+      try {
+        BottomOutpost = PathPlannerPath.fromChoreoTrajectory("BottomToOutpost");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(BottomOutpost);
+    }
+
+    public Command goOutpostToShootBPs() {
+      PathPlannerPath BottomShootPs;
+
+      try {
+        BottomShootPs = PathPlannerPath.fromChoreoTrajectory("OutpostToShooterB");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Commands.none();
+      }
+
+      return AutoBuilder.followPath(BottomShootPs);
+    }
+  */
+  public Command goToptoShooterPs() {
+    return choreoPath("TopStartToShootT", true);
   }
 
   public Command goMidToShooterPs() {
-    PathPlannerPath path3;
-
-    try {
-      path3 = PathPlannerPath.fromChoreoTrajectory("MidStartToShootM");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path3);
-  }
-
-  // climbing only
-  public Command goMidtoTower() {
-    PathPlannerPath path4;
-
-    try {
-      path4 = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path4);
-  }
-
-  public Command goBottomShootertoDepot() {
-    PathPlannerPath path5;
-
-    try {
-      path5 = PathPlannerPath.fromChoreoTrajectory("ShootMtoDepot");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path5);
-  }
-
-  public Command goMidShootertoDepot() {
-    PathPlannerPath path6;
-
-    try {
-      path6 = PathPlannerPath.fromChoreoTrajectory("ShootBtoDepot");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path6);
-  }
-
-  public Command goTopShootertoDepot() {
-    PathPlannerPath path7;
-
-    try {
-      path7 = PathPlannerPath.fromChoreoTrajectory("ShootTtoDepot");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path7);
-  }
-
-  public Command goDepotToMid() {
-    PathPlannerPath path8;
-
-    try {
-      path8 = PathPlannerPath.fromChoreoTrajectory("DepotToMid");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(path8);
+    return choreoPath("MidStartToShootM", true);
   }
 
   public Command goMidTower() {
-    PathPlannerPath MdTower;
+    return choreoPath("MidToTower", true);
+  }
 
-    try {
-      MdTower = PathPlannerPath.fromChoreoTrajectory("MidtoTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
+  public Command goBottomShootertoDepot() {
+    return choreoPath("ShootMtoDepot", true);
+  }
 
-    return AutoBuilder.followPath(MdTower);
+  public Command goMidShootertoDepot() {
+    return choreoPath("ShootBtoDepot", true);
+  }
+
+  public Command goTopShootertoDepot() {
+    return choreoPath("ShooterTtoDepot", true);
+  }
+
+  public Command goDepotToMid() {
+    return choreoPath("DepotToMid", true);
   }
 
   public Command goBottomTower() {
-    PathPlannerPath BtTower;
-
-    try {
-      BtTower = PathPlannerPath.fromChoreoTrajectory("BottomToTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(BtTower);
+    return choreoPath("BottomToTower", true);
   }
 
   public Command goTopTower() {
-    PathPlannerPath TpTower;
-
-    try {
-      TpTower = PathPlannerPath.fromChoreoTrajectory("TopToTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(TpTower);
+    return choreoPath("TopToTower", true);
   }
 
   public Command goShooterBtoTower() {
-    PathPlannerPath ShooterBTower;
-
-    try {
-      ShooterBTower = PathPlannerPath.fromChoreoTrajectory("ShootBtoTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(ShooterBTower);
+    return choreoPath("ShootBtoTower", true);
   }
 
   public Command goShooterTtoTower() {
-    PathPlannerPath ShooterTTower;
-
-    try {
-      ShooterTTower = PathPlannerPath.fromChoreoTrajectory("ShootTtoTower");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(ShooterTTower);
+    return choreoPath("ShootTtoTower", true);
   }
 
-  public Command  goBottomToOutpost(){
-    PathPlannerPath BottomOutpost;
-
-    try {
-       BottomOutpost= PathPlannerPath.fromChoreoTrajectory("BottomToOutpost");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(BottomOutpost);
+  public Command goBottomToOutpost() {
+    return choreoPath("BottomToOutpost", true);
   }
-  public Command  goOutpostToShootBPs(){
-    PathPlannerPath BottomShootPs;
 
-    try {
-      BottomShootPs= PathPlannerPath.fromChoreoTrajectory("OutpostToShooterB");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Commands.none();
-    }
-
-    return AutoBuilder.followPath(BottomShootPs);
+  public Command goOutpostToShootBPs() {
+    return choreoPath("OutpostToShooterB", true);
   }
 
   // AUTOROUTINES
@@ -401,7 +472,7 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Begin shooting")),
         shoot().withTimeout(6),
         new InstantCommand(() -> System.out.println("moving to tower to climb")),
-        goMidtoTower(),
+        goMidTower(),
         climb());
   }
 
@@ -449,16 +520,14 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomToOutpostShoot() {
     return Commands.sequence(
-            new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-            goBottomToOutpost(),
-            new WaitCommand(6),
-            new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-            goOutpostToShootBPs(),
-            new InstantCommand(() -> System.out.println("We are going to shoot now")),
-            shoot().withTimeout(4),
-            stop(),
-            new InstantCommand(() -> System.out.println("complete routine")));
+        new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
+        goBottomToOutpost(),
+        new WaitCommand(6),
+        new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
+        goOutpostToShootBPs(),
+        new InstantCommand(() -> System.out.println("We are going to shoot now")),
+        shoot().withTimeout(4),
+        stop(),
+        new InstantCommand(() -> System.out.println("complete routine")));
   }
 }
-
-
