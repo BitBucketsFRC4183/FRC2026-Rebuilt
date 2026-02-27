@@ -1,5 +1,8 @@
 package frc.robot.subsystems.hopper;
 
+import static frc.robot.constants.IntakeConstants.*;
+import static frc.robot.constants.IntakeConstants.kS;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -8,9 +11,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.constants.HopperConstants;
-
-import static frc.robot.constants.IntakeConstants.*;
-import static frc.robot.constants.IntakeConstants.kS;
 
 public class HopperIOTalonFX implements HopperIO {
 
@@ -29,7 +29,7 @@ public class HopperIOTalonFX implements HopperIO {
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
-    Slot0Configs slot0 = motorConfig.Slot0;
+    Slot0Configs slot0 = config.Slot0;
     slot0.kP = kP;
     slot0.kI = kI;
     slot0.kD = kD;
