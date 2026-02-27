@@ -57,25 +57,26 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    int index = 0;
-    while (index < lookupTable.length) {
-      if (lookupTable[index][0] >= storedDistance) {
-        break;
-      }
-      index++;
-    }
-    if (lookupTable[index][0] != storedDistance) {
-      // Calculates linear graph between 2 closest distances to estimate the best RPS to output
-      System.out.println(lookupTable[index][1] - lookupTable[index - 1][1]);
-      System.out.println(lookupTable[index][0] - lookupTable[index - 1][0]);
-      double slope =
-          (lookupTable[index][1] - lookupTable[index - 1][1])
-              / (lookupTable[index][0] - lookupTable[index - 1][0]);
-      //      targetVelocity =
-      //          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
-      //    } else {
-      //      targetVelocity = lookupTable[index][1];
-    }
+    //    int index = 0;
+    //    while (index < lookupTable.length) {
+    //      if (lookupTable[index][0] >= storedDistance) {
+    //        break;
+    //      }
+    //      index++;
+    //    }
+    //    if (lookupTable[index][0] != storedDistance) {
+    //      // Calculates linear graph between 2 closest distances to estimate the best RPS to
+    // output
+    //      System.out.println(lookupTable[index][1] - lookupTable[index - 1][1]);
+    //      System.out.println(lookupTable[index][0] - lookupTable[index - 1][0]);
+    //      double slope =
+    //          (lookupTable[index][1] - lookupTable[index - 1][1])
+    //              / (lookupTable[index][0] - lookupTable[index - 1][0]);
+    //      targetVelocity =
+    //          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
+    //    } else {
+    //      targetVelocity = lookupTable[index][1];
+    //    }
   }
 
   public void setTargetVelocity() {
