@@ -66,7 +66,7 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
     // update gyro seeding
     forAllCameras(
-            cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
+        cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
 
     // TODO COMMENT IT WHEN USING, THIS MAKES VISION VERY SLOW
     /// ONLY FOR TESTING
@@ -77,16 +77,17 @@ public class VisionSubsystem extends SubsystemBase {
 
     // only if there is a change, we apply network table changes
     if (finalMode == VisionMode.DISABLED) {
-      applyAllIMU(1);} else if (finalMode == VisionMode.AUTONOMOUS || finalMode == VisionMode.TELEOP) {
+      applyAllIMU(1);
+    } else if (finalMode == VisionMode.AUTONOMOUS || finalMode == VisionMode.TELEOP) {
       applyAllIMU(4);
       applyAllIMUAlphaAssist();
     }
 
     // they are separated because we don't want to feed pipeline continuously
     if (defaultMode == null || finalMode != defaultMode) {
-        defaultMode = finalMode;
-        applyVisionMode(finalMode);
-        Logger.recordOutput("Vision/CurrentVisionMode", defaultMode.toString());
+      defaultMode = finalMode;
+      applyVisionMode(finalMode);
+      Logger.recordOutput("Vision/CurrentVisionMode", defaultMode.toString());
     }
 
     /// one
