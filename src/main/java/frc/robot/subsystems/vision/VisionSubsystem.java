@@ -81,6 +81,8 @@ public class VisionSubsystem extends SubsystemBase {
       applyAllIMU(4);
       applyAllIMUAlphaAssist();
     }
+
+    // they are separated because we don't want to feed pipeline continuously
     if (defaultMode == null || finalMode != defaultMode) {
         defaultMode = finalMode;
         applyVisionMode(finalMode);
@@ -272,9 +274,10 @@ public class VisionSubsystem extends SubsystemBase {
       return VisionMode.DISABLED;
     } else if (DriverStation.isAutonomous()) {
       return VisionMode.AUTONOMOUS;
-    } else {
+    } else if (DriverStation.isTeleop()) {
       return VisionMode.TELEOP;
     }
+    return VisionMode.DISABLED;
   }
 
   private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B};
