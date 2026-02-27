@@ -281,6 +281,9 @@ public class RobotContainer {
                 intakeSubsystem));
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
+    operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
+    operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
+
     // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
@@ -300,7 +303,7 @@ public class RobotContainer {
 
     // Climber Setpoint Commands
     operatorController
-        .a()
+        .b()
         .whileTrue(IntakeCommands.outtake(intakeSubsystem));
 //    operatorController
 //        .x()
@@ -337,7 +340,7 @@ public class RobotContainer {
     new Trigger(
             () ->
                 Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.povDown().getAsBoolean())
+                    && (operatorController.povDown()).getAsBoolean())
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
