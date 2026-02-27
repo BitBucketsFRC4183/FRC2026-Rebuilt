@@ -203,7 +203,9 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
-
+    autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
+    autoChooser.addOption(" StartMidShootDepot", autoSubsystem. StartMidShootDepot());
+    autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
     // Set up SysId routines
     autoChooser.addOption(
         "DriveSubsystem Wheel Radius Characterization",
