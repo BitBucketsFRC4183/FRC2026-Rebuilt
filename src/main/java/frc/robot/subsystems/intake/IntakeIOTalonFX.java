@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.constants.IntakeConstants.*;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -7,13 +9,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.robot.constants.IntakeConstants;
-import com.revrobotics.servohub.ServoHub;
 import com.revrobotics.servohub.ServoChannel;
 import com.revrobotics.servohub.ServoChannel.ChannelId;
-
-import static frc.robot.constants.IntakeConstants.*;
+import com.revrobotics.servohub.ServoHub;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import frc.robot.constants.IntakeConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
@@ -33,9 +33,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     MotorOutputConfigs outputConfigs = motorConfig.MotorOutput;
     outputConfigs.Inverted =
-            MOTOR_INVERTED
-                    ? InvertedValue.Clockwise_Positive
-                    : InvertedValue.CounterClockwise_Positive;
+        MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
     Slot0Configs slot0 = motorConfig.Slot0;
     slot0.kP = kP;
@@ -55,18 +53,18 @@ public class IntakeIOTalonFX implements IntakeIO {
     intakeMotor.stopMotor();
 
     leftPiston =
-            new DoubleSolenoid(
-                    PNEUMATICS_HUB_CANID,
-                    PNEUMATICS_TYPE,
-                    LEFT_PISTON_FORWARD_CHANNEL,
-                    LEFT_PISTON_REVERSE_CHANNEL);
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
+            PNEUMATICS_TYPE,
+            LEFT_PISTON_FORWARD_CHANNEL,
+            LEFT_PISTON_REVERSE_CHANNEL);
 
     rightPiston =
-            new DoubleSolenoid(
-                    PNEUMATICS_HUB_CANID,
-                    PNEUMATICS_TYPE,
-                    RIGHT_PISTON_FORWARD_CHANNEL,
-                    RIGHT_PISTON_REVERSE_CHANNEL);
+        new DoubleSolenoid(
+            PNEUMATICS_HUB_CANID,
+            PNEUMATICS_TYPE,
+            RIGHT_PISTON_FORWARD_CHANNEL,
+            RIGHT_PISTON_REVERSE_CHANNEL);
 
     servoHub = new ServoHub(IntakeConstants.hubCANID);
     servoChannel0 = servoHub.getServoChannel(ChannelId.kChannelId0);
@@ -82,8 +80,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.motorTargetVelocityRPS = targetVelocityRPS;
 
     boolean extended =
-            leftPiston.get() == DoubleSolenoid.Value.kForward
-                    && rightPiston.get() == DoubleSolenoid.Value.kForward;
+        leftPiston.get() == DoubleSolenoid.Value.kForward
+            && rightPiston.get() == DoubleSolenoid.Value.kForward;
     inputs.primaryPistonExtended = extended;
     inputs.secondaryPistonExtended = extended;
 

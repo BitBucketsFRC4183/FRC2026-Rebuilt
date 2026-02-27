@@ -10,7 +10,6 @@ public interface IntakeIO {
     public double motorTargetVelocityRPS = 0.0;
     public double motorVoltage = 0.0;
     public double motorCurrentAmps = 0.0;
-    public double motorVoltage = 0.0;
     public boolean primaryPistonExtended = false;
     public boolean secondaryPistonExtended = false;
     public double servoAngleDegrees = 0.0;

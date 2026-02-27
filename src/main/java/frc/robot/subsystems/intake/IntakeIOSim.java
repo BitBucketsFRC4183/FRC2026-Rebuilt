@@ -34,7 +34,7 @@ public class IntakeIOSim implements IntakeIO {
     double targetRPM = motorOutput * FREE_SPEED_RPM;
 
     motorVelocityRPM +=
-            (targetRPM - motorVelocityRPM) * MathUtil.clamp(dt * VELOCITY_RESPONSE, 0.0, 1.0);
+        (targetRPM - motorVelocityRPM) * MathUtil.clamp(dt * VELOCITY_RESPONSE, 0.0, 1.0);
 
     motorCurrentAmps = Math.abs(motorOutput) * MAX_CURRENT_AMPS;
 
@@ -49,7 +49,6 @@ public class IntakeIOSim implements IntakeIO {
     inputs.primaryPistonExtended = piston1Extended;
     inputs.secondaryPistonExtended = piston2Extended;
   }
-
 
   @Override
   public void extend() {

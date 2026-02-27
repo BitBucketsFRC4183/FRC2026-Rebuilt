@@ -47,20 +47,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     Logger.processInputs("Intake", inputs);
-    Logger.recordOutput("Intake/State", currentState.toString());
-    Logger.recordOutput("Intake/IsRunning", isRunning());
-    Logger.recordOutput(
-            "Intake/Extended",
-            inputs.primaryPistonExtended && inputs.secondaryPistonExtended);
-    Logger.recordOutput(
-            "Intake/VelocityError",
-            inputs.motorTargetVelocityRPS - inputs.motorVelocityRPS);
-    Logger.recordOutput("Intake/TargetRPS", inputs.motorTargetVelocityRPS);
-    Logger.recordOutput("Intake/ActualRPS", inputs.motorVelocityRPS);
-    Logger.recordOutput("Intake/Voltage", inputs.motorVoltage);
-    Logger.recordOutput("Intake/Current", inputs.motorCurrentAmps);
-
-    Logger.processInputs("Intake", inputs);
   }
 
   public boolean isRunning() {

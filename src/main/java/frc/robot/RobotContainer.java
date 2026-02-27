@@ -261,11 +261,11 @@ public class RobotContainer {
                     new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-    //Overrides the DPD Subsystem
+    // Overrides the DPD Subsystem
     driverController
-            .back()
-            .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
-            .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
+        .back()
+        .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
+        .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
 
     operatorController
         .leftBumper()
@@ -280,6 +280,9 @@ public class RobotContainer {
                 },
                 intakeSubsystem));
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
+
+    operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
+    operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
     // Hopper runs, will change to intake later
     operatorController
@@ -299,45 +302,45 @@ public class RobotContainer {
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     // Climber Setpoint Commands
-    operatorController
-        .a()
-        .whileTrue(IntakeCommands.outtake(intakeSubsystem));
-//    operatorController
-//        .x()
-//        // .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
-//    operatorController
-//        .y()
-//        // .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-//    operatorController
-//        .b()
-//        //  .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+    operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+    //    operatorController
+    //        .x()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+    //    operatorController
+    //        .y()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+    //    operatorController
+    //        .b()
+    //        //  .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command
-//    operatorController
-//        .povUp()
-//        .and(operatorController.back())
-//        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-//    operatorController
-//        .povDown()
-//        .and(operatorController.back())
-//        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-//    new Trigger(
-//            () ->
-//                (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
-//        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-//    new Trigger(
-//            () ->
-//                (operatorController.getRightY()) < -0.1 && operatorController.back().getAsBoolean())
-//        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    //    operatorController
+    //        .povUp()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    //    operatorController
+    //        .povDown()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) > 0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) < -0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
     // manual climb command
     new Trigger(
             () ->
                 Math.abs(operatorController.getLeftY()) > 0.1
-                    && operatorController.povDown().getAsBoolean())
+                    && (operatorController.povDown()).getAsBoolean())
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
