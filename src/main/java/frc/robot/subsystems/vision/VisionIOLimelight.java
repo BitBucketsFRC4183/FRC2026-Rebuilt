@@ -13,10 +13,10 @@ public class VisionIOLimelight implements VisionIO {
   // getTable(""), inside the "", is webUI/table name
   // name doesn't matter here as well
   private final NetworkTable limelightOneTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_SIDE);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_A);
 
   private final NetworkTable limelightTwoTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
 
   // define, create a 0.0 double array
   private static final double[] defaultStdDev =
@@ -25,8 +25,8 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
-    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_SIDE);
-    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_A);
+    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_B);
   }
 
   // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to

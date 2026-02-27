@@ -56,7 +56,7 @@ public class VisionSubsystem extends SubsystemBase {
     visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
     visionModeChooser.addOption("TELEOP", VisionMode.TELEOP);
 
-    SmartDashboard.putData("Vision/Vision Mode Chooser", visionModeChooser);
+    SmartDashboard.putData("Vision Mode Chooser", visionModeChooser);
   }
 
   @Override
@@ -251,7 +251,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private static final String[] CAMERAS = {
-    VisionConstant.LIMELIGHT_SIDE, VisionConstant.LIMELIGHT_FRONT_SHOOTER
+    VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B
   };
 
   private void forAllCameras(Consumer<String> action) {
