@@ -1,35 +1,24 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.constants.VisionConstant;
-import java.util.List;
-import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   // set the stage
   // this is basically allinone yooo
   private VisionSystemSim visionSim;
 
-  private PhotonCamera PHOTON_FRONT;
-  private PhotonCamera PHOTON_BACK;
+  private final PhotonCamera PHOTON_FRONT;
+  private final PhotonCamera PHOTON_BACK;
 
-  private PhotonCameraSim frontCamSim;
-  private PhotonCameraSim backCamSim;
-  private final Supplier<Pose2d> poseSupplier;
+  private final PhotonCameraSim frontCamSim;
+  private final PhotonCameraSim backCamSim;
 
-  public VisionIOPhotonVisionSim(
-      Supplier<Pose2d> poseSupplier,
-      Transform3d robotToFrontCam,
-      Transform3d robotToBackCam) // the parameter
+  public VisionIOPhotonVisionSim() // the parameter
       {
-    // now create the stage
-    this.poseSupplier = poseSupplier;
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");
@@ -63,17 +52,12 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     backCamSim.enableDrawWireframe(true);
 
     // add properties that's it
-    visionSim.addCamera(frontCamSim, robotToFrontCam);
-    visionSim.addCamera(backCamSim, robotToBackCam);
+    visionSim.addCamera(frontCamSim, VisionConstant.robotToFrontCam);
+    visionSim.addCamera(backCamSim, VisionConstant.robotToBackCam);
   }
 
   @Override
   public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
-    visionSim.update(poseSupplier.get());
-    List<PhotonPipelineResult> visionResult = PHOTON_FRONT.getAllUnreadResults();
-
-    frontCamInputs.cameraConnected = PHOTON_FRONT.isConnected();
-    frontCamInputs.aprilTagIDNumber = 0;
-    frontCamInputs.timestamp = visionResult.lastIndexOf(frontCamInputs);
+    super.updateInputs(frontCamInputs, backCamInputs);
   }
 }

@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
-import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -105,7 +104,12 @@ public class RobotContainer {
 
          */
 
-        visionSubsystem = new VisionSubsystem(visionIO, () -> driveSubsystem.poseEstimator.getEstimatedPosition(), odometryHistory, driveSubsystem);
+        visionSubsystem =
+            new VisionSubsystem(
+                visionIO,
+                () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
+                odometryHistory,
+                driveSubsystem);
         break;
 
       case SIM:
@@ -133,10 +137,8 @@ public class RobotContainer {
 
         visionSubsystem =
             new VisionSubsystem(
-                new VisionIOPhotonVisionSim(
-                    VisionConstant.robotToBackCam,
-                    VisionConstant.robotToFrontCam),
-                    () -> driveSimulation.getSimulatedDriveTrainPose(),
+                new VisionIOPhotonVisionSim(),
+                () -> driveSimulation.getSimulatedDriveTrainPose(),
                 odometryHistory,
                 driveSubsystem);
 
@@ -158,7 +160,12 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(visionIO,() -> driveSimulation.getSimulatedDriveTrainPose(), odometryHistory, driveSubsystem);
+        visionSubsystem =
+            new VisionSubsystem(
+                visionIO,
+                () -> driveSimulation.getSimulatedDriveTrainPose(),
+                odometryHistory,
+                driveSubsystem);
 
         break;
     }
