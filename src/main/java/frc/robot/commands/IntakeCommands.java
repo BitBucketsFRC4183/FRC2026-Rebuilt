@@ -46,4 +46,15 @@ public final class IntakeCommands {
   public static Command deployAndIntake(IntakeSubsystem intake) {
     return Commands.sequence(deploy(intake), intake(intake)).withName("Intake.DeployAndIntake");
   }
+
+  public static Command moveServoTo0(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoAngle(0.0), intake)
+            .withName("Intake.MoveServo0");
+  }
+
+  public static Command moveServoTo90(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoAngle(90.0), intake)
+            .withName("Intake.MoveServo90");
+  }
+
 }

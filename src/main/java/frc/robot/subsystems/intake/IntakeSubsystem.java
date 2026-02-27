@@ -6,7 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private final IntakeIO io;
+  public final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private IntakeState currentState = IntakeState.DEPLOYED;
