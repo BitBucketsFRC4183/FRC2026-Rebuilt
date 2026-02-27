@@ -71,10 +71,10 @@ public class ShooterSubsystem extends SubsystemBase {
       double slope =
           (lookupTable[index][1] - lookupTable[index - 1][1])
               / (lookupTable[index][0] - lookupTable[index - 1][0]);
-      targetVelocity =
-          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
-    } else {
-      targetVelocity = lookupTable[index][1];
+//      targetVelocity =
+//          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
+//    } else {
+//      targetVelocity = lookupTable[index][1];
     }
   }
 

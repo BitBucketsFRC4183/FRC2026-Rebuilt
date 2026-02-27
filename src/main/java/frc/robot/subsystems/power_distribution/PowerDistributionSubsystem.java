@@ -26,9 +26,9 @@ public class PowerDistributionSubsystem extends SubsystemBase {
 
     if (!overrideActive) {
       if (intakeRunning && shooterRunning) {
-        currentState = PowerState.INTAKE_AND_SHOOT_NO_DRIVE;
+        currentState = PowerState.INTAKE_AND_SHOOT_DRIVE;
       } else if (shooterRunning) {
-        currentState = PowerState.SHOOTING_NO_DRIVE;
+        currentState = PowerState.SHOOTING_DRIVE;
       } else if (intakeRunning) {
         currentState = PowerState.INTAKE_DRIVE;
       } else {
@@ -43,9 +43,9 @@ public class PowerDistributionSubsystem extends SubsystemBase {
         driveFactor = 0.7;
         break;
 
-      case SHOOTING_NO_DRIVE:
-      case INTAKE_AND_SHOOT_NO_DRIVE:
-        driveFactor = 0.0;
+      case SHOOTING_DRIVE:
+      case INTAKE_AND_SHOOT_DRIVE:
+        driveFactor = 0.2;
         break;
 
       case DRIVE_OVERRIDE:
