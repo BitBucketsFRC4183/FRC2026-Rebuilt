@@ -1,7 +1,9 @@
 package frc.robot.subsystems.hopper;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HopperConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class HopperSubsystem extends SubsystemBase {
 
@@ -12,26 +14,30 @@ public class HopperSubsystem extends SubsystemBase {
     this.io = io;
   }
 
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Hopper", inputs);
+    SmartDashboard.putNumber("Hopper Velocity RPS", inputs.motorVelocityRPS);
+    SmartDashboard.putNumber("Hopper Target RPS", inputs.motorTargetVelocityRPS);
+    SmartDashboard.putNumber("Hopper Voltage", inputs.motorVoltage);
+    SmartDashboard.putNumber("Hopper Current", inputs.motorCurrentAmps);
   }
 
-  // Conveyor
   public void runConveyorForward() {
-    io.setConveyorPercent(HopperConstants.CONVEYOR_FORWARD_PERCENT);
+    io.setVelocity(HopperConstants.FORWARD_RPS);
   }
 
   public void runConveyorReverse() {
-    io.setConveyorPercent(HopperConstants.CONVEYOR_REVERSE_PERCENT);
+    io.setVelocity(HopperConstants.REVERSE_RPS);
   }
 
   public void stopConveyor() {
-    io.stopConveyor();
+    io.stopMotor();
   }
 
-  // Telemetry
-  public double getConveyorOutput() {
-    return inputs.conveyorAppliedOutput;
+  public double getVelocity() {
+    return inputs.motorVelocityRPS;
   }
 }

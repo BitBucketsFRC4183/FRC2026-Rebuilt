@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
+  private boolean flywheelsRunning = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   private final LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Flywheel RPS", 9.0);
@@ -22,6 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setTargetVelocity() {
+    flywheelsRunning = true;
     io.setSpeed(targetVelocity.get());
   }
 
@@ -40,6 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Stops both Intermediate and Flywheel Motors
   public void stop() {
+    flywheelsRunning = false;
     io.stopMotor();
   }
 
@@ -60,6 +63,10 @@ public class ShooterSubsystem extends SubsystemBase {
         && shooterInputs.flywheelVelocity < (targetVelocity.get() - ShooterConstants.tolerance)
         && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
         && shooterInputs.flywheelVelocity2 < (targetVelocity.get() - ShooterConstants.tolerance);
+  }
+
+  public boolean isFlywheelRunning() {
+    return flywheelsRunning;
   }
 
   @Override
