@@ -23,7 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
       new double[][] {
         {0.0, 0.0},
         {5.0, 9.0},
-        {10.0, 15.0}
+        {6.0, 45.0}
       };
 
   public ShooterSubsystem(ShooterIO io) {
@@ -71,10 +71,10 @@ public class ShooterSubsystem extends SubsystemBase {
       double slope =
           (lookupTable[index][1] - lookupTable[index - 1][1])
               / (lookupTable[index][0] - lookupTable[index - 1][0]);
-//      targetVelocity =
-//          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
-//    } else {
-//      targetVelocity = lookupTable[index][1];
+      //      targetVelocity =
+      //          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
+      //    } else {
+      //      targetVelocity = lookupTable[index][1];
     }
   }
 
