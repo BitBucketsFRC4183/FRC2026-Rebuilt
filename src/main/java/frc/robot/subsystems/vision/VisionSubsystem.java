@@ -65,6 +65,10 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("Vision/side", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
 
+    // TODO COMMENT IT WHEN USING, THIS MAKES VISION VERY SLOW
+    /// ONLY FOR TESTING
+    //    logAutoAimInputs(pose2dSupplier);
+
     VisionMode manualSelectMode = visionModeChooser.getSelected();
     VisionMode finalMode = (manualSelectMode != null) ? manualSelectMode : decideVisionMode();
 
@@ -240,6 +244,21 @@ public class VisionSubsystem extends SubsystemBase {
     return Math.abs(deltaGryoDegs / deltaTime);
   }
 
+  private void logAutoAimInputs(Supplier<Pose2d> supplier) {
+    double angle = AutoAimCalculation.getAngleToHub(supplier.get()).getDegrees();
+    double[] targetHubPose2d =
+        new double[] {
+          AutoAimCalculation.getTargetHubPose2d().getX(),
+          AutoAimCalculation.getTargetHubPose2d().getY(),
+          AutoAimCalculation.getTargetHubPose2d().getRotation().getDegrees()
+        };
+    double distance = AutoAimCalculation.getDistanceFromRobotToHub(supplier.get());
+
+    Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose2d);
+    Logger.recordOutput("Vision/Aim/AngleToHub", angle);
+    Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
+  }
+
   private VisionMode decideVisionMode() {
     if (DriverStation.isDisabled()) {
       return VisionMode.DISABLED;
@@ -250,9 +269,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private static final String[] CAMERAS = {
-    VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B
-  };
+  private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B};
 
   private void forAllCameras(Consumer<String> action) {
     for (String cameraName : CAMERAS) {

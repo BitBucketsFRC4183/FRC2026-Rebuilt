@@ -10,7 +10,7 @@ public class OdometryHistory {
   public void addPose(double timestamps, Pose2d pose) {
     history.put(timestamps, pose);
     // 20ms -> 1 second = 200 entries
-    int maxHistorySize = 300;
+    int maxHistorySize = 50;
     while (history.size() > maxHistorySize) {
       history.pollFirstEntry();
     }

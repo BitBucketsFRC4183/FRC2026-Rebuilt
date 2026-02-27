@@ -84,6 +84,13 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
                 (pose) -> {});
 
+        visionSubsystem =
+            new VisionSubsystem(
+                visionIO,
+                () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
+                odometryHistory,
+                driveSubsystem);
+
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
@@ -103,13 +110,6 @@ public class RobotContainer {
         Drive <-> odometry pose history -> provided to vision to help calculation
 
          */
-
-        visionSubsystem =
-            new VisionSubsystem(
-                visionIO,
-                () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
-                odometryHistory,
-                driveSubsystem);
         break;
 
       case SIM:
@@ -129,18 +129,18 @@ public class RobotContainer {
 
         driveSubsystem.setPose(new Pose2d(3, 3, new Rotation2d()));
 
+        visionSubsystem =
+            new VisionSubsystem(
+                new VisionIOPhotonVisionSim(() -> driveSimulation.getSimulatedDriveTrainPose()),
+                () -> driveSimulation.getSimulatedDriveTrainPose(),
+                odometryHistory,
+                driveSubsystem);
+
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
-
-        visionSubsystem =
-            new VisionSubsystem(
-                new VisionIOPhotonVisionSim(),
-                () -> driveSimulation.getSimulatedDriveTrainPose(),
-                odometryHistory,
-                driveSubsystem);
 
         break;
         // thinking to what
@@ -248,9 +248,7 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    driverController
-        .x()
-        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
+    driverController.x().whileTrue(autoAim());
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
@@ -338,6 +336,15 @@ public class RobotContainer {
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
+  public Command autoAim() {
+    System.out.println("Aim AT HUB");
+    return DriveCommands.joystickDriveAtAngle(
+        driveSubsystem,
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () ->
+            AutoAimCalculation.getAngleToHub(driveSubsystem.poseEstimator.getEstimatedPosition()));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
