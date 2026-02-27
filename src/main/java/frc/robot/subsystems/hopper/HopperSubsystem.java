@@ -14,7 +14,6 @@ public class HopperSubsystem extends SubsystemBase {
     this.io = io;
   }
 
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);

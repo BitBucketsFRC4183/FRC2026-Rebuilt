@@ -172,9 +172,10 @@ public class RobotContainer {
     }
 
     autoSubsystem =
-        new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
+        new AutoSubsystem(
+            driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
 
-    //WARMUP commands
+    // WARMUP commands
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
@@ -192,16 +193,16 @@ public class RobotContainer {
     autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
     autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
     autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
-    autoChooser.addOption("StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
+    autoChooser.addOption(
+        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
     autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
     autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
     autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
     autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
     autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
     autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
-    autoChooser.addOption("StartMidToDepotShoot", autoSubsystem. StartMidToDepotShoot());
+    autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
-
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -269,11 +270,11 @@ public class RobotContainer {
                     new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-    //Overrides the DPD Subsystem
+    // Overrides the DPD Subsystem
     driverController
-            .back()
-            .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
-            .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
+        .back()
+        .onTrue(Commands.runOnce(() -> powerSubsystem.setOverride(true)))
+        .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
 
     operatorController
         .leftBumper()
@@ -307,39 +308,39 @@ public class RobotContainer {
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     // Climber Setpoint Commands
-    operatorController
-        .a()
-        .whileTrue(IntakeCommands.outtake(intakeSubsystem));
-//    operatorController
-//        .x()
-//        // .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
-//    operatorController
-//        .y()
-//        // .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-//    operatorController
-//        .b()
-//        //  .and(operatorController.back())
-//        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
+    operatorController.a().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+    //    operatorController
+    //        .x()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem));
+    //    operatorController
+    //        .y()
+    //        // .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
+    //    operatorController
+    //        .b()
+    //        //  .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelThree(climberSubsystem));
 
     // servo command
-//    operatorController
-//        .povUp()
-//        .and(operatorController.back())
-//        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-//    operatorController
-//        .povDown()
-//        .and(operatorController.back())
-//        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-//    new Trigger(
-//            () ->
-//                (operatorController.getRightY()) > 0.1 && operatorController.back().getAsBoolean())
-//        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-//    new Trigger(
-//            () ->
-//                (operatorController.getRightY()) < -0.1 && operatorController.back().getAsBoolean())
-//        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    //    operatorController
+    //        .povUp()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
+    //    operatorController
+    //        .povDown()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) > 0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
+    //    new Trigger(
+    //            () ->
+    //                (operatorController.getRightY()) < -0.1 &&
+    // operatorController.back().getAsBoolean())
+    //        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
 
     // manual climb command
     new Trigger(

@@ -23,8 +23,7 @@ public class HopperIOSim implements HopperIO {
 
     double target = targetVelocity;
 
-    motorVelocityRPS +=
-            (target - motorVelocityRPS) * MathUtil.clamp(dt * RESPONSE, 0.0, 1.0);
+    motorVelocityRPS += (target - motorVelocityRPS) * MathUtil.clamp(dt * RESPONSE, 0.0, 1.0);
 
     motorCurrent = Math.abs(motorVelocityRPS / MAX_RPS) * MAX_CURRENT;
 
