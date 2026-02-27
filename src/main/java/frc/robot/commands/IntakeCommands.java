@@ -49,12 +49,11 @@ public final class IntakeCommands {
 
   public static Command moveServoTo0(IntakeSubsystem intake) {
     return Commands.runOnce(() -> intake.io.setServoAngle(0.0), intake)
-            .withName("Intake.MoveServo0");
+        .withName("Intake.MoveServo0");
   }
 
   public static Command moveServoTo90(IntakeSubsystem intake) {
     return Commands.runOnce(() -> intake.io.setServoAngle(90.0), intake)
-            .withName("Intake.MoveServo90");
+        .withName("Intake.MoveServo90");
   }
-
 }
