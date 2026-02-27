@@ -2,9 +2,8 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.VisionConstant;
@@ -76,12 +75,10 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   public void updateInputs(VisionIOInputs frontCamInputs, VisionIOInputs backCamInputs) {
 
     visionSim.update(poseSupplier.get());
-    NetworkTable table = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_A);
-    NetworkTable tableB = NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
 
     /// write to the table we have for limelight
-    writeToTable(PHOTON_FRONT.getAllUnreadResults(), table, frontCamSim);
-    writeToTable(PHOTON_BACK.getAllUnreadResults(), tableB, backCamSim);
+    updateCameraInputs(PHOTON_FRONT.getAllUnreadResults(), frontCamInputs, frontCamSim);
+    updateCameraInputs(PHOTON_BACK.getAllUnreadResults(), backCamInputs, backCamSim);
     super.updateInputs(frontCamInputs, backCamInputs);
   }
 
@@ -135,46 +132,55 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     return pose_data;
   }
 
-  private void writeToTable(
-      List<PhotonPipelineResult> results, NetworkTable table, PhotonCameraSim cameraSim) {
-    boolean seesTarget = false;
+  private void updateCameraInputs(
+      List<PhotonPipelineResult> results, VisionIOInputs inputs, PhotonCameraSim cameraSim) {
+
+    boolean foundMT = false;
+    PhotonPipelineResult bestResult = null;
 
     for (var result : results) {
-      List<Double> pose_data = null;
       if (result.getMultiTagResult().isPresent()) {
-        var multiTagResult = result.getMultiTagResult().get();
-        Transform3d best = multiTagResult.estimatedPose.best;
-        pose_data = getBotpose(best, multiTagResult.fiducialIDsUsed.size(), result, cameraSim);
-      } else if (result.hasTargets()) {
-        var bestTarget = result.getBestTarget();
-        Transform3d best =
+        bestResult = result;
+        foundMT = true;
+        inputs.hasTarget = true;
+        inputs.hasMegaTag2 = true;
+        inputs.timestamp = result.getTimestampSeconds();
+
+      } else if (result.hasTargets() && foundMT == false) {
+        bestResult = result;
+        inputs.hasTarget = true;
+        inputs.hasMegaTag2 = false;
+        inputs.latency = result.metadata.getLatencyMillis();
+        inputs.timestamp = result.getTimestampSeconds();
+      }
+    }
+
+    if (bestResult != null) {
+      Transform3d best;
+      if (foundMT) {
+        best = bestResult.getMultiTagResult().get().estimatedPose.best;
+        inputs.tagCount = bestResult.getMultiTagResult().get().fiducialIDsUsed.size();
+        inputs.ta = 5;
+      } else {
+        inputs.tagCount = 1;
+        var bestTarget = bestResult.getBestTarget();
+        best =
             VisionConstant.aprilTagFieldLayout
                 .getTagPose(bestTarget.getFiducialId())
                 .get()
                 .minus(Pose3d.kZero)
                 .plus(bestTarget.bestCameraToTarget.inverse());
-
-        pose_data = getBotpose(best, 1, result, cameraSim);
+        inputs.ta = bestTarget.getArea();
       }
+      inputs.rawStdDev = new double[] {0.3, 0.3, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-      if (pose_data != null) {
-        table
-            .getEntry("botpose_wpiblue")
-            .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
-        table
-            .getEntry("botpose_orb_wpiblue")
-            .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
-        // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,
-        // MT2pitch,
-        // MT2yaw]
-        table
-            .getEntry("stddevs")
-            .setDoubleArray(
-                new Double[] {0.3, 0.3, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
-        seesTarget = true;
-      }
-      table.getEntry("cl").setDouble(result.metadata.getLatencyMillis());
+      List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
+      // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,
+      // MT2pitch,
+      // MT2yaw]
+
+      inputs.megaTagPose =
+          new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
     }
-    table.getEntry("tv").setInteger(seesTarget ? 1 : 0);
   }
 }
