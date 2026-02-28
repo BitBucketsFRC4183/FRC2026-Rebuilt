@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
-import frc.robot.subsystems.vision.VisionMode;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -15,21 +14,34 @@ public class IntakeSubsystem extends SubsystemBase {
   private IntakeState currentState = IntakeState.DEPLOYED;
 
   private final SendableChooser<IntakeState> intakeStateChooser = new SendableChooser<>();
+  private final SendableChooser<Boolean> overrideToggle = new SendableChooser<>();
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
+
+    intakeStateChooser.setDefaultOption("DEPLOYED", IntakeState.DEPLOYED);
     intakeStateChooser.addOption("STOWED", IntakeState.STOWED);
-    intakeStateChooser.addOption("DEPLOYED", IntakeState.DEPLOYED);
     intakeStateChooser.addOption("INTAKING", IntakeState.INTAKING);
     intakeStateChooser.addOption("OUTTAKING", IntakeState.OUTTAKING);
+    intakeStateChooser.addOption("HOLD", IntakeState.HOLD);
+
+    overrideToggle.setDefaultOption("Override OFF", false);
+    overrideToggle.addOption("Override ON", true);
 
     SmartDashboard.putData("IntakeStateChooser", intakeStateChooser);
+    SmartDashboard.putData("IntakeManualOverride", overrideToggle);
   }
-
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+
+    boolean overrideEnabled = overrideToggle.getSelected() != null && overrideToggle.getSelected();
+    IntakeState selected = intakeStateChooser.getSelected();
+
+    if (overrideEnabled && selected != null) {
+      currentState = selected;
+    }
 
     switch (currentState) {
       case STOWED:
@@ -59,20 +71,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     Logger.processInputs("Intake", inputs);
-
-    IntakeState manualSelectMode = intakeStateChooser.getSelected();
-    currentState = (manualSelectMode);
-
   }
 
   public boolean isRunning() {
     return currentState == IntakeState.INTAKING || currentState == IntakeState.OUTTAKING;
   }
 
-  // State Control
-
   public void setState(IntakeState state) {
-    this.currentState = state;
+    if (!(overrideToggle.getSelected() != null && overrideToggle.getSelected())) {
+      this.currentState = state;
+    }
   }
 
   public IntakeState getState() {
