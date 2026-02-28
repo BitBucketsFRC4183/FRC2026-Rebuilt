@@ -25,7 +25,7 @@ public class AutoAimCalculation {
     // -0.677 = from center of hub minus the center robot, it is about this much allowance
     // this is a valid estimation lol
     if (diff.getX() < VisionConstant.MidGameAllowance) {
-      return -1;
+      return 0;
     }
     return robotPose.getTranslation().getDistance(HubPose.getTranslation());
   }
