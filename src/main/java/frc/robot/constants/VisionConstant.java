@@ -46,7 +46,7 @@ public final class VisionConstant {
   /// **********
   /// **********
   public static final String LIMELIGHT_A = "limelight-side";
-  public static final String LIMELIGHT_B = "limelight-frontShooter";
+  public static final String LIMELIGHT_B = "limelight-front";
 
   public static final int PIPELINE_DEFAULT_AprilTagTuning = 0;
   public static final int PIPELINE_DEFAULT_DriverCamera = 1;

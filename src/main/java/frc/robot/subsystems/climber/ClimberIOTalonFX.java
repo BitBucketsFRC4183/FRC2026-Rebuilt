@@ -81,7 +81,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void setInverted(){
+  public void setInverted() {
     climbConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     climbMotor.getConfigurator().apply(climbConfig);
   }
