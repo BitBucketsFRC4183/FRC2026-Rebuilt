@@ -63,7 +63,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
-    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+    Logger.processInputs("Vision/front", CamTwoInputs);
     // update gyro seeding
     forAllCameras(
         cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
@@ -309,7 +309,7 @@ public class VisionSubsystem extends SubsystemBase {
         applyAllPipeline(VisionConstant.PIPELINE_DEFAULT_OFF);
       }
       case AUTONOMOUS -> {
-        applyAllPipeline(VisionConstant.PIPELINE_Autonomous);
+        applyAllPipeline(VisionConstant.PIPELINE_DEFAULT_AprilTagTuning);
       }
 
       case TELEOP -> {

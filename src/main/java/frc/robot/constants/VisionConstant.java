@@ -27,13 +27,12 @@ public final class VisionConstant {
     Y = 28in/0.7112m;
 
     CAMERA A
-    38.682 degree back forward
-    height: 0.271018m
-    from pigeon to limelight: 0.352425m
-    from center: -0.352425m
+    Initial: 12.875in in horizontal;
+    In height: 10.67/0.271018m
 
+    10 degree back forward
 
-
+    After: -12.375in/0.314325m
 
 
     PIPELINE RESULTS/APPROXIMATED STABLE APRILTAG DETECTION DISTANCE/CPU USAGE
