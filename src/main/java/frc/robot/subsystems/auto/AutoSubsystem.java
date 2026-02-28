@@ -65,12 +65,21 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command extendKickerbar() {
+    System.out.println("extending kickerbar");
     return IntakeCommands.moveServoTo90(intake);
   }
-
-  public Command deployIntake(){
-    return IntakeCommands.deploy(intake);
+  // Helper to drive while intaking
+  private Command driveAndIntake(Command pathCommand) {
+    return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
   }
+
+  private Command shootWithTimeout(double seconds) {
+    return shoot().withTimeout(seconds);
+  }
+
+  /*public Command deployIntake() {
+    return IntakeCommands.deploy(intake);
+  }*/
   // loading autoroutines from choreo to pathplanner
   public Command choreoPath(String trajName, boolean resetPose) {
     try {
@@ -187,13 +196,13 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
-        deployIntake(),
+        IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        goBottomStartToShootB(),
+        driveAndIntake(goBottomStartToShootB()),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shoot(),
+        shootWithTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -201,224 +210,225 @@ public class AutoSubsystem extends SubsystemBase {
   public Command topStartToShootOnly() {
 
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from top position to shooting position")),
-        goToptoShooterPs(),
+        driveAndIntake(goToptoShooterPs()),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
-        shoot(),
+        shootWithTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   public Command midStartToShootOnly() {
     return Commands.sequence(
-        deployIntake(),
+        IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
-        goMidToShooterPs(),
+        driveAndIntake(goMidToShooterPs()),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
-        shoot(),
+        shootWithTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  public Command StartBottomToTower() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will just be climbing")),
-        goBottomTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("bottom to climb routine complete")));
-  }
+  /*public Command StartBottomToTower() {
+      return Commands.sequence(
+          IntakeCommands.deploy(intake),
+          extendKickerbar(),
+              new InstantCommand(() -> System.out.println("We will just be climbing")),
+              driveAndIntake(goBottomTower()),
+              climb(),
+              stop(),
+              new InstantCommand(() -> System.out.println("bottom to climb routine complete")),
+              IntakeCommands.intake(intake)));
+    }
 
-  public Command StartTopToTower() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will just be climbing")),
-        goTopTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("top to climb routine complete")));
-  }
+    public Command StartTopToTower() {
+      return Commands.sequence(
+          IntakeCommands.deploy(intake),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("We will just be climbing")),
+          goTopTower(),
+          climb(),
+          stop(),
+          new InstantCommand(() -> System.out.println("top to climb routine complete")));
+    }
 
-  public Command StartMidToTower() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will just be climbing")),
-        goMidTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("mid to climb routine complete")));
-  }
+    public Command StartMidToTower() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("We will just be climbing")),
+          goMidTower(),
+          climb(),
+          stop(),
+          new InstantCommand(() -> System.out.println("mid to climb routine complete")));
+    }
 
-  public Command StartTopShootEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will move to top shooting position")),
-        goToptoShooterPs(),
-        shoot().withTimeout(6),
-        new InstantCommand(() -> System.out.println("moving to tower to climb")),
-        goShooterTtoTower(),
-        climb());
-  }
+    public Command StartTopShootEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("We will move to top shooting position")),
+          goToptoShooterPs(),
+          shoot().withTimeout(6),
+          new InstantCommand(() -> System.out.println("moving to tower to climb")),
+          goShooterTtoTower(),
+          climb());
+    }
 
-  public Command StartBottomShootEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will move to bottom shooting position")),
-        goBottomStartToShootB(),
-        shoot().withTimeout(6),
-        new InstantCommand(() -> System.out.println("moving to tower to climb")),
-        goShooterBtoTower(),
-        climb());
-  }
+    public Command StartBottomShootEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("We will move to bottom shooting position")),
+          goBottomStartToShootB(),
+          shoot().withTimeout(6),
+          new InstantCommand(() -> System.out.println("moving to tower to climb")),
+          goShooterBtoTower(),
+          climb());
+    }
 
-  public Command StartMidShootEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("We will move to mid shooting position")),
-        goMidToShooterPs(),
-        shoot().withTimeout(6),
-        new InstantCommand(() -> System.out.println("moving to tower to climb")),
-        goMidTower(),
-        climb());
-  }
+    public Command StartMidShootEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("We will move to mid shooting position")),
+          goMidToShooterPs(),
+          shoot().withTimeout(6),
+          new InstantCommand(() -> System.out.println("moving to tower to climb")),
+          goMidTower(),
+          climb());
+    }
 
-  public Command StartBottomShootIntakeEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Routine 1 starting - ")),
-        goBottomStartToShootB(),
-        shoot().withTimeout(4),
-        goBottomShootertoDepot(),
-        new WaitCommand(3),
-        goDepotToMid(),
-        goMidTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine 1 complete")));
-  }
+    public Command StartBottomShootIntakeEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("Routine 1 starting - ")),
+          goBottomStartToShootB(),
+          shoot().withTimeout(4),
+          goBottomShootertoDepot(),
+          new WaitCommand(3),
+          goDepotToMid(),
+          goMidTower(),
+          climb(),
+          stop(),
+          new InstantCommand(() -> System.out.println("routine 1 complete")));
+    }
 
-  public Command StartMidShootIntakeEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving to Shooter position")),
-        goMidToShooterPs(),
-        shoot().withTimeout(4),
-        goMidShootertoDepot(),
-        new WaitCommand(3),
-        goDepotToMid(),
-        goMidTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("complete routine")));
-  }
+    public Command StartMidShootIntakeEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("Moving to Shooter position")),
+          goMidToShooterPs(),
+          shoot().withTimeout(4),
+          goMidShootertoDepot(),
+          new WaitCommand(3),
+          goDepotToMid(),
+          goMidTower(),
+          climb(),
+          stop(),
+          new InstantCommand(() -> System.out.println("complete routine")));
+    }
 
-  public Command StartTopShootIntakeEndL1() {
-    return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top to mid shooting position")),
-        goToptoShooterPs(),
-        shoot().withTimeout(4),
-        goTopShootertoDepot(),
-        new WaitCommand(3),
-        goDepotToMid(),
-        goMidTower(),
-        climb(),
-        stop(),
-        new InstantCommand(() -> System.out.println("complete routine")));
-  }
-
+    public Command StartTopShootIntakeEndL1() {
+      return Commands.sequence(
+          // deployIntake(),
+          extendKickerbar(),
+          new InstantCommand(() -> System.out.println("Moving from top to mid shooting position")),
+          goToptoShooterPs(),
+          shoot().withTimeout(4),
+          goTopShootertoDepot(),
+          new WaitCommand(3),
+          goDepotToMid(),
+          goMidTower(),
+          climb(),
+          stop(),
+          new InstantCommand(() -> System.out.println("complete routine")));
+    }
+  */
   public Command StartBottomToOutpostShoot() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-        goBottomToOutpost(),
+        driveAndIntake(goBottomToOutpost()),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-        goOutpostToShootBPs(),
-        shoot().withTimeout(6),
+        driveAndIntake(goOutpostToShootBPs()),
+        shootWithTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
   }
 
   public Command StartMidToDepotShoot() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
-        goMidToDepot(),
+        driveAndIntake(goMidToDepot()),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        goDepotToMid(),
-        shoot().withTimeout(6),
+        driveAndIntake(goDepotToMid()),
+        shootWithTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   public Command StartTopToDepotShoot() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
-        goTopStartToDepot(),
+        driveAndIntake(goTopStartToDepot()),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        goDepotToShootT(),
-        shoot().withTimeout(6),
+        driveAndIntake(goDepotToShootT()),
+        shootWithTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   public Command StartBottomShootOutpost() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
-        goBottomStartToShootB(),
-        shoot().withTimeout(6),
+        driveAndIntake(goBottomStartToShootB()),
+        shootWithTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
-        goBottomShootertoDepot(),
+        driveAndIntake(goBottomShootertoDepot()),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   public Command StartMidShootDepot() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
-        goMidToShooterPs(),
-        shoot().withTimeout(6),
+        driveAndIntake(goMidToShooterPs()),
+        shootWithTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
-        goMidShootertoDepot(),
+        driveAndIntake(goMidShootertoDepot()),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   public Command StartTopShootDepot() {
     return Commands.sequence(
-            deployIntake(),
-            extendKickerbar(),
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
-        goToptoShooterPs(),
-        shoot().withTimeout(6),
+        driveAndIntake(goToptoShooterPs()),
+        shootWithTimeout(6),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
-        goTopShootertoDepot(),
+        driveAndIntake(goTopShootertoDepot()),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
