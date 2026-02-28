@@ -273,7 +273,7 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(() -> powerSubsystem.setOverride(false)));
 
     operatorController
-        .leftBumper()
+        .leftBumper().debounce(0.2)
         .onTrue(
             Commands.runOnce(
                 () -> {
