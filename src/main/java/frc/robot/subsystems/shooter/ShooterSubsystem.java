@@ -80,6 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
     } else {
       targetVelocity.set(lookupTable[index][1]);
     }
+    if(storedDistance == 0) {targetVelocity.set(ShooterConstants.flywheelDefaultSpeed);}
   }
 
   public void setTargetVelocity() {
