@@ -88,7 +88,7 @@ public class RobotContainer {
 
         visionSubsystem =
             new VisionSubsystem(
-                visionIO,
+                new VisionIOLimelight(),
                 () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
                 odometryHistory,
                 driveSubsystem);
@@ -302,7 +302,11 @@ public class RobotContainer {
     double distance = 1;
     operatorController
         .rightTrigger()
-        .onTrue(ShooterCommands.storeDistance(shooterSubsystem, distance))
+        .onTrue(
+            ShooterCommands.storeDistance(
+                shooterSubsystem,
+                AutoAimCalculation.getDistanceFromRobotToHub(
+                    driveSubsystem.poseEstimator.getEstimatedPosition())))
         .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
