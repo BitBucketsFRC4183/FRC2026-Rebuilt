@@ -68,6 +68,9 @@ public class AutoSubsystem extends SubsystemBase {
     return IntakeCommands.moveServoTo90(intake);
   }
 
+  public Command deployIntake(){
+    return IntakeCommands.deploy(intake);
+  }
   // loading autoroutines from choreo to pathplanner
   public Command choreoPath(String trajName, boolean resetPose) {
     try {
@@ -184,6 +187,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
+        deployIntake(),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
@@ -197,7 +201,8 @@ public class AutoSubsystem extends SubsystemBase {
   public Command topStartToShootOnly() {
 
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from top position to shooting position")),
         goToptoShooterPs(),
@@ -209,6 +214,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command midStartToShootOnly() {
     return Commands.sequence(
+        deployIntake(),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
@@ -221,7 +227,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomToTower() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will just be climbing")),
         goBottomTower(),
         climb(),
@@ -231,7 +238,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopToTower() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will just be climbing")),
         goTopTower(),
         climb(),
@@ -241,7 +249,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartMidToTower() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will just be climbing")),
         goMidTower(),
         climb(),
@@ -251,7 +260,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopShootEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will move to top shooting position")),
         goToptoShooterPs(),
         shoot().withTimeout(6),
@@ -262,7 +272,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomShootEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will move to bottom shooting position")),
         goBottomStartToShootB(),
         shoot().withTimeout(6),
@@ -273,7 +284,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartMidShootEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("We will move to mid shooting position")),
         goMidToShooterPs(),
         shoot().withTimeout(6),
@@ -284,7 +296,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomShootIntakeEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Routine 1 starting - ")),
         goBottomStartToShootB(),
         shoot().withTimeout(4),
@@ -299,7 +312,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartMidShootIntakeEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving to Shooter position")),
         goMidToShooterPs(),
         shoot().withTimeout(4),
@@ -314,7 +328,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopShootIntakeEndL1() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top to mid shooting position")),
         goToptoShooterPs(),
         shoot().withTimeout(4),
@@ -329,7 +344,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomToOutpostShoot() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
         goBottomToOutpost(),
         new WaitCommand(6),
@@ -342,7 +358,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartMidToDepotShoot() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
         goMidToDepot(),
         new WaitCommand(6),
@@ -355,7 +372,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopToDepotShoot() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
         goTopStartToDepot(),
         new WaitCommand(6),
@@ -368,7 +386,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartBottomShootOutpost() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
         goBottomStartToShootB(),
         shoot().withTimeout(6),
@@ -380,7 +399,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartMidShootDepot() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
         goMidToShooterPs(),
         shoot().withTimeout(6),
@@ -392,7 +412,8 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopShootDepot() {
     return Commands.sequence(
-        extendKickerbar(),
+            deployIntake(),
+            extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         goToptoShooterPs(),
         shoot().withTimeout(6),
