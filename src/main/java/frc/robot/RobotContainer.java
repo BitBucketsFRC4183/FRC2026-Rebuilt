@@ -311,19 +311,19 @@ public class RobotContainer {
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
-//     Climber Setpoint Commands
-        operatorController
-            .x()
-            .and(operatorController.back())
-            .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
+    //     Climber Setpoint Commands
+    operatorController
+        .x()
+        .and(operatorController.back())
+        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
     //    operatorController
     //        .y()
     //        // .and(operatorController.back())
     //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-        operatorController
-            .b()
-            //  .and(operatorController.back())
-            .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
+    operatorController
+        .b()
+        //  .and(operatorController.back())
+        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
 
     // servo command
     //    operatorController

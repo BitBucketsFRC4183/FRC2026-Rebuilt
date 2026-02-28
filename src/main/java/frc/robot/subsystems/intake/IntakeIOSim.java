@@ -6,7 +6,6 @@ public class IntakeIOSim implements IntakeIO {
   private boolean extended;
   private double servoAngle;
 
-
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.motorVelocityRPS = velocity;
