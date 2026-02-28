@@ -42,6 +42,8 @@ public class VisionIOLimelight implements VisionIO {
     /// basics
     // drive pose
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
+      inputs.limelightHeart = LimelightHelpers.getHeartbeat(cameraName);
+      inputs.cameraConnected = inputs.limelightHeart > 1;
 
     if (inputs.hasTarget) {
       try {
@@ -60,8 +62,7 @@ public class VisionIOLimelight implements VisionIO {
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
         inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
 
-        inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
-        inputs.tx = LimelightHelpers.getTX(cameraName);
+       inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);

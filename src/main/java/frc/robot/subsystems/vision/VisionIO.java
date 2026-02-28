@@ -9,6 +9,8 @@ public interface VisionIO {
     public boolean cameraConnected;
     public boolean hasTarget;
 
+    public double limelightHeart;
+
     public double tx;
     public double ty;
     public double ta;
