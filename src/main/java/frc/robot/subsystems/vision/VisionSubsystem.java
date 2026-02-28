@@ -64,9 +64,6 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
-    // update gyro seeding
-    forAllCameras(
-        cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
 
     // TODO COMMENT IT WHEN USING, THIS MAKES VISION VERY SLOW
     /// ONLY FOR TESTING
@@ -76,11 +73,9 @@ public class VisionSubsystem extends SubsystemBase {
     VisionMode finalMode = (manualSelectMode != null) ? manualSelectMode : decideVisionMode();
 
     // only if there is a change, we apply network table changes
-    if (finalMode == VisionMode.DISABLED) {
-      applyAllIMU(1);
-    } else if (finalMode == VisionMode.AUTONOMOUS || finalMode == VisionMode.TELEOP) {
-      applyAllIMU(4);
-      applyAllIMUAlphaAssist();
+    if (finalMode == VisionMode.AUTONOMOUS || finalMode == VisionMode.TELEOP) {
+        forAllCameras(
+                cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
     }
 
     // they are separated because we don't want to feed pipeline continuously
@@ -306,14 +301,20 @@ public class VisionSubsystem extends SubsystemBase {
 
     switch (visionMode) {
       case DISABLED -> {
+          applyAllIMU(1);
         applyAllPipeline(VisionConstant.PIPELINE_DEFAULT_OFF);
+      forAllCameras(
+                  cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
+
       }
       case AUTONOMOUS -> {
         applyAllPipeline(VisionConstant.PIPELINE_Autonomous);
+          applyAllIMU(4);
       }
 
       case TELEOP -> {
         applyAllPipeline(VisionConstant.PIPELINE_Teleop);
+          applyAllIMUAlphaAssist();
       }
     }
   }
