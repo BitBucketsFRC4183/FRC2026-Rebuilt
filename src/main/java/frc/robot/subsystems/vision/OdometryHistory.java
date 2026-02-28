@@ -6,12 +6,11 @@ import java.util.TreeMap;
 
 public class OdometryHistory {
   TreeMap<Double, Pose2d> history = new TreeMap<>();
-  // 20ms -> 1 second = 200 entries
-  private final int maxHistorySize = 300;
 
   public void addPose(double timestamps, Pose2d pose) {
     history.put(timestamps, pose);
-
+    // 20ms -> 1 second = 200 entries
+    int maxHistorySize = 50;
     while (history.size() > maxHistorySize) {
       history.pollFirstEntry();
     }

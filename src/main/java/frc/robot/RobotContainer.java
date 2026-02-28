@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
-import frc.robot.constants.VisionConstant;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -87,6 +86,13 @@ public class RobotContainer {
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
                 (pose) -> {});
 
+        visionSubsystem =
+            new VisionSubsystem(
+                visionIO,
+                () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
+                odometryHistory,
+                driveSubsystem);
+
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
@@ -107,9 +113,6 @@ public class RobotContainer {
         Drive <-> odometry pose history -> provided to vision to help calculation
 
          */
-
-        visionIO = new VisionIOLimelight(() -> driveSubsystem.poseEstimator.getEstimatedPosition());
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
         break;
 
       case SIM:
@@ -129,22 +132,19 @@ public class RobotContainer {
 
         driveSubsystem.setPose(new Pose2d(3, 3, new Rotation2d()));
 
+        visionSubsystem =
+            new VisionSubsystem(
+                new VisionIOPhotonVisionSim(() -> driveSimulation.getSimulatedDriveTrainPose()),
+                () -> driveSimulation.getSimulatedDriveTrainPose(),
+                odometryHistory,
+                driveSubsystem);
+
         climberIO = new ClimberIOSim();
         climberSubsystem = new ClimberSubsystem(climberIO);
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
-
-        visionSubsystem =
-            new VisionSubsystem(
-                new VisionIOPhotonVisionSim(
-                    () -> driveSimulation.getSimulatedDriveTrainPose(),
-                    VisionConstant.robotToBackCam,
-                    VisionConstant.robotToFrontCam),
-                odometryHistory,
-                driveSubsystem);
-
         break;
         // thinking to what
 
@@ -163,8 +163,13 @@ public class RobotContainer {
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
-        visionSubsystem = new VisionSubsystem(visionIO, odometryHistory, driveSubsystem);
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
+        visionSubsystem =
+            new VisionSubsystem(
+                visionIO,
+                () -> driveSimulation.getSimulatedDriveTrainPose(),
+                odometryHistory,
+                driveSubsystem);
 
         break;
     }
@@ -248,9 +253,7 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    driverController
-        .x()
-        .whileTrue(new AutoAimCommand(driveSubsystem, () -> driveSubsystem.getPose()));
+    driverController.x().whileTrue(autoAim());
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
@@ -344,6 +347,15 @@ public class RobotContainer {
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
+  public Command autoAim() {
+    System.out.println("Aim AT HUB");
+    return DriveCommands.joystickDriveAtAngle(
+        driveSubsystem,
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () ->
+            AutoAimCalculation.getAngleToHub(driveSubsystem.poseEstimator.getEstimatedPosition()));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

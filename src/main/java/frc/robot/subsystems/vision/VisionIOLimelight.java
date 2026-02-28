@@ -1,11 +1,9 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstant;
-import java.util.function.Supplier;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -15,28 +13,20 @@ public class VisionIOLimelight implements VisionIO {
   // getTable(""), inside the "", is webUI/table name
   // name doesn't matter here as well
   private final NetworkTable limelightOneTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_A);
 
   private final NetworkTable limelightTwoTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
 
-  private final Supplier<Pose2d> poseSupplier;
-  private VisionFusionResults visionFusionResults;
   // define, create a 0.0 double array
   private static final double[] defaultStdDev =
       new double[VisionConstant.kExpectedStdDevArrayLength];
 
-  // get that pose for me
-  public VisionIOLimelight(Supplier<Pose2d> poseSupplier) {
-
-    this.poseSupplier = poseSupplier;
-  }
-
   @Override
   public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
-    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_FRONT);
-    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_FRONT_SHOOTER);
+    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_A);
+    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_B);
   }
 
   // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to
@@ -55,10 +45,6 @@ public class VisionIOLimelight implements VisionIO {
 
     if (inputs.hasTarget) {
       try {
-        inputs.estimatedRobotPose = poseSupplier.get();
-        LimelightHelpers.SetRobotOrientation(
-            cameraName, inputs.estimatedRobotPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-
         /** MEGA TAG 2 * */
         var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
@@ -68,9 +54,6 @@ public class VisionIOLimelight implements VisionIO {
           inputs.tagCount = megaTag2Results.tagCount;
           inputs.timestamp = megaTag2Results.timestampSeconds;
           inputs.latency = megaTag2Results.latency;
-          // package them
-          //          visionPoseFusion = new VisionPoseFusion(inputs.megaTagPose, inputs.timestamp,
-          // inputs.visionStdDev, inputs.tagCount);
           return;
         }
 
@@ -83,18 +66,33 @@ public class VisionIOLimelight implements VisionIO {
         inputs.ta = LimelightHelpers.getTA(cameraName);
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
 
-        /// log details for hopperTracker, also for testing
-        //        inputs.TargetHubPose2d = HopperTracker.getTargetHubPose2d();
-        //        inputs.DistanceFromRobotToHub =
-        // HopperTracker.getDistanceFromRobotToHub(inputs.estimatedRobotPose);
-        //        inputs.FieldAngleFromHubToRobot =
-        // HopperTracker.getAngleToHub(inputs.estimatedRobotPose);
-        //    inputs.TurningAngle = HopperTracker.getTurningAngle(inputs.estimatedRobotPose);
-
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
       }
     }
+  }
+
+  @Override
+  public void setPipeline(String cameraName, int pipelineNumber) {
+    NetworkTableInstance.getDefault()
+        .getTable(cameraName)
+        .getEntry("pipeline")
+        .setNumber(pipelineNumber);
+  }
+
+  @Override
+  public void setRobotOrientation(String cameraName, double headingDegs) {
+    LimelightHelpers.SetRobotOrientation(cameraName, headingDegs, 0, 0, 0, 0, 0);
+  }
+
+  @Override
+  public void setIMUMode(String cameraName, int mode) {
+    LimelightHelpers.SetIMUMode(cameraName, mode);
+  }
+
+  @Override
+  public void setIMUAssistAlpha(String cameraName, double alpha) {
+    LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
   }
 
   private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {

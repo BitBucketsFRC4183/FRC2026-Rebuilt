@@ -16,11 +16,12 @@ public class AprilTagLabel {
   // 2foot height from apriltag to hopper
   // 23.5inch from center of hopper
 
-  // TODO, need to tune
+  // TODO need to measure
   public static final Transform3d tagToHub3d =
       new Transform3d(new Translation3d(0.5969, 0, 0.6096), new Rotation3d());
   public static final Pose3d RedHubPose3d =
       aprilTagFieldLayout.getTagPose(RED_RIGHT_BELOW_HUB).get().plus(tagToHub3d);
+
   public static final Pose3d BlueHubPose3d =
       aprilTagFieldLayout.getTagPose(BLUE_RIGHT_BELOW_HUB).get().plus(tagToHub3d);
 }
