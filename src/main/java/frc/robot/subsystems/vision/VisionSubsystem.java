@@ -63,10 +63,7 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
-
-    // TODO COMMENT IT WHEN USING, THIS MAKES VISION VERY SLOW
-    /// ONLY FOR TESTING
-    //    logAutoAimInputs(pose2dSupplier);
+    logAutoAimInputs(pose2dSupplier);
     visualizeAprilTags(CamOneInputs, pose2dSupplier);
 
     VisionMode manualSelectMode = visionModeChooser.getSelected();

@@ -20,19 +20,17 @@ public class AutoAimCalculation {
   //  }
 
   public static double getDistanceFromRobotToHub(Pose2d robotPose) {
-    Pose2d HubPose = getTargetHubPose2d();
-    Translation2d diff = HubPose.getTranslation().minus(robotPose.getTranslation());
+    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
     // -0.677 = from center of hub minus the center robot, it is about this much allowance
     // this is a valid estimation lol
     if (diff.getX() < VisionConstant.MidGameAllowance) {
       return 0;
     }
-    return robotPose.getTranslation().getDistance(HubPose.getTranslation());
+    return robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
   }
 
   /// targetRad
   public static Rotation2d getAngleToHub(Pose2d robotPose) {
-    Pose2d HubPose = getTargetHubPose2d();
     // Vector--> robot to hub; code--> hub - robot
     // could from any degrees -> 360
 
@@ -40,7 +38,7 @@ public class AutoAimCalculation {
     // https://maththebeautiful.com/angle-between-points/
     // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
     // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
-    Translation2d diff = HubPose.getTranslation().minus(robotPose.getTranslation());
+    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
     Rotation2d fieldAngle = diff.getAngle();
     return fieldAngle;
   }
