@@ -30,6 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import frc.robot.generated.*;
+
+import static frc.robot.generated.TunerConstants.ANGULAR_SLEW_RATE;
+import static frc.robot.generated.TunerConstants.LINEAR_SLEW_RATE;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -40,7 +44,8 @@ public class DriveCommands {
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
-  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05;
+// Rad/Sec^2
 
   private DriveCommands() {}
 
@@ -63,47 +68,47 @@ public class DriveCommands {
    * velocities).
    */
   public static Command joystickDrive(
-      Drive driveSubsystem,
-      PowerDistributionSubsystem powerSubsystem,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
-    return Commands.run(
-        () -> {
-          // Get linear velocity
+          Drive driveSubsystem,
+          PowerDistributionSubsystem powerSubsystem,
+          DoubleSupplier xSupplier,
+          DoubleSupplier ySupplier,
+          DoubleSupplier omegaSupplier) {
+
+      SlewRateLimiter xLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+      SlewRateLimiter yLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+      SlewRateLimiter omegaLimiter = new SlewRateLimiter(ANGULAR_SLEW_RATE);
+
+      return Commands.run(() -> {
           Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+                  getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
 
-          // Apply rotation deadband
+          double xSpeed = xLimiter.calculate(linearVelocity.getX());
+          double ySpeed = yLimiter.calculate(linearVelocity.getY());
+
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-          // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
+          omega = omegaLimiter.calculate(omega);
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX()
-                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
-                      * powerSubsystem.getDriveFactor(),
-                  linearVelocity.getY()
-                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
-                      * powerSubsystem.getDriveFactor(),
-                  omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
+          ChassisSpeeds speeds = new ChassisSpeeds(
+                  xSpeed
+                          * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                          * powerSubsystem.getDriveFactor(),
+                  ySpeed
+                          * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                          * powerSubsystem.getDriveFactor(),
+                                          omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
+
+          boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+
           driveSubsystem.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
-                      : driveSubsystem.getRotation()));
-        },
-        driveSubsystem);
+                  ChassisSpeeds.fromFieldRelativeSpeeds(speeds, isFlipped
+                          ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
+                          : driveSubsystem.getRotation()));}, driveSubsystem)
+              .beforeStarting(() -> {xLimiter.reset(0.0);yLimiter.reset(0.0);omegaLimiter.reset(0.0);});
   }
 
-  /**
+
+    /**
    * Field relative driveSubsystem command using joystick for linear control and PID for angular
    * control. Possible use cases include snapping to an angle, aiming at a vision target, or
    * controlling absolute rotation with a joystick.

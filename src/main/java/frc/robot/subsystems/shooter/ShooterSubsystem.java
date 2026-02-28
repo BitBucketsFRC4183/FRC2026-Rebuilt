@@ -22,8 +22,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final double[][] lookupTable =
       new double[][] {
         {0.0, 0.0},
-        {5.0, 9.0},
-        {6.0, 45.0}
+        {6.0, 45.0},
+        {13.0, 55.0}
       };
 
   public ShooterSubsystem(ShooterIO io) {
@@ -38,6 +38,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+    storedDistance = 15;
+    calculateVelocity();
   }
 
   public void runCharacterization(double voltage) {
@@ -57,27 +59,30 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    //    int index = 0;
-    //    while (index < lookupTable.length) {
-    //      if (lookupTable[index][0] >= storedDistance) {
-    //        break;
-    //      }
-    //      index++;
-    //    }
-    //    if (lookupTable[index][0] != storedDistance) {
-    //      // Calculates linear graph between 2 closest distances to estimate the best RPS to
-    // output
-    //      System.out.println(lookupTable[index][1] - lookupTable[index - 1][1]);
-    //      System.out.println(lookupTable[index][0] - lookupTable[index - 1][0]);
-    //      double slope =
-    //          (lookupTable[index][1] - lookupTable[index - 1][1])
-    //              / (lookupTable[index][0] - lookupTable[index - 1][0]);
-    //      //      targetVelocity =
-    //      //          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index -
-    // 1][1];
-    //      //    } else {
-    //      //      targetVelocity = lookupTable[index][1];
-    //    }
+    int index;
+    for (index = 0; index < lookupTable.length; index++) {
+      if (lookupTable[index][0] >= storedDistance) {
+        break;
+      }
+    }
+    if (index >= lookupTable.length) {
+      index--;
+    }
+    if (lookupTable[index][0] != storedDistance) {
+      // Calculates linear graph between 2 closest distances to estimate the best RPS to output
+      double slope =
+          (lookupTable[index][1] - lookupTable[index - 1][1])
+              / (lookupTable[index][0] - lookupTable[index - 1][0]);
+      System.out.println(
+          (slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]));
+      targetVelocity.set(
+          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]);
+    } else {
+      targetVelocity.set(lookupTable[index][1]);
+    }
+    if (storedDistance == 0) {
+      targetVelocity.set(ShooterConstants.flywheelDefaultSpeed);
+    }
   }
 
   public void setTargetVelocity() {
