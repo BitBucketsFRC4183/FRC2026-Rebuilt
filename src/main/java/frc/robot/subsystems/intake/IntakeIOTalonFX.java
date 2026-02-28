@@ -21,7 +21,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final DoubleSolenoid leftPiston;
   private final DoubleSolenoid rightPiston;
   private final ServoHub servoHub;
-  private final ServoChannel servoChannel0;
+  private final ServoChannel servoChannel2;
 
   private double targetVelocityRPS;
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
@@ -67,8 +67,8 @@ public class IntakeIOTalonFX implements IntakeIO {
             RIGHT_PISTON_REVERSE_CHANNEL);
 
     servoHub = new ServoHub(IntakeConstants.hubCANID);
-    servoChannel0 = servoHub.getServoChannel(ChannelId.kChannelId0);
-    servoChannel0.setPowered(true);
+    servoChannel2 = servoHub.getServoChannel(ChannelId.kChannelId2);
+    servoChannel2.setPowered(true);
     setServoAngle(0.0);
   }
 
@@ -115,7 +115,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void setServoAngle(double angleDegrees) {
     lastServoAngleDegrees = angleDegrees;
     int pulseUs = angleToPulseWidth(angleDegrees);
-    servoChannel0.setPulseWidth(pulseUs);
+    servoChannel2.setPulseWidth(pulseUs);
   }
 
   private int angleToPulseWidth(double angleDegrees) {
