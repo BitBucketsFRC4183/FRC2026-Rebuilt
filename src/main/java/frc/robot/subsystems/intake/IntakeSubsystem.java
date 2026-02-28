@@ -25,8 +25,8 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeStateChooser.addOption("OUTTAKING", IntakeState.OUTTAKING);
     intakeStateChooser.addOption("HOLD", IntakeState.HOLD);
 
-    overrideToggle.setDefaultOption("Override OFF", false);
-    overrideToggle.addOption("Override ON", true);
+    overrideToggle.setDefaultOption("Intake Chooser Override ON", false);
+    overrideToggle.addOption("Intake Chooser Override Off", true);
 
     SmartDashboard.putData("IntakeStateChooser", intakeStateChooser);
     SmartDashboard.putData("IntakeManualOverride", overrideToggle);
