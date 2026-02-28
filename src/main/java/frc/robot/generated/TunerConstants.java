@@ -247,6 +247,9 @@ public class TunerConstants {
               kBackRightSteerMotorInverted,
               kBackRightEncoderInverted);
 
+  public static final double LINEAR_SLEW_RATE = 1.0;
+  public static final double ANGULAR_SLEW_RATE = 1.0;
+
   /**
    * Creates a CommandSwerveDrivetrain instance. This should only be called once in your robot
    * program,.
