@@ -42,8 +42,8 @@ public class VisionIOLimelight implements VisionIO {
     /// basics
     // drive pose
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
-      inputs.limelightHeart = LimelightHelpers.getHeartbeat(cameraName);
-      inputs.cameraConnected = inputs.limelightHeart > 1;
+    inputs.limelightHeart = LimelightHelpers.getHeartbeat(cameraName);
+    inputs.cameraConnected = inputs.limelightHeart > 1;
 
     if (inputs.hasTarget) {
       try {
@@ -60,9 +60,11 @@ public class VisionIOLimelight implements VisionIO {
         }
 
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
-        inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
 
-       inputs.tx = LimelightHelpers.getTX(cameraName);
+        inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
+        inputs.rawAprilTagID = getAprilTagIDs(rawFiducial);
+
+        inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
@@ -104,6 +106,18 @@ public class VisionIOLimelight implements VisionIO {
       minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
     }
     return minAmbiguity;
+  }
+
+  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+    if (UnreadReadFiducial == null || UnreadReadFiducial.length == 0) {
+      return new int[0];
+    } else {
+      int[] ids = new int[UnreadReadFiducial.length];
+      for (int i = 0; i < UnreadReadFiducial.length; i++) {
+        ids[i] = UnreadReadFiducial[i].id;
+      }
+      return ids;
+    }
   }
 }
 

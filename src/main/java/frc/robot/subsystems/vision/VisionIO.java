@@ -11,6 +11,7 @@ public interface VisionIO {
 
     public double limelightHeart;
 
+    // crosshairs
     public double tx;
     public double ty;
     public double ta;
@@ -22,11 +23,9 @@ public interface VisionIO {
     public double timestamp;
     public int tagCount;
     public double latency;
+
     public double[] rawStdDev;
-
-    public int aprilTagIDNumber;
-    // from raw fiducial
-
+    public int[] rawAprilTagID;
     public double minAmbiguity;
   }
 
