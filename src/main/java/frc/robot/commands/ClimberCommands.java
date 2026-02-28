@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.drive.Drive;
+
 import java.util.function.DoubleSupplier;
 
 public class ClimberCommands {
@@ -144,13 +146,12 @@ public class ClimberCommands {
                 .andThen(ClimberCommands.decreaseClimberLength(climberSubsystem)));
   }
 
-  public static Command climbToLevelOne(ClimberSubsystem climberSubsystem) {
+  public static Command climbToLevelOne(ClimberSubsystem climberSubsystem, Drive drive) {
     return ClimberCommands.increaseClimberLengthLevelOne(climberSubsystem)
-        .andThen(
-            ClimberCommands.climberServoUp(climberSubsystem)
+        .andThen(Commands.deadline(Commands.waitSeconds(3), new RobotRelativeDriveCommand(drive, ()-> 0.2, () ->0, () -> 0))
                 .andThen(
                     ClimberCommands.decreaseClimberLength(climberSubsystem)
-                        .andThen(ClimberCommands.baseServoUp(climberSubsystem))));
+                        .andThen()));
   }
   ;
 
@@ -169,13 +170,9 @@ public class ClimberCommands {
 
   public static Command climbZeroing(ClimberSubsystem climberSubsystem) {
 
-    return ClimberCommands.climberServoDown(climberSubsystem)
-        .andThen(
-            ClimberCommands.baseServoDown(climberSubsystem)
-                .andThen(
-                    Commands.run(
-                        () -> climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)))
-                .until(() -> climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
-                .andThen(Commands.runOnce(climberSubsystem::resetPosition)));
+    return Commands.run(() -> climberSubsystem.setTargetHeight(ClimberConstants.maxHeight)).until(() -> climberSubsystem.getClimbHeight() == ClimberConstants.maxHeight - 0.5)
+            .andThen(Commands.runOnce(climberSubsystem::resetPosition)
+                    .andThen(Commands.runOnce(climberSubsystem::setInverted)));
+
   }
 }
