@@ -9,8 +9,8 @@ public final class IntakeConstants {
   public static final boolean MOTOR_INVERTED = true;
 
   // all in rps
-  public static final double INTAKE_SPEED = 60.0;
-  public static final double OUTTAKE_SPEED = -30.0;
+  public static final double INTAKE_SPEED = -90.0;
+  public static final double OUTTAKE_SPEED = 50.0;
   public static final double HOLD_SPEED = 1;
 
   // Current limiting
