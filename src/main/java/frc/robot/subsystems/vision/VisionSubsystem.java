@@ -36,7 +36,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
-  private VisionMode defaultMode = null;
+  private VisionMode pipelineState = null;
   private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
 
   public VisionSubsystem(
@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
     this.lastGyroTimestamp = Timer.getFPGATimestamp();
     this.lastGyroDegs = pose2dSupplier.get().getRotation().getDegrees();
 
-    visionModeChooser.setDefaultOption("DISABLED", VisionMode.DISABLED);
+    visionModeChooser.addOption("DISABLED", VisionMode.DISABLED);
     visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
     visionModeChooser.addOption("TELEOP", VisionMode.TELEOP);
 
@@ -67,20 +67,14 @@ public class VisionSubsystem extends SubsystemBase {
     visualizeAprilTags(CamOneInputs, pose2dSupplier);
 
     VisionMode manualSelectMode = visionModeChooser.getSelected();
-    VisionMode finalMode = (manualSelectMode != null) ? manualSelectMode : decideVisionMode();
-
-    // only if there is a change, we apply network table changes
-    if (finalMode == VisionMode.AUTONOMOUS || finalMode == VisionMode.TELEOP) {
-      forAllCameras(
-          cam ->
-              visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
-    }
+    VisionMode finalMode = (manualSelectMode != decideVisionMode()) ? manualSelectMode : decideVisionMode();
+    applyContVisionMode(finalMode);
 
     // they are separated because we don't want to feed pipeline continuously
-    if (defaultMode == null || finalMode != defaultMode) {
-      defaultMode = finalMode;
-      applyVisionMode(finalMode);
-      Logger.recordOutput("Vision/CurrentVisionMode", defaultMode.toString());
+    if (pipelineState == null || finalMode != pipelineState) {
+      pipelineState = finalMode;
+        applyOnceVisionMode(finalMode);
+      Logger.recordOutput("Vision/CurrentVisionMode", pipelineState.toString());
     }
 
     /// one
@@ -309,26 +303,40 @@ public class VisionSubsystem extends SubsystemBase {
         cam -> visionio.setIMUAssistAlpha(cam, VisionConstant.complementaryFilterAlphaIMU));
   }
 
-  private void applyVisionMode(VisionMode visionMode) {
+  private void applyAllOrientation(){
+      forAllCameras(
+              cam ->
+                      visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
+  }
+
+  private void applyOnceVisionMode(VisionMode visionMode) {
 
     switch (visionMode) {
       case DISABLED -> {
-        applyAllIMU(1);
         applyAllPipeline(VisionConstant.PIPELINE_DEFAULT_OFF);
-        forAllCameras(
-            cam ->
-                visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
       }
       case AUTONOMOUS -> {
         applyAllPipeline(VisionConstant.PIPELINE_Autonomous);
-        applyAllIMU(4);
       }
 
       case TELEOP -> {
         applyAllPipeline(VisionConstant.PIPELINE_Teleop);
-        applyAllIMUAlphaAssist();
       }
     }
+  }
+
+  private void applyContVisionMode(VisionMode visionMode){
+      applyAllOrientation();
+      switch (visionMode) {
+          case DISABLED -> {
+              applyAllIMU(1);
+          }
+          case AUTONOMOUS, TELEOP -> {
+              applyAllIMU(4);
+              applyAllIMUAlphaAssist();
+          }
+
+      }
   }
 }
 
