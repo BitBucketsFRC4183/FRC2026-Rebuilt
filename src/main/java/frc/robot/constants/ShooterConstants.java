@@ -19,7 +19,8 @@ public final class ShooterConstants extends SubsystemBase {
   public static final boolean interInverted = true;
 
   // Allowed RPS offset before shooting
-  public static final double tolerance = 0.0;
+  // Not a perfect FF :sigh:
+  public static final double tolerance = 0.5;
 
   // PID Constants for flywheel
   public static final double flywheel_kP = 0.2;
