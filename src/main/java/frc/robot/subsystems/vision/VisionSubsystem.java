@@ -59,7 +59,10 @@ public class VisionSubsystem extends SubsystemBase {
     visionModeChooser.addOption("DISABLED", VisionMode.DISABLED);
     visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
     visionModeChooser.addOption("TELEOP", VisionMode.TELEOP);
-    visionModeChooser.onChange(mode ->{manualMode = mode;});
+    visionModeChooser.onChange(
+        mode -> {
+          manualMode = mode;
+        });
 
     SmartDashboard.putData("Vision Mode Chooser", visionModeChooser);
   }
@@ -72,12 +75,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     /// logging
     logAutoAimInputs(pose2dSupplier);
-    visualizeAprilTags(CamOneInputs, pose2dSupplier);
+    visualizeAprilTags(CamTwoInputs, pose2dSupplier);
     visualizeAprilTags(CamTwoInputs, pose2dSupplier);
 
-
-    if(getFinalVisionMode()!=defaultMode){
-        defaultMode = getFinalVisionMode();
+    if (getFinalVisionMode() != defaultMode) {
+      defaultMode = getFinalVisionMode();
     }
     applyContVisionMode(defaultMode);
 
@@ -267,20 +269,6 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
   }
 
-  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    Pose3d robot3d = new Pose3d(robotPose.get());
-    List<Pose3d> linePoses = new ArrayList<>();
-    for (var readAprilTagIDs : inputs.rawAprilTagID) {
-      Optional<Pose3d> aprilTagPose =
-          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
-      if (aprilTagPose.isPresent()) {
-        linePoses.add(aprilTagPose.get());
-        linePoses.add(robot3d);
-      }
-    }
-    Logger.recordOutput("seenAprilTags", linePoses.toArray(new Pose3d[0]));
-  }
-
   private VisionMode decideVisionMode() {
     if (DriverStation.isDisabled()) {
       return VisionMode.DISABLED;
@@ -292,22 +280,39 @@ public class VisionSubsystem extends SubsystemBase {
     return VisionMode.DISABLED;
   }
 
-  private VisionMode getFinalVisionMode(){
-      VisionMode autoMode = decideVisionMode();
+  private VisionMode getFinalVisionMode() {
+    VisionMode autoMode = decideVisionMode();
 
-      if (lastAutoMode == null) {
-          lastAutoMode = autoMode;
-      } else if (autoMode != lastAutoMode) {
-          lastAutoMode = autoMode;
-          manualMode = null;
-      }
+    if (lastAutoMode == null) {
+      lastAutoMode = autoMode;
+    } else if (autoMode != lastAutoMode) {
+      lastAutoMode = autoMode;
+      manualMode = null;
+    }
 
-      if (manualMode!=null){
-          return manualMode;
+    if (manualMode != null) {
+      return manualMode;
+    } else {
+      return autoMode;
+    }
+  }
+
+  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
+    if (inputs == null || inputs.rawAprilTagID == null) {
+      return;
+    }
+
+    Pose3d robot3d = new Pose3d(robotPose.get());
+    List<Pose3d> linePoses = new ArrayList<>();
+    for (var readAprilTagIDs : inputs.rawAprilTagID) {
+      Optional<Pose3d> aprilTagPose =
+          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
+      if (aprilTagPose.isPresent()) {
+        linePoses.add(aprilTagPose.get());
+        linePoses.add(robot3d);
       }
-      else {
-          return autoMode;
-      }
+    }
+    Logger.recordOutput("seenAprilTags", linePoses.toArray(new Pose3d[0]));
   }
 
   private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B};

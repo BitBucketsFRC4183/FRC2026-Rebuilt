@@ -100,16 +100,6 @@ public class VisionIOLimelight implements VisionIO {
     LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
   }
 
-  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
-    /// ambiguity, new!
-
-    double minAmbiguity = 999;
-    for (var readFludicial : UnreadReadFiducial) {
-      minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
-    }
-    return minAmbiguity;
-  }
-
   private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
     if (UnreadReadFiducial == null || UnreadReadFiducial.length == 0) {
       return new int[0];
@@ -120,6 +110,16 @@ public class VisionIOLimelight implements VisionIO {
       }
       return ids;
     }
+  }
+
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+    /// ambiguity, new!
+
+    double minAmbiguity = 999;
+    for (var readFludicial : UnreadReadFiducial) {
+      minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
+    }
+    return minAmbiguity;
   }
 }
 
