@@ -20,7 +20,7 @@ public final class ShooterConstants extends SubsystemBase {
 
   // Allowed RPS offset before shooting
   // Not a perfect FF :sigh:
-  public static final double tolerance = 0.5;
+  public static final double tolerance = 0.0;
 
   // PID Constants for flywheel
   public static final double flywheel_kP = 0.2;

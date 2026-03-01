@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -82,7 +83,7 @@ public class RobotContainer {
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
+                new ModuleIOTalonFXHacked(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
                 (pose) -> {});
 
@@ -256,6 +257,10 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController.a().whileTrue(autoAim());
+
+    // temp only
+    driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
