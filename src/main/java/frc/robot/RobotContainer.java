@@ -254,7 +254,7 @@ public class RobotContainer {
     //                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController.a().whileTrue(autoAim());
 
     // Reset gyro / odometry
@@ -355,7 +355,6 @@ public class RobotContainer {
   }
 
   public Command autoAim() {
-    System.out.println("Aim AT HUB");
     return DriveCommands.joystickDriveAtAngle(
         driveSubsystem,
         () -> -driverController.getLeftY(),
