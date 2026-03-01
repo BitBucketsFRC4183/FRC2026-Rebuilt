@@ -250,6 +250,16 @@ public class TunerConstants {
   public static final double LINEAR_SLEW_RATE = 1.0;
   public static final double ANGULAR_SLEW_RATE = 1.0;
 
+  public static final double steerkP = 0;
+  public static final double steerkI = 0;
+  public static final double steerkD = 0;
+  public static final double steerkV = 0;
+  public static final double steerkS = 0;
+  public static final double steerkA = 0;
+
+  public static final double turnPIDMaxInput = 2 * Math.PI;
+  public static final double turnPIDMinInput = 0;
+
   /**
    * Creates a CommandSwerveDrivetrain instance. This should only be called once in your robot
    * program,.
