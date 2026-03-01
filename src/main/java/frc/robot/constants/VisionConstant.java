@@ -3,6 +3,8 @@ package frc.robot.constants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 import java.io.IOException;
 
 public final class VisionConstant {
@@ -80,8 +82,10 @@ public final class VisionConstant {
   public static final double kTagMinAreaForSingleTagMegatag = 3.0;
   public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
+    public static final Transform3d tagToHub3d =
+            new Transform3d(new Translation3d(0.5969, 0, 0.6096), new Rotation3d());
 
-  // TODO need measure & test
+    // TODO need measure & test
   /*
   -0.677 = from center of hub minus the center robot, it is about this much allowance.
   this is a valid estimation lol
