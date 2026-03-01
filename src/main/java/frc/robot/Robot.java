@@ -101,7 +101,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     // robotContainer.resetSimulation(new Pose2d(3, 3, new Rotation2d()));
-    Pose2d hubPose = AutoAimCalculation.getTargetHubPose2d();
   }
 
   /** This function is called periodically when disabled. */
