@@ -36,7 +36,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
-  private VisionMode pipelineState = null;
+  private VisionMode pipelineState = VisionMode.DISABLED;
   private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
 
   public VisionSubsystem(
@@ -70,7 +70,7 @@ public class VisionSubsystem extends SubsystemBase {
     applyContVisionMode(finalMode);
 
     // they are separated because we don't want to feed pipeline continuously
-    if (pipelineState == null || finalMode != pipelineState) {
+    if (finalMode != pipelineState) {
       pipelineState = finalMode;
         applyOnceVisionMode(finalMode);
     }
