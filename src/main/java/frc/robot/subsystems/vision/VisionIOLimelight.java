@@ -7,6 +7,7 @@ import frc.robot.constants.VisionConstant;
 
 public class VisionIOLimelight implements VisionIO {
 
+  private double lasthb = -1;
   // LIMELIGHT is constant
   // "limelight" is Networktables path
 
@@ -42,8 +43,9 @@ public class VisionIOLimelight implements VisionIO {
     /// basics
     // drive pose
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
+    inputs.cameraConnected = LimelightHelpers.getHeartbeat(cameraName) != lasthb;
+    lasthb = LimelightHelpers.getHeartbeat(cameraName);
     inputs.limelightHeart = LimelightHelpers.getHeartbeat(cameraName);
-    inputs.cameraConnected = inputs.limelightHeart > 1;
 
     if (inputs.hasTarget) {
       try {

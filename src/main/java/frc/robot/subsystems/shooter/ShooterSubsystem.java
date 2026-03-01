@@ -38,8 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-    storedDistance = 15;
-    calculateVelocity();
   }
 
   public void runCharacterization(double voltage) {
@@ -117,9 +115,9 @@ public class ShooterSubsystem extends SubsystemBase {
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
     return shooterInputs.flywheelVelocity < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity < (targetVelocity.get() - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity > (targetVelocity.get() - ShooterConstants.tolerance)
         && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() - ShooterConstants.tolerance);
+        && shooterInputs.flywheelVelocity2 > (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {

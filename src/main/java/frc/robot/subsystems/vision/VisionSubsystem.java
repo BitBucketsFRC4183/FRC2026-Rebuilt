@@ -62,9 +62,8 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
-    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
     logAutoAimInputs(pose2dSupplier);
-    visualizeAprilTags(CamOneInputs, pose2dSupplier);
+    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
 
     VisionMode manualSelectMode = visionModeChooser.getSelected();
     VisionMode finalMode = (manualSelectMode != decideVisionMode()) ? manualSelectMode : decideVisionMode();

@@ -244,17 +244,17 @@ public class RobotContainer {
             () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-//    driverController
-//        .a()
-//        .whileTrue(
-//            DriveCommands.joystickDriveAtAngle(
-//                driveSubsystem,
-//                () -> -driverController.getLeftY(),
-//                () -> -driverController.getLeftX(),
-//                () -> Rotation2d.kZero));
+    //    driverController
+    //        .a()
+    //        .whileTrue(
+    //            DriveCommands.joystickDriveAtAngle(
+    //                driveSubsystem,
+    //                () -> -driverController.getLeftY(),
+    //                () -> -driverController.getLeftX(),
+    //                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    //    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
+    driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
     driverController.a().whileTrue(autoAim());
 
     // Reset gyro / odometry
@@ -274,6 +274,7 @@ public class RobotContainer {
 
     operatorController
         .leftBumper()
+        .debounce(0.2)
         .onTrue(
             Commands.runOnce(
                 () -> {
@@ -320,10 +321,10 @@ public class RobotContainer {
     //        .y()
     //        // .and(operatorController.back())
     //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-    operatorController
-        .b()
-        //  .and(operatorController.back())
-        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
+    //    operatorController
+    //        .b()
+    //        //  .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
 
     // servo command
     //    operatorController
@@ -354,7 +355,6 @@ public class RobotContainer {
   }
 
   public Command autoAim() {
-    System.out.println("Aim AT HUB");
     return DriveCommands.joystickDriveAtAngle(
         driveSubsystem,
         () -> -driverController.getLeftY(),
