@@ -73,7 +73,6 @@ public class VisionSubsystem extends SubsystemBase {
     if (pipelineState == null || finalMode != pipelineState) {
       pipelineState = finalMode;
         applyOnceVisionMode(finalMode);
-      Logger.recordOutput("Vision/CurrentVisionMode", pipelineState.toString());
     }
 
     /// one
@@ -326,6 +325,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void applyContVisionMode(VisionMode visionMode){
       applyAllOrientation();
+      Logger.recordOutput("Vision/CurrentVisionMode", visionMode.toString());
       switch (visionMode) {
           case DISABLED -> {
               applyAllIMU(1);
