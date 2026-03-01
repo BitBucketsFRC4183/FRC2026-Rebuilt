@@ -15,7 +15,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -52,6 +56,7 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.opencv.core.Mat;
 
 public class Drive extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
@@ -70,9 +75,9 @@ public class Drive extends SubsystemBase {
   // PathPlanner config constants
 
   // robot weight 135
-  private static final double ROBOT_MASS_KG = Units.lbsToKilograms(135);
+  private static final double ROBOT_MASS_KG = Units.lbsToKilograms(130); // with bumper and battery remember
   private static final double ROBOT_MOI = 6.883;
-  private static final double WHEEL_COF = 1.426;
+  private static final double WHEEL_COF = COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof; // ~1.426
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -85,6 +90,8 @@ public class Drive extends SubsystemBase {
               TunerConstants.FrontLeft.SlipCurrent,
               1),
           getModuleTranslations());
+  private final SwerveSetpointGenerator setpointGenerator;
+  private SwerveSetpoint previousSetpoint;
 
   public static final DriveTrainSimulationConfig mapleSimConfig =
       DriveTrainSimulationConfig.Default()
@@ -101,7 +108,7 @@ public class Drive extends SubsystemBase {
                   Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
                   Inches.of(2),
                   KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
-                  COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof));
+                  WHEEL_COF));
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -165,6 +172,12 @@ public class Drive extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+    setpointGenerator = new SwerveSetpointGenerator(
+            PP_CONFIG, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
+            Units.rotationsToRadians(4 * Math.PI) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
+        );
+    previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
 
     // Configure SysId
     sysId =
@@ -264,6 +277,29 @@ public class Drive extends SubsystemBase {
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
+
+  public void runVelocityPP(ChassisSpeeds speeds) {
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+
+    previousSetpoint = setpointGenerator.generateSetpoint(
+        previousSetpoint, // The previous setpoint
+        speeds, // The desired target speeds, do not discretize this one
+        0.02 // The loop time of the robot code, in seconds
+    );
+
+    // Send setpoints to modules
+    for (int i = 0; i < 4; i++) {
+      modules[i].runSetpoint(previousSetpoint.moduleStates()[i]);
+    }
+        // Log optimized setpoints (runSetpoint mutates each state)
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", previousSetpoint.moduleStates());
+
+  }
+
+
   /** Same with runVelocity, but for rotations */
   public void runOmega(double omega) {
     runVelocity(new ChassisSpeeds(0, 0, omega));
