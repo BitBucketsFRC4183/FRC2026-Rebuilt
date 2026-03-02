@@ -9,6 +9,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -176,8 +178,12 @@ public class RobotContainer {
     }
 
     autoSubsystem =
-        new AutoSubsystem(driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem);
+        new AutoSubsystem(
+            driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
 
+    // WARMUP commands
+    FollowPathCommand.warmupCommand().schedule();
+    PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // building autochooser
@@ -187,22 +193,25 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     //    // for registered commands
-    //    autoChooser.setDefaultOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
-    //    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    //    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    //    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-    //    autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
-    //    autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
-    //    autoChooser.addOption(
-    //        "StartBottomShootIntakeEndL1", autoSubsystem.StartBottomShootIntakeEndL1());
-    //    autoChooser.addOption("StartTopShootIntakeEndL1",
-    // autoSubsystem.StartTopShootIntakeEndL1());
-    //    autoChooser.addOption("StartMidShootIntakeEndL1",
-    // autoSubsystem.StartMidShootIntakeEndL1());
-    //    autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    //    autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    //    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
-
+    // autoChooser.setDefaultOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
+    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    // autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
+    // autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
+    // autoChooser.addOption("StartBottomShootIntakeEndL1",
+    // autoSubsystem.StartBottomShootIntakeEndL1());
+    // autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
+    // autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
+    // autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
+    // autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
+    // autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
+    autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
+    autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
+    autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
+    autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
+    autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
     // Set up SysId routines
     //    autoChooser.addOption(
     //        "DriveSubsystem Wheel Radius Characterization",
@@ -341,6 +350,7 @@ public class RobotContainer {
     //        .b()
     //        //  .and(operatorController.back())
     //        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
+    operatorController.a().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
     // servo command
     //    operatorController
