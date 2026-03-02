@@ -70,7 +70,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
-        System.out.println(inputs.rawStdDev);
+        //        System.out.println(inputs.rawStdDev);
 
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
