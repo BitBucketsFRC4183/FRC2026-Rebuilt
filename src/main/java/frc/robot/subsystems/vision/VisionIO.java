@@ -24,7 +24,7 @@ public interface VisionIO {
     public int tagCount;
     public double latency;
 
-    public double[] rawStdDev;
+    public double[] rawStdDev = new double[12];
     public int[] rawAprilTagID;
     public double minAmbiguity;
   }

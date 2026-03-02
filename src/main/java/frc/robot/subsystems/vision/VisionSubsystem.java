@@ -212,13 +212,15 @@ public class VisionSubsystem extends SubsystemBase {
     if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
       return Optional.empty();
     }
+    double xStd = inputs.rawStdDev[6];
+    double yStd = inputs.rawStdDev[7];
+    double xyStd = Math.max(xStd, yStd);
 
     return Optional.of(
         new VisionFusionResults(
             inputs.megaTagPose,
             inputs.timestamp,
-            VecBuilder.fill(
-                inputs.rawStdDev[0], inputs.rawStdDev[1], VisionConstant.kLargeVariance),
+            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
             inputs.tagCount));
   }
 
