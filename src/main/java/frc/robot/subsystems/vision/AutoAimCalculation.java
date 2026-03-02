@@ -8,29 +8,28 @@ import frc.robot.constants.VisionConstant;
 public class AutoAimCalculation {
   /// fancy notation
   /// function that give you hub pose based on alliance color
-  public static Pose2d getTargetHubPose2d() {
+  public static Pose3d getTargetHubPose3d() {
     var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
     return (alliance == DriverStation.Alliance.Red)
-        ? AprilTagLabel.RedHubPose3d.toPose2d()
-        : AprilTagLabel.BlueHubPose3d.toPose2d();
+        ? AprilTagLabel.RedHubPose3d
+        : AprilTagLabel.BlueHubPose3d;
   }
 
-  //  public static Pose2d getTargetHubPose2d() {
-  //    return AprilTagLabel.BlueHubPose2d;
-  //  }
+  public static Pose2d getTargetHubPose2d() {
+    return getTargetHubPose3d().toPose2d();
+  }
 
   public static double getDistanceFromRobotToHub(Pose2d robotPose) {
-    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
-    // -0.677 = from center of hub minus the center robot, it is about this much allowance
-    // this is a valid estimation lol
-    if (diff.getX() < VisionConstant.MidGameAllowance) {
+
+    if (robotPose.getTranslation().getX() > VisionConstant.MidGameMin
+        && robotPose.getTranslation().getX() < VisionConstant.MidGameMax) {
       return 0;
     }
     return robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
   }
 
   /// targetRad
-  public static Rotation2d getAngleToHub(Pose2d robotPose) {
+  public static Rotation2d getTargetAngle(Pose2d robotPose) {
     // Vector--> robot to hub; code--> hub - robot
     // could from any degrees -> 360
 

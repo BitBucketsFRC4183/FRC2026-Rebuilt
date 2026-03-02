@@ -360,7 +360,7 @@ public class RobotContainer {
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
         () ->
-            AutoAimCalculation.getAngleToHub(driveSubsystem.poseEstimator.getEstimatedPosition()));
+            AutoAimCalculation.getTargetAngle(driveSubsystem.poseEstimator.getEstimatedPosition()));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

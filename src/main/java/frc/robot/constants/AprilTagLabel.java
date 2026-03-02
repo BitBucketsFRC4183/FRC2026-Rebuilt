@@ -19,8 +19,14 @@ public class AprilTagLabel {
   // TODO need to measure
 
   public static final Pose3d RedHubPose3d =
-      aprilTagFieldLayout.getTagPose(RED_RIGHT_BELOW_HUB).get().plus(VisionConstant.tagToHub3d);
+      aprilTagFieldLayout
+          .getTagPose(RED_RIGHT_BELOW_HUB)
+          .get()
+          .plus(VisionConstant.tagToHub3d.inverse());
 
   public static final Pose3d BlueHubPose3d =
-      aprilTagFieldLayout.getTagPose(BLUE_RIGHT_BELOW_HUB).get().plus(VisionConstant.tagToHub3d);
+      aprilTagFieldLayout
+          .getTagPose(BLUE_RIGHT_BELOW_HUB)
+          .get()
+          .plus(VisionConstant.tagToHub3d.inverse());
 }

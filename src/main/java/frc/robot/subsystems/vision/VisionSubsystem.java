@@ -255,17 +255,19 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void logAutoAimInputs(Supplier<Pose2d> supplier) {
-    double angle = AutoAimCalculation.getAngleToHub(supplier.get()).getDegrees();
-    double[] targetHubPose2d =
+    double angle = AutoAimCalculation.getTargetAngle(supplier.get()).getDegrees();
+    double[] targetHubPose3d =
         new double[] {
-          AutoAimCalculation.getTargetHubPose2d().getX(),
-          AutoAimCalculation.getTargetHubPose2d().getY(),
-          AutoAimCalculation.getTargetHubPose2d().getRotation().getDegrees()
+          AutoAimCalculation.getTargetHubPose3d().getX(),
+          AutoAimCalculation.getTargetHubPose3d().getY(),
+          AutoAimCalculation.getTargetHubPose3d().getZ(),
+          AutoAimCalculation.getTargetHubPose3d().getRotation().getZ()
         };
+
     double distance = AutoAimCalculation.getDistanceFromRobotToHub(supplier.get());
 
-    Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose2d);
-    Logger.recordOutput("Vision/Aim/AngleToHub", angle);
+    Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose3d);
+    Logger.recordOutput("Vision/Aim/HubTargetAngle", angle);
     Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
   }
 
