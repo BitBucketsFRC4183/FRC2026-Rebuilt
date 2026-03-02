@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -33,9 +34,9 @@ public class ShooterSubsystem extends SubsystemBase {
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 null,
+                Volts.of(7),
                 null,
-                null,
-                (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
+                (state) -> SignalLogger.writeString("state", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
@@ -114,10 +115,13 @@ public class ShooterSubsystem extends SubsystemBase {
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity > (targetVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 < (targetVelocity.get() + ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 > (targetVelocity.get() - ShooterConstants.tolerance);
+    return
+    //            shooterInputs.flywheelVelocity <= (targetVelocity.get() +
+    // ShooterConstants.tolerance)
+    shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
+        //        && shooterInputs.flywheelVelocity2 <= (targetVelocity.get() +
+        // ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
