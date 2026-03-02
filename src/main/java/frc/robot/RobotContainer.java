@@ -204,24 +204,35 @@ public class RobotContainer {
     //    autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
 
     // Set up SysId routines
+    //    autoChooser.addOption(
+    //        "DriveSubsystem Wheel Radius Characterization",
+    //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Quasistatic Forward)",
+    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Quasistatic Reverse)",
+    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Dynamic Forward)",
+    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Dynamic Reverse)",
+    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     autoChooser.addOption(
-        "DriveSubsystem Wheel Radius Characterization",
-        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+        "ShooterSubsystem SysId (Quasistatic Forward)",
+        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "DriveSubsystem Simple FF Characterization",
-        DriveCommands.feedforwardCharacterization(driveSubsystem));
+        "ShooterSubsystem SysId (Quasistatic Reverse)",
+        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Forward)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        "ShooterSubsystem SysId (Dynamic Forward)",
+        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Reverse)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Forward)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Reverse)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "ShooterSubsystem SysId (Dynamic Reverse)",
+        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -245,18 +256,18 @@ public class RobotContainer {
             () -> -driverController.getRightX()));
 
     // Lock to 0° when A button is held
-    //    driverController
-    //        .a()
-    //        .whileTrue(
-    //            DriveCommands.joystickDriveAtAngle(
-    //                driveSubsystem,
-    //                () -> -driverController.getLeftY(),
-    //                () -> -driverController.getLeftX(),
-    //                () -> Rotation2d.kZero));
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                driveSubsystem,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    driverController.a().whileTrue(autoAim());
+    // driverController.a().whileTrue(autoAim());
 
     // temp only
     driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));

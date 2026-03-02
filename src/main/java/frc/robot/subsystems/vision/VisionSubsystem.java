@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstant;
 import frc.robot.subsystems.drive.Drive;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -269,6 +267,20 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
   }
 
+  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
+    //    Pose3d robot3d = new Pose3d(robotPose.get());
+    //    List<Pose3d> linePoses = new ArrayList<>();
+    //    for (var readAprilTagIDs : inputs.rawAprilTagID) {
+    //      Optional<Pose3d> aprilTagPose =
+    //          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
+    //      if (aprilTagPose.isPresent()) {
+    //        linePoses.add(aprilTagPose.get());
+    //        linePoses.add(robot3d);
+    //      }
+    //    }
+    //    Logger.recordOutput("seenAprilTags", linePoses);
+  }
+
   private VisionMode decideVisionMode() {
     if (DriverStation.isDisabled()) {
       return VisionMode.DISABLED;
@@ -295,24 +307,6 @@ public class VisionSubsystem extends SubsystemBase {
     } else {
       return autoMode;
     }
-  }
-
-  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    if (inputs == null || inputs.rawAprilTagID == null) {
-      return;
-    }
-
-    Pose3d robot3d = new Pose3d(robotPose.get());
-    List<Pose3d> linePoses = new ArrayList<>();
-    for (var readAprilTagIDs : inputs.rawAprilTagID) {
-      Optional<Pose3d> aprilTagPose =
-          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
-      if (aprilTagPose.isPresent()) {
-        linePoses.add(aprilTagPose.get());
-        linePoses.add(robot3d);
-      }
-    }
-    Logger.recordOutput("seenAprilTags", linePoses.toArray(new Pose3d[0]));
   }
 
   private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B};
