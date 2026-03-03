@@ -333,7 +333,7 @@ public class RobotContainer {
                 shooterSubsystem,
                 AutoAimCalculation.getDistanceFromRobotToHub(
                     driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
