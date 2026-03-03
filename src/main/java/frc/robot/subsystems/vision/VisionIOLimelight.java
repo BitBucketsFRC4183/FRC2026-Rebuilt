@@ -7,6 +7,7 @@ import frc.robot.constants.VisionConstant;
 
 public class VisionIOLimelight implements VisionIO {
 
+  private double lasthb = -1;
   // LIMELIGHT is constant
   // "limelight" is Networktables path
 
@@ -42,6 +43,9 @@ public class VisionIOLimelight implements VisionIO {
     /// basics
     // drive pose
     inputs.hasTarget = LimelightHelpers.getTV(cameraName);
+    inputs.cameraConnected = LimelightHelpers.getHeartbeat(cameraName) != lasthb;
+    lasthb = LimelightHelpers.getHeartbeat(cameraName);
+    inputs.limelightHeart = LimelightHelpers.getHeartbeat(cameraName);
 
     if (inputs.hasTarget) {
       try {
@@ -58,13 +62,15 @@ public class VisionIOLimelight implements VisionIO {
         }
 
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
-        inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
 
-        inputs.cameraConnected = LimelightHelpers.getLimelightNTTable(cameraName) != null;
+        inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
+        inputs.rawAprilTagID = getAprilTagIDs(rawFiducial);
+
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
         inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
+        //        System.out.println(inputs.rawStdDev);
 
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
@@ -93,6 +99,18 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void setIMUAssistAlpha(String cameraName, double alpha) {
     LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
+  }
+
+  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+    if (UnreadReadFiducial == null || UnreadReadFiducial.length == 0) {
+      return new int[0];
+    } else {
+      int[] ids = new int[UnreadReadFiducial.length];
+      for (int i = 0; i < UnreadReadFiducial.length; i++) {
+        ids[i] = UnreadReadFiducial[i].id;
+      }
+      return ids;
+    }
   }
 
   private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {

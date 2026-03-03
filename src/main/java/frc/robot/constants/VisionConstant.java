@@ -3,6 +3,7 @@ package frc.robot.constants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import java.io.IOException;
 
 public final class VisionConstant {
@@ -27,13 +28,12 @@ public final class VisionConstant {
     Y = 28in/0.7112m;
 
     CAMERA A
-    38.682 degree back forward
-    height: 0.271018m
-    from pigeon to limelight: 0.352425m
-    from center: -0.352425m
+    Initial: 12.875in in horizontal;
+    In height: 10.67/0.271018m
 
+    10 degree back forward
 
-
+    After: -12.375in/0.314325m
 
 
     PIPELINE RESULTS/APPROXIMATED STABLE APRILTAG DETECTION DISTANCE/CPU USAGE
@@ -46,7 +46,7 @@ public final class VisionConstant {
   /// **********
   /// **********
   public static final String LIMELIGHT_A = "limelight-side";
-  public static final String LIMELIGHT_B = "limelight-frontShooter";
+  public static final String LIMELIGHT_B = "limelight-front";
 
   public static final int PIPELINE_DEFAULT_AprilTagTuning = 0;
   public static final int PIPELINE_DEFAULT_DriverCamera = 1;
@@ -81,13 +81,13 @@ public final class VisionConstant {
   public static final double kTagMinAreaForSingleTagMegatag = 3.0;
   public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
+  public static final Transform3d tagToHub3d =
+      new Transform3d(new Translation3d(0.5969, 0, 0.6096), new Rotation3d());
 
   // TODO need measure & test
-  /*
-  -0.677 = from center of hub minus the center robot, it is about this much allowance.
-  this is a valid estimation lol
-  */
-  public static final double MidGameAllowance = -0.677;
+
+  public static final double MidGameMin = 5.939;
+  public static final double MidGameMax = 10.637;
 
   private VisionConstant() {}
 }

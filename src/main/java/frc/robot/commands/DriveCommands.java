@@ -7,6 +7,9 @@
 
 package frc.robot.commands;
 
+import static frc.robot.generated.TunerConstants.ANGULAR_SLEW_RATE;
+import static frc.robot.generated.TunerConstants.LINEAR_SLEW_RATE;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.generated.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import java.text.DecimalFormat;
@@ -33,14 +37,15 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 5.0;
+  private static final double ANGLE_KP = 7.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
-  private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
-  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double WHEEL_RADIUS_MAX_VELOCITY = 1; // Rad/Sec
+  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05;
+  // Rad/Sec^2
 
   private DriveCommands() {}
 
@@ -68,39 +73,52 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+
+    SlewRateLimiter xLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter yLimiter = new SlewRateLimiter(LINEAR_SLEW_RATE);
+    SlewRateLimiter omegaLimiter = new SlewRateLimiter(ANGULAR_SLEW_RATE);
+
     return Commands.run(
-        () -> {
-          // Get linear velocity
-          Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(-xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+            () -> {
+              Translation2d linearVelocity =
+                  getLinearVelocityFromJoysticks(
+                      -xSupplier.getAsDouble(), -ySupplier.getAsDouble());
 
-          // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              double xSpeed = xLimiter.calculate(linearVelocity.getX());
+              double ySpeed = yLimiter.calculate(linearVelocity.getY());
 
-          // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+              double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              omega = Math.copySign(omega * omega, omega);
+              omega = omegaLimiter.calculate(omega);
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX()
-                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
-                      * powerSubsystem.getDriveFactor(),
-                  linearVelocity.getY()
-                      * driveSubsystem.getMaxLinearSpeedMetersPerSec()
-                      * powerSubsystem.getDriveFactor(),
-                  omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          driveSubsystem.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
-                      : driveSubsystem.getRotation()));
-        },
-        driveSubsystem);
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      xSpeed
+                          * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                          * powerSubsystem.getDriveFactor(),
+                      ySpeed
+                          * driveSubsystem.getMaxLinearSpeedMetersPerSec()
+                          * powerSubsystem.getDriveFactor(),
+                      omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
+
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+
+              driveSubsystem.runVelocityPP(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? driveSubsystem.getRotation().plus(new Rotation2d(Math.PI))
+                          : driveSubsystem.getRotation()));
+            },
+            driveSubsystem)
+        .beforeStarting(
+            () -> {
+              xLimiter.reset(0.0);
+              yLimiter.reset(0.0);
+              omegaLimiter.reset(0.0);
+            });
   }
 
   /**
@@ -139,8 +157,8 @@ public class DriveCommands {
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      linearVelocity.getX() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
+                      -linearVelocity.getX() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
+                      -linearVelocity.getY() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
                       omega);
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
@@ -290,7 +308,6 @@ public class DriveCommands {
                               + " inches");
                     })));
   }
-
 
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];

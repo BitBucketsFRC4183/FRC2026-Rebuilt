@@ -13,23 +13,24 @@ public final class ShooterConstants extends SubsystemBase {
   // O No
   public static final int intermediateSpeed = 20;
 
-  public static final int flywheelDefaultSpeed = 55;
+  public static final int flywheelDefaultSpeed = 48;
   public static final int maxRPS = 75;
   public static final boolean flywheelInverted = true;
   public static final boolean interInverted = true;
 
   // Allowed RPS offset before shooting
-  public static final double tolerance = 0.0;
+  // Not a perfect FF :sigh:
+  public static final double tolerance = 0.5;
 
   // PID Constants for flywheel
-  public static final double flywheel_kP = 0.2;
+  public static final double flywheel_kP = 0.16843;
   public static final double flywheel_kI = 0.0;
   public static final double flywheel_kD = 0.0;
 
   // FF for flywheel
-  public static final double flywheel_kS = 0.2;
-  public static final double flywheel_kV = 0.11;
-  public static final double flywheel_kA = 0.1;
+  public static final double flywheel_kS = 0.04199;
+  public static final double flywheel_kV = 0.11757;
+  public static final double flywheel_kA = 0.0068944;
 
   public static double statorCurrentLimit = 80;
   public static double supplyCurrentLimit = 50;

@@ -69,6 +69,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     servoHub = new ServoHub(IntakeConstants.hubCANID);
     servoChannel2 = servoHub.getServoChannel(ChannelId.kChannelId2);
     servoChannel2.setPowered(true);
+    servoChannel2.setEnabled(true);
     setServoAngle(0.0);
   }
 
