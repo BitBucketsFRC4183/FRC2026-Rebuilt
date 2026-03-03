@@ -20,7 +20,7 @@ public class ShooterCommands {
             Commands.waitUntil(shooterSubsystem::targetReached).andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 
-  public static Command revFlywheels(
+  public static Command visionShoot(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         // Waits for the distance from vision
