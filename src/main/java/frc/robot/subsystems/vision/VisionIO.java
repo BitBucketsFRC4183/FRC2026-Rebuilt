@@ -26,8 +26,8 @@ public interface VisionIO {
     public double latency;
 
     public double[] rawStdDev = new double[12];
-    public int[] rawAprilTagID;
-    public Pose3d[] rawAprilTagPose;
+    public int[] rawAprilTagID = new int[10];
+    public Pose3d[] rawAprilTagPose = new Pose3d[10];
     public double minAmbiguity;
   }
 

@@ -114,13 +114,13 @@ public class VisionIOLimelight implements VisionIO {
     }
   }
 
-  private static Pose3d[] getAprilTagPose(LimelightHelpers.RawFiducial[] UnreadReadFiducial){
-      int[] ids = getAprilTagIDs(UnreadReadFiducial);
-      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
-      for (int i = 0; i < getAprilTagIDs(UnreadReadFiducial).length; i++) {
-          aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
-      }
-      return aprilTagPoses;
+  private static Pose3d[] getAprilTagPose(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+    int[] ids = getAprilTagIDs(UnreadReadFiducial);
+    Pose3d[] aprilTagPoses = new Pose3d[ids.length];
+    for (int i = 0; i < getAprilTagIDs(UnreadReadFiducial).length; i++) {
+      aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
+    }
+    return aprilTagPoses;
   }
 
   private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
