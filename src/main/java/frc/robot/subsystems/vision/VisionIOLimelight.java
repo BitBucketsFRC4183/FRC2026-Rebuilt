@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
@@ -65,7 +64,6 @@ public class VisionIOLimelight implements VisionIO {
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
         inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
         inputs.rawAprilTagID = getAprilTagIDs(rawFiducial);
-        inputs.rawAprilTagPose = getAprilTagPose(rawFiducial);
 
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
@@ -102,32 +100,23 @@ public class VisionIOLimelight implements VisionIO {
     LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
   }
 
-  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
-    if (UnreadReadFiducial == null || UnreadReadFiducial.length == 0) {
+  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] unreadFiducial) {
+    if (unreadFiducial == null || unreadFiducial.length == 0) {
       return new int[0];
     } else {
-      int[] ids = new int[UnreadReadFiducial.length];
-      for (int i = 0; i < UnreadReadFiducial.length; i++) {
-        ids[i] = UnreadReadFiducial[i].id;
+      int[] ids = new int[unreadFiducial.length];
+      for (int i = 0; i < unreadFiducial.length; i++) {
+        ids[i] = unreadFiducial[i].id;
       }
       return ids;
     }
   }
 
-  private static Pose3d[] getAprilTagPose(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
-    int[] ids = getAprilTagIDs(UnreadReadFiducial);
-    Pose3d[] aprilTagPoses = new Pose3d[ids.length];
-    for (int i = 0; i < getAprilTagIDs(UnreadReadFiducial).length; i++) {
-      aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
-    }
-    return aprilTagPoses;
-  }
-
-  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] unreadFiducial) {
     /// ambiguity, new!
 
     double minAmbiguity = 999;
-    for (var readFludicial : UnreadReadFiducial) {
+    for (var readFludicial : unreadFiducial) {
       minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
     }
     return minAmbiguity;

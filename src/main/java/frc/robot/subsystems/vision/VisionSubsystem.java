@@ -38,6 +38,8 @@ public class VisionSubsystem extends SubsystemBase {
   private VisionMode lastAutoMode = null;
   private VisionMode manualMode = null;
 
+  private boolean oneCameraMode = true;
+
   private VisionMode defaultMode = VisionMode.DISABLED;
 
   private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
@@ -70,8 +72,11 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+
     /// logging
     logAutoAimInputs(pose2dSupplier);
+    logAprilTagPose(CamOneInputs, pose2dSupplier);
+    logAprilTagPose(CamTwoInputs, pose2dSupplier);
 
     if (getFinalVisionMode() != defaultMode) {
       defaultMode = getFinalVisionMode();
@@ -178,18 +183,34 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
-    Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
-    if (!isValidInputs(inputs)) {
+    boolean isBasicFiltered = isBasicFiltered(inputs);
+    boolean isAdvancedFiltered = isAdvancedFiltered(inputs);
+    boolean useMeasurement;
+
+    if (oneCameraMode) {
+      useMeasurement = isBasicFiltered;
+    } else {
+      useMeasurement = isBasicFiltered && isAdvancedFiltered;
+    }
+
+    if (!useMeasurement) {
       return Optional.empty();
     }
-    Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
-    if (mtEstimate.isPresent()) {
-      estimateOrEmpty = mtEstimate;
-    }
-    return estimateOrEmpty;
+
+    double xStd = inputs.rawStdDev[6];
+    double yStd = inputs.rawStdDev[7];
+    double theta = inputs.rawStdDev[11];
+
+    return Optional.of(
+        new VisionFusionResults(
+            inputs.megaTagPose,
+            inputs.timestamp,
+            //            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
+            VecBuilder.fill(xStd, yStd, theta),
+            inputs.tagCount));
   }
 
-  private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
+  private boolean isAdvancedFiltered(VisionIOInputsAutoLogged inputs) {
 
     // Single‑tag extra checks
     //    if (inputs.tagCount < 2) {
@@ -198,27 +219,26 @@ public class VisionSubsystem extends SubsystemBase {
     //      }
     //    }
 
-    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
-      return Optional.empty();
+    if (AutoAimCalculation.getDistanceFromRobotToHub(pose2dSupplier.get())
+        > VisionConstant.maxDistanceFromRobotToApril) {
+      return false;
     }
-
     if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
-      return Optional.empty();
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isBasicFiltered(VisionIOInputsAutoLogged inputs) {
+
+    if (!isValidInputs(inputs)) {
+      return false;
     }
 
     if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
-      return Optional.empty();
+      return false;
     }
-    double xStd = inputs.rawStdDev[6];
-    double yStd = inputs.rawStdDev[7];
-    double xyStd = Math.max(xStd, yStd);
-
-    return Optional.of(
-        new VisionFusionResults(
-            inputs.megaTagPose,
-            inputs.timestamp,
-            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
-            inputs.tagCount));
+    return true;
   }
 
   /// are we a valid pose?
@@ -253,19 +273,26 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void logAutoAimInputs(Supplier<Pose2d> supplier) {
     double angle = AutoAimCalculation.getTargetAngle(supplier.get()).getDegrees();
-    double[] targetHubPose3d =
-        new double[] {
-          AutoAimCalculation.getTargetHubPose3d().getX(),
-          AutoAimCalculation.getTargetHubPose3d().getY(),
-          AutoAimCalculation.getTargetHubPose3d().getZ(),
-          AutoAimCalculation.getTargetHubPose3d().getRotation().getZ()
-        };
 
     double distance = AutoAimCalculation.getDistanceFromRobotToHub(supplier.get());
 
-    Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose3d);
-    Logger.recordOutput("Vision/Aim/HubTargetAngle", angle);
+    Logger.recordOutput("Vision/Aim/CurrentHubPose", AutoAimCalculation.getTargetHubPose3d());
+    Logger.recordOutput("Vision/Aim/TargetAngle", angle);
     Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
+  }
+
+  private void logAprilTagPose(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
+    if (inputs.rawAprilTagID.length == 0) {
+      return;
+    } else {
+      int[] ids = inputs.rawAprilTagID;
+      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
+      for (int i = 0; i < ids.length; i++) {
+        aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
+        Logger.recordOutput(
+            "Vision/AprilTagPoses", new Pose3d[] {aprilTagPoses[i], new Pose3d(robotPose.get())});
+      }
+    }
   }
 
   private VisionMode decideVisionMode() {

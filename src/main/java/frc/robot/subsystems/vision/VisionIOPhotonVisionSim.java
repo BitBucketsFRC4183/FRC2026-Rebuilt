@@ -17,6 +17,7 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   // set the stage
@@ -139,6 +140,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     PhotonPipelineResult bestResult = null;
 
     for (var result : results) {
+      List<PhotonTrackedTarget> targets = result.getTargets();
+      inputs.rawAprilTagID = getAprilTagIDs(targets);
+
       if (result.getMultiTagResult().isPresent()) {
         bestResult = result;
         foundMT = true;
@@ -172,7 +176,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
                 .plus(bestTarget.bestCameraToTarget.inverse());
         inputs.ta = bestTarget.getArea();
       }
-      inputs.rawStdDev = new double[] {0.3, 0.3, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.3};
 
       List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
       // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,
@@ -181,6 +185,20 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
       inputs.megaTagPose =
           new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+    }
+  }
+
+  private static int[] getAprilTagIDs(List<PhotonTrackedTarget> unreadTargets) {
+    if (unreadTargets == null || unreadTargets.isEmpty()) {
+      return new int[0];
+    } else {
+      int[] ids = new int[unreadTargets.size()];
+      for (PhotonTrackedTarget readTargets : unreadTargets) {
+        for (int i = 0; i < unreadTargets.size(); i++) {
+          ids[i] = readTargets.getFiducialId();
+        }
+      }
+      return ids;
     }
   }
 }
