@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -78,7 +79,7 @@ public final class VisionConstant {
   public static final double maxDistanceFromRobotToApril = 17.0;
 
   public static final double maxGyroChange = 360; // degrees
-  public static final double kTagMinAreaForSingleTagMegatag = 3.0;
+  public static final double kTagMinAreaForSingleTagMegatag = 5.0;
   public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
   public static final Transform3d tagToHub3d =

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
@@ -62,9 +63,9 @@ public class VisionIOLimelight implements VisionIO {
         }
 
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
-
         inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
         inputs.rawAprilTagID = getAprilTagIDs(rawFiducial);
+        inputs.rawAprilTagPose = getAprilTagPose(rawFiducial);
 
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
@@ -111,6 +112,15 @@ public class VisionIOLimelight implements VisionIO {
       }
       return ids;
     }
+  }
+
+  private static Pose3d[] getAprilTagPose(LimelightHelpers.RawFiducial[] UnreadReadFiducial){
+      int[] ids = getAprilTagIDs(UnreadReadFiducial);
+      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
+      for (int i = 0; i < getAprilTagIDs(UnreadReadFiducial).length; i++) {
+          aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
+      }
+      return aprilTagPoses;
   }
 
   private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {

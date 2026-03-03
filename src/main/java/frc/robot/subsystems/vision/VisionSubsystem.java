@@ -70,11 +70,8 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/side", CamOneInputs);
     Logger.processInputs("Vision/front_shooter", CamTwoInputs);
-
     /// logging
     logAutoAimInputs(pose2dSupplier);
-    visualizeAprilTags(CamTwoInputs, pose2dSupplier);
-    visualizeAprilTags(CamTwoInputs, pose2dSupplier);
 
     if (getFinalVisionMode() != defaultMode) {
       defaultMode = getFinalVisionMode();
@@ -195,11 +192,11 @@ public class VisionSubsystem extends SubsystemBase {
   private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
 
     // Single‑tag extra checks
-    if (inputs.tagCount < 2) {
-      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
-        return Optional.empty();
-      }
-    }
+    //    if (inputs.tagCount < 2) {
+    //      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+    //        return Optional.empty();
+    //      }
+    //    }
 
     if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
       return Optional.empty();
@@ -269,20 +266,6 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose3d);
     Logger.recordOutput("Vision/Aim/HubTargetAngle", angle);
     Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
-  }
-
-  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    //    Pose3d robot3d = new Pose3d(robotPose.get());
-    //    List<Pose3d> linePoses = new ArrayList<>();
-    //    for (var readAprilTagIDs : inputs.rawAprilTagID) {
-    //      Optional<Pose3d> aprilTagPose =
-    //          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
-    //      if (aprilTagPose.isPresent()) {
-    //        linePoses.add(aprilTagPose.get());
-    //        linePoses.add(robot3d);
-    //      }
-    //    }
-    //    Logger.recordOutput("seenAprilTags", linePoses);
   }
 
   private VisionMode decideVisionMode() {

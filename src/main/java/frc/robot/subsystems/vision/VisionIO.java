@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -26,6 +27,7 @@ public interface VisionIO {
 
     public double[] rawStdDev = new double[12];
     public int[] rawAprilTagID;
+    public Pose3d[] rawAprilTagPose;
     public double minAmbiguity;
   }
 

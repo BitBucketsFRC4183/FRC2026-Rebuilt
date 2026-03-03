@@ -38,7 +38,7 @@ public class AutoAimCalculation {
     // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
     // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
     Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
-    Rotation2d fieldAngle = diff.getAngle();
+    Rotation2d fieldAngle = diff.getAngle().rotateBy(new Rotation2d(Math.PI));
     return fieldAngle;
   }
 
