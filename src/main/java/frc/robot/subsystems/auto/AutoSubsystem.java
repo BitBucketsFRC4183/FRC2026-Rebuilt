@@ -56,7 +56,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command shoot() {
     System.out.println("Beginning to Shoot");
-    return ShooterCommands.revFlywheels(shooter, hopper);
+    return ShooterCommands.shootAtRPS(10.0, shooter, hopper);
   }
 
   public Command climb() {
@@ -169,31 +169,6 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("ShootTtoDepot", true);
   }
   // AUTOROUTINES
-
-  /*public Command bottomStartToShootOnly() {
-    return Commands.sequence(
-        // FIRST: Reset robot pose to the path's starting position
-        new InstantCommand(
-            () -> {
-              try {
-                // Load the path to get its starting pose
-                PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory("BottomStartToShootB");
-                Pose2d startPose = path.getPathPoses().get(0);
-                drive.setPose(startPose);
-                System.out.println("Reset pose to: " + startPose);
-              } catch (Exception e) {
-                System.err.println("Failed to reset pose: " + e.getMessage());
-              }
-            }),
-        new InstantCommand(
-            () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        goBottomToShootPs(),
-        new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shoot(),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  } */
-
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -233,125 +208,6 @@ public class AutoSubsystem extends SubsystemBase {
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
-
-  /*public Command StartBottomToTower() {
-      return Commands.sequence(
-          IntakeCommands.deploy(intake),
-          extendKickerbar(),
-              new InstantCommand(() -> System.out.println("We will just be climbing")),
-              driveAndIntake(goBottomTower()),
-              climb(),
-              stop(),
-              new InstantCommand(() -> System.out.println("bottom to climb routine complete")),
-              IntakeCommands.intake(intake)));
-    }
-
-    public Command StartTopToTower() {
-      return Commands.sequence(
-          IntakeCommands.deploy(intake),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("We will just be climbing")),
-          goTopTower(),
-          climb(),
-          stop(),
-          new InstantCommand(() -> System.out.println("top to climb routine complete")));
-    }
-
-    public Command StartMidToTower() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("We will just be climbing")),
-          goMidTower(),
-          climb(),
-          stop(),
-          new InstantCommand(() -> System.out.println("mid to climb routine complete")));
-    }
-
-    public Command StartTopShootEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("We will move to top shooting position")),
-          goToptoShooterPs(),
-          shoot().withTimeout(6),
-          new InstantCommand(() -> System.out.println("moving to tower to climb")),
-          goShooterTtoTower(),
-          climb());
-    }
-
-    public Command StartBottomShootEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("We will move to bottom shooting position")),
-          goBottomStartToShootB(),
-          shoot().withTimeout(6),
-          new InstantCommand(() -> System.out.println("moving to tower to climb")),
-          goShooterBtoTower(),
-          climb());
-    }
-
-    public Command StartMidShootEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("We will move to mid shooting position")),
-          goMidToShooterPs(),
-          shoot().withTimeout(6),
-          new InstantCommand(() -> System.out.println("moving to tower to climb")),
-          goMidTower(),
-          climb());
-    }
-
-    public Command StartBottomShootIntakeEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("Routine 1 starting - ")),
-          goBottomStartToShootB(),
-          shoot().withTimeout(4),
-          goBottomShootertoDepot(),
-          new WaitCommand(3),
-          goDepotToMid(),
-          goMidTower(),
-          climb(),
-          stop(),
-          new InstantCommand(() -> System.out.println("routine 1 complete")));
-    }
-
-    public Command StartMidShootIntakeEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("Moving to Shooter position")),
-          goMidToShooterPs(),
-          shoot().withTimeout(4),
-          goMidShootertoDepot(),
-          new WaitCommand(3),
-          goDepotToMid(),
-          goMidTower(),
-          climb(),
-          stop(),
-          new InstantCommand(() -> System.out.println("complete routine")));
-    }
-
-    public Command StartTopShootIntakeEndL1() {
-      return Commands.sequence(
-          // deployIntake(),
-          extendKickerbar(),
-          new InstantCommand(() -> System.out.println("Moving from top to mid shooting position")),
-          goToptoShooterPs(),
-          shoot().withTimeout(4),
-          goTopShootertoDepot(),
-          new WaitCommand(3),
-          goDepotToMid(),
-          goMidTower(),
-          climb(),
-          stop(),
-          new InstantCommand(() -> System.out.println("complete routine")));
-    }
-  */
   public Command StartBottomToOutpostShoot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
