@@ -87,7 +87,16 @@ public enum ShootingPosition{
   private Command driveAndIntake(Command pathCommand) {
     return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
   }
-
+//outtake in alliance zone
+  private Command outtakeAtAlliance(){
+    System.out.println("dumping balls in alliance zone!");
+    return IntakeCommands.outtake(intake);
+  }
+ //momentary intake
+  private Command IntakeOnly(){
+    System.out.println("intaking at neutral zone");
+    return IntakeCommands.intake(intake);
+  }
   /*public Command deployIntake() {
     return IntakeCommands.deploy(intake);
   }*/
@@ -178,6 +187,22 @@ public enum ShootingPosition{
 
   public Command goTopShootertoDepot() {
     return choreoPath("ShootTtoDepot", true);
+  }
+
+  public Command goBottomStartToNeutralZ(){
+    return choreoPath("bottomStartToneutralZ", true);
+  }
+
+  public Command goIntakeBtmToAlliance(){
+    return choreoPath("IntakeBtmToAlliance", true);
+  }
+
+  public Command goTopStartToneutralZ(){
+      return choreoPath("topStartToneutralZ", true);
+  }
+
+  public Command goIntakeTopToAlliance(){
+      return choreoPath("IntakeToptoAlliance", true);
   }
   // AUTOROUTINES
   public Command bottomStartToShootOnly() {
@@ -299,4 +324,28 @@ public enum ShootingPosition{
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
+  public Command StartBottomNeutralZIntake(){
+    return Commands.sequence(
+            IntakeCommands.deploy(intake),
+            extendKickerbar(),
+            new InstantCommand(()->System.out.println("Moving from bottom start to neutral zone")),
+            driveAndIntake(goBottomStartToNeutralZ()),
+            IntakeOnly().withTimeout(3),
+            driveAndIntake(goIntakeBtmToAlliance()),
+            outtakeAtAlliance().withTimeout(3),
+            stop(),
+            new InstantCommand(()->System.out.println("routine complete")));
+  }
+    public Command StartTopNeutralZIntake(){
+        return Commands.sequence(
+                IntakeCommands.deploy(intake),
+                extendKickerbar(),
+                new InstantCommand(()->System.out.println("Moving from top start to neutral zone")),
+                driveAndIntake(goTopStartToneutralZ()),
+                IntakeOnly().withTimeout(3),
+                driveAndIntake(goIntakeTopToAlliance()),
+                outtakeAtAlliance().withTimeout(3),
+                stop(),
+                new InstantCommand(()->System.out.println("routine complete")));
+    }
 }

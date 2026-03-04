@@ -212,6 +212,8 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
+    autoChooser.addOption("StartBottomNeutralZIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartTopNeutralZIntake", autoSubsystem.StartTopNeutralZIntake());
     // Set up SysId routines
     //    autoChooser.addOption(
     //        "DriveSubsystem Wheel Radius Characterization",
