@@ -37,12 +37,25 @@ public class AutoSubsystem extends SubsystemBase {
 
   // Setup PathPlanner
   // Named Commands
+public enum ShootingPosition{
+    POSITION_mid(7.73955, 32.74425),
+    POSITION_top(7.47391,31.62039),
+    POSITION_btm(9.66585, 40.89397);
+    public final double distance;
+    public final double velocity;
 
+    ShootingPosition(double distance, double velocity) {
+      this.distance = distance;
+      this.velocity = velocity;
+    }
+  }
   private void registerNamedCommands() {
 
     NamedCommands.registerCommand("Stop", stop());
 
-    NamedCommands.registerCommand("Shoot", shoot());
+    NamedCommands.registerCommand("ShootMid", shoot(ShootingPosition.POSITION_mid));
+    NamedCommands.registerCommand("ShootTop", shoot(ShootingPosition.POSITION_top));
+    NamedCommands.registerCommand("ShootBtm", shoot(ShootingPosition.POSITION_btm));
 
     NamedCommands.registerCommand("Climb", climb());
 
@@ -54,11 +67,13 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.runOnce(drive::stop, drive);
   }
 
-  public Command shoot() {
+  public Command shoot(ShootingPosition position) {
     System.out.println("Beginning to Shoot");
-    return ShooterCommands.shootAtRPS(10.0, shooter, hopper);
+    return ShooterCommands.shootAtRPS(position.velocity, shooter, hopper);
   }
-
+//40.89397 for bottom shooting ps
+//31.62039 for top shooting ps
+//32.74425 for mid shooting ps
   public Command climb() {
     return ClimberCommands.increaseClimberLengthLevelOne(climber)
         .beforeStarting(() -> System.out.println("Climbing!"));
@@ -71,10 +86,6 @@ public class AutoSubsystem extends SubsystemBase {
   // Helper to drive while intaking
   private Command driveAndIntake(Command pathCommand) {
     return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
-  }
-
-  private Command shootWithTimeout(double seconds) {
-    return shoot().withTimeout(seconds);
   }
 
   /*public Command deployIntake() {
@@ -177,7 +188,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
         driveAndIntake(goBottomStartToShootB()),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shootWithTimeout(7),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -191,7 +202,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from top position to shooting position")),
         driveAndIntake(goToptoShooterPs()),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
-        shootWithTimeout(7),
+        shoot(ShootingPosition.POSITION_top).withTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -204,7 +215,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from mid position to shooting position")),
         driveAndIntake(goMidToShooterPs()),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
-        shootWithTimeout(7),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(7),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -217,7 +228,7 @@ public class AutoSubsystem extends SubsystemBase {
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
         driveAndIntake(goOutpostToShootBPs()),
-        shootWithTimeout(6),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
   }
@@ -231,7 +242,7 @@ public class AutoSubsystem extends SubsystemBase {
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         driveAndIntake(goDepotToMid()),
-        shootWithTimeout(6),
+            shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -245,7 +256,7 @@ public class AutoSubsystem extends SubsystemBase {
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         driveAndIntake(goDepotToShootT()),
-        shootWithTimeout(6),
+        shoot(ShootingPosition.POSITION_top).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -256,7 +267,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
         driveAndIntake(goBottomStartToShootB()),
-        shootWithTimeout(6),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
         driveAndIntake(goBottomShootertoDepot()),
         stop(),
@@ -269,7 +280,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
         driveAndIntake(goMidToShooterPs()),
-        shootWithTimeout(6),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
         driveAndIntake(goMidShootertoDepot()),
         stop(),
@@ -282,7 +293,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         driveAndIntake(goToptoShooterPs()),
-        shootWithTimeout(6),
+        shoot(ShootingPosition.POSITION_top).withTimeout(6),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
         driveAndIntake(goTopShootertoDepot()),
         stop(),
