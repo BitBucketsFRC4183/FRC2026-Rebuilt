@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstant;
 import frc.robot.subsystems.drive.Drive;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,7 +40,7 @@ public class VisionSubsystem extends SubsystemBase {
   private VisionMode lastAutoMode = null;
   private VisionMode manualMode = null;
 
-  private boolean oneCameraMode = true;
+  //  private boolean oneCameraMode = true;
 
   private VisionMode defaultMode = VisionMode.DISABLED;
 
@@ -183,63 +185,107 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
-    boolean isBasicFiltered = isBasicFiltered(inputs);
-    boolean isAdvancedFiltered = isAdvancedFiltered(inputs);
-    boolean useMeasurement;
+    Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
+    if (!isValidInputs(inputs)) {
+      return Optional.empty();
+    }
+    Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
+    if (mtEstimate.isPresent()) {
+      estimateOrEmpty = mtEstimate;
+    }
+    return estimateOrEmpty;
+  }
 
-    if (oneCameraMode) {
-      useMeasurement = isBasicFiltered;
-    } else {
-      useMeasurement = isBasicFiltered && isAdvancedFiltered;
+  private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
+
+    // Single‑tag extra checks
+    if (inputs.tagCount < 2) {
+      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+        return Optional.empty();
+      }
     }
 
-    if (!useMeasurement) {
+    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
       return Optional.empty();
     }
 
+    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
+      return Optional.empty();
+    }
+
+    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
+      return Optional.empty();
+    }
     double xStd = inputs.rawStdDev[6];
     double yStd = inputs.rawStdDev[7];
-    double theta = inputs.rawStdDev[11];
+    double xyStd = Math.max(xStd, yStd);
 
     return Optional.of(
         new VisionFusionResults(
             inputs.megaTagPose,
             inputs.timestamp,
-            //            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
-            VecBuilder.fill(xStd, yStd, theta),
+            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
             inputs.tagCount));
   }
 
-  private boolean isAdvancedFiltered(VisionIOInputsAutoLogged inputs) {
-
-    // Single‑tag extra checks
-    //    if (inputs.tagCount < 2) {
-    //      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
-    //        return Optional.empty();
-    //      }
-    //    }
-
-    if (AutoAimCalculation.getDistanceFromRobotToHub(pose2dSupplier.get())
-        > VisionConstant.maxDistanceFromRobotToApril) {
-      return false;
-    }
-    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
-      return false;
-    }
-    return true;
-  }
-
-  private boolean isBasicFiltered(VisionIOInputsAutoLogged inputs) {
-
-    if (!isValidInputs(inputs)) {
-      return false;
-    }
-
-    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
-      return false;
-    }
-    return true;
-  }
+  //  private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
+  //    boolean isBasicFiltered = isBasicFiltered(inputs);
+  //    boolean isAdvancedFiltered = isAdvancedFiltered(inputs);
+  //    boolean useMeasurement;
+  //
+  //    if (oneCameraMode) {
+  //      useMeasurement = isBasicFiltered;
+  //    } else {
+  //      useMeasurement = isBasicFiltered && isAdvancedFiltered;
+  //    }
+  //
+  //    if (!useMeasurement) {
+  //      return Optional.empty();
+  //    }
+  //
+  //    double xStd = inputs.rawStdDev[6];
+  //    double yStd = inputs.rawStdDev[7];
+  //    double theta = inputs.rawStdDev[11];
+  //
+  //    return Optional.of(
+  //        new VisionFusionResults(
+  //            inputs.megaTagPose,
+  //            inputs.timestamp,
+  //            //            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
+  //            VecBuilder.fill(xStd, yStd, theta),
+  //            inputs.tagCount));
+  //  }
+  //
+  //  private boolean isAdvancedFiltered(VisionIOInputsAutoLogged inputs) {
+  //
+  //    // Single‑tag extra checks
+  //    //    if (inputs.tagCount < 2) {
+  //    //      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+  //    //        return Optional.empty();
+  //    //      }
+  //    //    }
+  //
+  //    if (AutoAimCalculation.getDistanceFromRobotToHub(pose2dSupplier.get())
+  //        > VisionConstant.maxDistanceFromRobotToApril) {
+  //      return false;
+  //    }
+  //    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
+  //      return false;
+  //    }
+  //    return true;
+  //  }
+  //
+  //  private boolean isBasicFiltered(VisionIOInputsAutoLogged inputs) {
+  //
+  //    if (!isValidInputs(inputs)) {
+  //      return false;
+  //    }
+  //
+  //    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
+  //      return false;
+  //    }
+  //    return true;
+  //  }
 
   /// are we a valid pose?
   /// yes sir!
@@ -282,17 +328,24 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void logAprilTagPose(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    if (inputs.rawAprilTagID.length == 0) {
+
+    int[] ids = inputs.rawAprilTagID;
+
+    if (ids.length == 0) {
       return;
-    } else {
-      int[] ids = inputs.rawAprilTagID;
-      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
-      for (int i = 0; i < ids.length; i++) {
-        aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
-        Logger.recordOutput(
-            "Vision/AprilTagPoses", new Pose3d[] {aprilTagPoses[i], new Pose3d(robotPose.get())});
-      }
     }
+
+    List<Pose3d> poses = new ArrayList<>();
+
+    for (int id : ids) {
+      Optional<Pose3d> tagPose = VisionConstant.aprilTagFieldLayout.getTagPose(id);
+
+      tagPose.ifPresent(poses::add);
+    }
+
+    Logger.recordOutput("Vision/AprilTagPoses", poses.toArray(new Pose3d[0]));
+
+    Logger.recordOutput("Vision/RobotPose", new Pose3d(robotPose.get()));
   }
 
   private VisionMode decideVisionMode() {
