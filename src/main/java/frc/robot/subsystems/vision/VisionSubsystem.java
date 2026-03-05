@@ -68,9 +68,9 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("Vision/side", CamTwoInputs);
 
     /// logging
-    logAutoAimInputs(pose2dSupplier);
-    logAprilTagPose(CamOneInputs, pose2dSupplier);
-    logAprilTagPose(CamTwoInputs, pose2dSupplier);
+    logAutoAimInputs();
+    logAprilTagPose(CamOneInputs);
+    logAprilTagPose(CamTwoInputs);
 
     if (getFinalVisionMode() != defaultMode) {
       defaultMode = getFinalVisionMode();
@@ -199,7 +199,7 @@ public class VisionSubsystem extends SubsystemBase {
     double yStd = inputs.rawStdDev[7];
     //    double theta = inputs.rawStdDev[11];
 
-    Logger.recordOutput("Vision/FilterOutResults", !useMeasurement);
+    Logger.recordOutput("Vision/FilterOutResults", false);
 
     return Optional.of(
         new VisionFusionResults(
@@ -219,7 +219,7 @@ public class VisionSubsystem extends SubsystemBase {
     //      }
     //    }
 
-    if (getHubDistanceMeter(pose2dSupplier.get()) > VisionConstant.maxDistanceFromRobotToApril) {
+    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
       return false;
     }
     if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
@@ -270,17 +270,14 @@ public class VisionSubsystem extends SubsystemBase {
     return Math.abs(deltaGryoDegs / deltaTime);
   }
 
-  private void logAutoAimInputs(Supplier<Pose2d> supplier) {
-    double angle = AutoAimUtil.getTargetAngle_HubPose(supplier.get()).getDegrees();
-
-    double distance = getHubDistanceMeter(supplier.get());
+  private void logAutoAimInputs() {
 
     Logger.recordOutput("Vision/Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
-    Logger.recordOutput("Vision/Aim/TargetAngle", angle);
-    Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
+    Logger.recordOutput("Vision/Aim/TargetAngle", getAimAngle());
+    Logger.recordOutput("Vision/Aim/DistanceToHub", getHubDistanceMeter(pose2dSupplier.get()));
   }
 
-  private void logAprilTagPose(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
+  private void logAprilTagPose(VisionIOInputsAutoLogged inputs) {
 
     if (inputs.rawAprilTagID.length == 0) {
       return;
@@ -383,21 +380,31 @@ public class VisionSubsystem extends SubsystemBase {
 
   /// ONLY ONE CAMERA!! THAT IS THE FRONTSHOOTER CAMERA
   public double getHubDistanceMeter(Pose2d robotPose) {
-    if (robotPose.getX() > VisionConstant.MidGameMin
-        && robotPose.getX() < VisionConstant.MidGameMax) {
+    if (robotPose.getTranslation().getX() > VisionConstant.MidGameMin
+        && robotPose.getTranslation().getX() < VisionConstant.MidGameMax) {
+      Logger.recordOutput("Vision/Aim/WeInMidGame", true);
       return 0;
     }
+    Logger.recordOutput("Vision/Aim/WeInMidGame", false);
     /// make sure only used in telop
     if (getCurrentVisionMode() == VisionMode.AUTONOMOUS) {
       return AutoAimUtil.getHubDistance_HubPose(robotPose);
+
     } else {
-      if (!CamOneInputs.hasTarget) return 0;
-      return (VisionConstant.goalHeightMeter - VisionConstant.cameraOneLensHeightMeter)
-          / Math.tan(Math.toRadians(VisionConstant.cameraOneMountAngleDegrees + CamOneInputs.ty));
+
+      if (!CamOneInputs.hasTarget) {
+        return 0;
+      }
+      double distanceCameraToHub =
+          (VisionConstant.goalHeightMeter - VisionConstant.cameraOneLensHeightMeter)
+              / Math.tan(
+                  Math.toRadians(VisionConstant.cameraOneMountAngleDegrees + CamOneInputs.ty));
+      Logger.recordOutput("Vision/Aim/distanceUsingTargetPose", distanceCameraToHub);
+      return distanceCameraToHub;
     }
   }
 
-  public Rotation2d aimSupplier(){
+  public Rotation2d getAimAngle() {
     if (!CamOneInputs.hasTarget) return Rotation2d.kZero;
     return drive.getRotation().plus(Rotation2d.fromDegrees(CamOneInputs.tx));
   }

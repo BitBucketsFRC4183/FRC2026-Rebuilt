@@ -16,6 +16,7 @@ public interface VisionIO {
     public double tx;
     public double ty;
     public double ta;
+    public double[] crosshairs = new double[4];
 
     public boolean hasMegaTag2;
 

@@ -19,10 +19,6 @@ public class VisionIOLimelight implements VisionIO {
   private final NetworkTable limelightTwoTable =
       NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
 
-  // define, create a 0.0 double array
-  private static final double[] defaultStdDev =
-      new double[VisionConstant.kExpectedStdDevArrayLength];
-
   @Override
   public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
@@ -68,8 +64,9 @@ public class VisionIOLimelight implements VisionIO {
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
-        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
+        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(new double[12]);
         //        System.out.println(inputs.rawStdDev);
+        inputs.crosshairs = table.getEntry("crosshairs").getDoubleArray(new double[4]);
 
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());

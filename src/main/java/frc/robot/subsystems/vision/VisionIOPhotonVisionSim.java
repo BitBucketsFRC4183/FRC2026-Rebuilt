@@ -54,9 +54,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
     // lets put "real" camera to the sim construction
     frontCamSim = new PhotonCameraSim(PHOTON_FRONT, camProps);
-    frontCamSim.setMinTargetAreaPixels(1000);
+    frontCamSim.setMinTargetAreaPixels(100);
     backCamSim = new PhotonCameraSim(PHOTON_BACK, camProps);
-    backCamSim.setMinTargetAreaPixels(1000);
+    backCamSim.setMinTargetAreaPixels(100);
 
     // streaming
     //    frontCamSim.enableRawStream(true);
@@ -78,6 +78,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     visionSim.update(poseSupplier.get());
 
     /// write to the table we have for limelight
+    frontCamInputs.hasTarget = true;
+    backCamInputs.hasTarget = true;
+
     updateCameraInputs(PHOTON_FRONT.getAllUnreadResults(), frontCamInputs, frontCamSim);
     updateCameraInputs(PHOTON_BACK.getAllUnreadResults(), backCamInputs, backCamSim);
     super.updateInputs(frontCamInputs, backCamInputs);

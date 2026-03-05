@@ -68,8 +68,9 @@ public final class VisionConstant {
   // just for sim
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
+  public static final double txSim = 3.3;
+  public static final double tySim = 5.5;
 
-  public static final int kExpectedStdDevArrayLength = 12;
   public static final double kLargeVariance = 1e6;
 
   // TODO need tune: max readable tag
