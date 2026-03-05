@@ -3,9 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.AprilTagLabel;
-import frc.robot.constants.VisionConstant;
 
-public class AutoAimCalculation {
+public class AutoAimUtil {
   /// fancy notation
   /// function that give you hub pose based on alliance color
   public static Pose3d getTargetHubPose3d() {
@@ -14,22 +13,22 @@ public class AutoAimCalculation {
         ? AprilTagLabel.RedHubPose3d
         : AprilTagLabel.BlueHubPose3d;
   }
-
+  // For Logging
   public static Pose2d getTargetHubPose2d() {
     return getTargetHubPose3d().toPose2d();
   }
 
-  public static double getDistanceFromRobotToHub(Pose2d robotPose) {
+  public static double getHubDistance_HubPose(Pose2d robotPose) {
 
-    if (robotPose.getTranslation().getX() > VisionConstant.MidGameMin
-        && robotPose.getTranslation().getX() < VisionConstant.MidGameMax) {
-      return 0;
-    }
+    //    if (robotPose.getX() > VisionConstant.MidGameMin
+    //        && robotPose.getX() < VisionConstant.MidGameMax) {
+    //      return 0;
+    //    }
     return robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
   }
 
   /// targetRad
-  public static Rotation2d getTargetAngle(Pose2d robotPose) {
+  public static Rotation2d getTargetAngle_HubPose(Pose2d robotPose) {
     // Vector--> robot to hub; code--> hub - robot
     // could from any degrees -> 360
 

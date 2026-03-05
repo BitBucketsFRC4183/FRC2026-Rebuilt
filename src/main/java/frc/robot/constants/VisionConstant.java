@@ -45,8 +45,8 @@ public final class VisionConstant {
    */
   /// **********
   /// **********
-  public static final String LIMELIGHT_A = "limelight-side";
-  public static final String LIMELIGHT_B = "limelight-front";
+  public static final String LIMELIGHT_A = "limelight-front";
+  public static final String LIMELIGHT_B = "limelight-side";
 
   public static final int PIPELINE_DEFAULT_AprilTagTuning = 0;
   public static final int PIPELINE_DEFAULT_DriverCamera = 1;
@@ -83,6 +83,15 @@ public final class VisionConstant {
   public static final double kMinAmbiguityToFlip = 666;
   public static final Transform3d tagToHub3d =
       new Transform3d(new Translation3d(-0.5969, 0, 0.6096), new Rotation3d());
+
+  /// camera One --> front
+  public static final double cameraOneMountAngleDegrees = 20;
+
+  // distance from the center of the Limelight lens to the floor
+  public static final double cameraOneLensHeightMeter = 0.271018;
+
+  // distance from the target to the floor
+  public static final double goalHeightMeter = 1.8288;
 
   public static final int numAprilTagWillVisualize = 5;
   // TODO need measure & test

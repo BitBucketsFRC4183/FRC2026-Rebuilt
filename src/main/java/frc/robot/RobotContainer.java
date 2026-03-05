@@ -263,7 +263,7 @@ public class RobotContainer {
         .onTrue(
             ShooterCommands.storeDistance(
                 shooterSubsystem,
-                AutoAimCalculation.getDistanceFromRobotToHub(
+                visionSubsystem.getHubDistanceMeter(
                     driveSubsystem.poseEstimator.getEstimatedPosition())))
         .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
@@ -290,8 +290,7 @@ public class RobotContainer {
         driveSubsystem,
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () ->
-            AutoAimCalculation.getTargetAngle(driveSubsystem.poseEstimator.getEstimatedPosition()));
+        () -> visionSubsystem.aimSupplier() );
   }
 
   public Command getAutonomousCommand() {
