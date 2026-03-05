@@ -23,7 +23,6 @@ public class VisionSubsystem extends SubsystemBase {
   /// ******************************
 
   private final VisionIO visionio;
-  private final OdometryHistory odometryHistory;
   private final Supplier<Pose2d> pose2dSupplier;
   private final Drive drive;
 
@@ -44,14 +43,9 @@ public class VisionSubsystem extends SubsystemBase {
 
   private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
 
-  public VisionSubsystem(
-      VisionIO visionio,
-      Supplier<Pose2d> pose2dSupplier,
-      OdometryHistory odometryHistory,
-      Drive drive) {
+  public VisionSubsystem(VisionIO visionio, Supplier<Pose2d> pose2dSupplier, Drive drive) {
     this.visionio = visionio;
     this.pose2dSupplier = pose2dSupplier;
-    this.odometryHistory = odometryHistory;
     this.drive = drive;
     this.lastGyroTimestamp = Timer.getFPGATimestamp();
     this.lastGyroDegs = pose2dSupplier.get().getRotation().getDegrees();
@@ -132,9 +126,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     // Preview both estimates to the same timestamp
     Transform2d a_T_b =
-        odometryHistory
+        drive
+            .getOdometryHistory()
             .getPoseAt(b.getTimestampSeconds())
-            .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
+            .minus(drive.getOdometryHistory().getPoseAt(a.getTimestampSeconds()));
 
     Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
     Pose2d poseB = b.getVisionRobotPoseMeters();
@@ -199,6 +194,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     double xStd = inputs.rawStdDev[6];
     double yStd = inputs.rawStdDev[7];
+    //    double xyStd = Math.max(xStd,yStd);
     double theta = inputs.rawStdDev[11];
 
     return Optional.of(

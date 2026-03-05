@@ -414,6 +414,10 @@ public class Drive extends SubsystemBase {
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
+  public OdometryHistory getOdometryHistory() {
+    return odometryHistory;
+  }
+
   public final void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
   }
