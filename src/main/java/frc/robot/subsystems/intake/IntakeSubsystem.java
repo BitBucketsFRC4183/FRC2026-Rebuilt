@@ -2,9 +2,14 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -15,6 +20,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final SendableChooser<IntakeState> intakeStateChooser = new SendableChooser<>();
   private final SendableChooser<Boolean> overrideToggle = new SendableChooser<>();
+
+  private final LoggedMechanism2d mech = new LoggedMechanism2d(2, 2);
+  private final LoggedMechanismRoot2d root = mech.getRoot("IntakeRoot", 1, 1);
+  private final LoggedMechanismLigament2d intakeBar =
+          root.append(new LoggedMechanismLigament2d("Intake", 0.0, 0.0, 8.0, new Color8Bit(Color.kPurple)));
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;
@@ -55,19 +65,39 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
 
       case INTAKING:
+        io.extend();
         io.setVelocity(IntakeConstants.INTAKE_SPEED);
         break;
 
       case OUTTAKING:
+        io.extend();
         io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
         break;
 
       case HOLD:
+        io.extend();
         io.stopMotor();
         break;
     }
 
+    boolean extended = inputs.primaryPistonExtended;
+
+    if (extended) {
+      intakeBar.setLength(0.8);
+    } else {
+      intakeBar.setLength(0.0);
+    }
+
+    if (currentState == IntakeState.INTAKING) {
+      intakeBar.setColor(new Color8Bit(Color.kGreen));
+    } else if (currentState == IntakeState.OUTTAKING) {
+      intakeBar.setColor(new Color8Bit(Color.kRed));
+    } else {
+      intakeBar.setColor(new Color8Bit(Color.kPurple));
+    }
+
     Logger.processInputs("Intake", inputs);
+    Logger.recordOutput("Mechanisms/Intake", mech);
   }
 
   public boolean isRunning() {

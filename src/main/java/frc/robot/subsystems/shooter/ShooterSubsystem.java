@@ -82,10 +82,11 @@ public class ShooterSubsystem extends SubsystemBase {
     if (storedDistance == 0) {
       targetVelocity.set(ShooterConstants.flywheelDefaultSpeed);
     }
+    setTargetVelocity(targetVelocity.get());
   }
 
-  public void setTargetVelocity() {
-    io.setFlywheelSpeed(targetVelocity.get());
+  public void setTargetVelocity(double targetVelocity) {
+    io.setFlywheelSpeed(targetVelocity);
     flywheelsRunning = true;
   }
 

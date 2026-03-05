@@ -41,12 +41,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   // Subsystems
   private final Drive driveSubsystem;
@@ -77,9 +71,6 @@ public class RobotContainer {
 
     switch (Constants.currentMode) {
       case REAL:
-        // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX driveSubsystem, TalonFX turn, and
-        // a CANcoder
         driveSubsystem =
             new Drive(
                 new GyroIOPigeon2(),
@@ -100,21 +91,6 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
-
-        /* DATA FLOW:
-        Vision IO (interface) connected VisionIOLimelight;
-        ↓
-        VisionSubsystem received data from VisionIOLimelight, then do calculations
-        wrapped results into VisionFusionResults
-        ↓
-        Drive receive results, then add vision measurement
-
-         */
-        /*
-        ANOTHER DATA FLOW:
-        Drive <-> odometry pose history -> provided to vision to help calculation
-
-         */
         break;
 
       case SIM:
@@ -187,44 +163,15 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    //    // for registered commands
-    // autoChooser.setDefaultOption("StartBottomToTower", autoSubsystem.StartBottomToTower());
     autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
     autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
-    // autoChooser.addOption("StartTopToTower", autoSubsystem.StartTopToTower());
-    // autoChooser.addOption("StartMidToTower", autoSubsystem.StartMidToTower());
-    // autoChooser.addOption("StartBottomShootIntakeEndL1",
-    // autoSubsystem.StartBottomShootIntakeEndL1());
-    // autoChooser.addOption("StartTopShootIntakeEndL1", autoSubsystem.StartTopShootIntakeEndL1());
-    // autoChooser.addOption("StartMidShootIntakeEndL1", autoSubsystem.StartMidShootIntakeEndL1());
-    // autoChooser.addOption("StartBottomShootEndL1", autoSubsystem.StartBottomShootEndL1());
-    // autoChooser.addOption("StartTopShootEndL1", autoSubsystem.StartTopShootEndL1());
-    // autoChooser.addOption("StartMidShootEndL1", autoSubsystem.StartMidShootEndL1());
     autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
     autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
-    // Set up SysId routines
-    //    autoChooser.addOption(
-    //        "DriveSubsystem Wheel Radius Characterization",
-    //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
-
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Forward)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Reverse)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Forward)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Reverse)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -242,13 +189,6 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link Joystick} or {@link
-   * XboxController}), and then passing it to a {@link JoystickButton}.
-   *
-   * @return
-   */
   private void configureButtonBindings() {
     // Default command, normal field-relative driveSubsystem
     driveSubsystem.setDefaultCommand(
@@ -259,19 +199,20 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    // Lock to 0° when A button is held
-    driverController
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                driveSubsystem,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> Rotation2d.kZero));
+//    // Lock to 0° when A button is held
+//    driverController
+//        .a()
+//        .whileTrue(
+//            DriveCommands.joystickDriveAtAngle(
+//                driveSubsystem,
+//                () -> -driverController.getLeftY(),
+//                () -> -driverController.getLeftX(),
+//                () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
-    // driverController.a().whileTrue(autoAim());
+
+    driverController.a().whileTrue(autoAim());
 
     // temp only
     driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
@@ -328,7 +269,7 @@ public class RobotContainer {
                 shooterSubsystem,
                 AutoAimCalculation.getDistanceFromRobotToHub(
                     driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.revFlywheels(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
@@ -337,35 +278,8 @@ public class RobotContainer {
         .x()
         .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
-    //    operatorController
-    //        .y()
-    //        // .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climbToLevelTwo(climberSubsystem));
-    //    operatorController
-    //        .b()
-    //        //  .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climbZeroing(climberSubsystem));
-    operatorController.a().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
-    // servo command
-    //    operatorController
-    //        .povUp()
-    //        .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climberServoUp(climberSubsystem));
-    //    operatorController
-    //        .povDown()
-    //        .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climberServoDown(climberSubsystem));
-    //    new Trigger(
-    //            () ->
-    //                (operatorController.getRightY()) > 0.1 &&
-    // operatorController.back().getAsBoolean())
-    //        .whileTrue(ClimberCommands.baseServoUp(climberSubsystem));
-    //    new Trigger(
-    //            () ->
-    //                (operatorController.getRightY()) < -0.1 &&
-    // operatorController.back().getAsBoolean())
-    //        .whileTrue(ClimberCommands.baseServoDown(climberSubsystem));
+    operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
     // manual climb command
     new Trigger(
@@ -383,11 +297,7 @@ public class RobotContainer {
         () ->
             AutoAimCalculation.getTargetAngle(driveSubsystem.poseEstimator.getEstimatedPosition()));
   }
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+
   public Command getAutonomousCommand() {
 
     return autoChooser.getSelected();

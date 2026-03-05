@@ -14,19 +14,20 @@ public class ShooterCommands {
         });
   }
 
-  public static Command revFlywheels(
+  public static Command shootAtRPS(double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+    return Commands.sequence( Commands.runOnce(
+                    () -> shooterSubsystem.setTargetVelocity(targetVelocity)),
+            Commands.waitUntil(shooterSubsystem::targetReached).andThen(feed(shooterSubsystem, hopperSubsystem)));
+  }
+
+  public static Command visionShoot(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         // Waits for the distance from vision
-        Commands.waitUntil(shooterSubsystem::distanceStored),
-        // Commands.run(() -> System.out.println(ShooterSubsystem.getTargetVelocity())),
+        Commands.waitUntil(shooterSubsystem::distanceStored)
         // Runs the flywheel until the controller is released
-        Commands.run(shooterSubsystem::setTargetVelocity, shooterSubsystem)
             .until(shooterSubsystem::targetReached)
-            .andThen(
-                Commands.parallel(
-                    Commands.run(shooterSubsystem::setTargetVelocity),
-                    feed(shooterSubsystem, hopperSubsystem))));
+            .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 
   public static Command feed(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
