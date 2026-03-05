@@ -94,6 +94,7 @@ public class VisionSubsystem extends SubsystemBase {
     Optional<VisionFusionResults> acceptedInputs = Optional.empty();
     if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
       acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
+      Logger.recordOutput("Vision/UsedAllCamera", false);
     } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
       acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
       Logger.recordOutput("Vision/UsedAllCamera", true);
@@ -178,35 +179,38 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
-    boolean isBasicFiltered = isBasicFiltered(inputs);
-    boolean isAdvancedFiltered = isAdvancedFiltered(inputs);
+    boolean isBasicFiltered = passedBasicFilter(inputs);
+    boolean isAdvancedFiltered = passedAdvancedFilter(inputs);
     boolean useMeasurement;
 
     if (oneCameraMode) {
       useMeasurement = isBasicFiltered;
+
     } else {
       useMeasurement = isBasicFiltered && isAdvancedFiltered;
     }
 
     if (!useMeasurement) {
+      Logger.recordOutput("Vision/FilterOutResults", true);
       return Optional.empty();
     }
 
     double xStd = inputs.rawStdDev[6];
     double yStd = inputs.rawStdDev[7];
-    //    double xyStd = Math.max(xStd,yStd);
-    double theta = inputs.rawStdDev[11];
+    //    double theta = inputs.rawStdDev[11];
+
+    Logger.recordOutput("Vision/FilterOutResults", !useMeasurement);
 
     return Optional.of(
         new VisionFusionResults(
             inputs.megaTagPose,
             inputs.timestamp,
-            //            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
-            VecBuilder.fill(xStd, yStd, theta),
+            VecBuilder.fill(xStd, yStd, VisionConstant.kLargeVariance),
+            //            VecBuilder.fill(xStd, yStd, theta),
             inputs.tagCount));
   }
 
-  private boolean isAdvancedFiltered(VisionIOInputsAutoLogged inputs) {
+  private boolean passedAdvancedFilter(VisionIOInputsAutoLogged inputs) {
 
     // Single‑tag extra checks
     //    if (inputs.tagCount < 2) {
@@ -225,7 +229,7 @@ public class VisionSubsystem extends SubsystemBase {
     return true;
   }
 
-  private boolean isBasicFiltered(VisionIOInputsAutoLogged inputs) {
+  private boolean passedBasicFilter(VisionIOInputsAutoLogged inputs) {
 
     if (!isValidInputs(inputs)) {
       return false;

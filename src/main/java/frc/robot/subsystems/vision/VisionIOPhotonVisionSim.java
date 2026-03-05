@@ -176,7 +176,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
                 .plus(bestTarget.bestCameraToTarget.inverse());
         inputs.ta = bestTarget.getArea();
       }
-      inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.3};
+      inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5, 5, 0.0, 0.0, 0.0, 0.3};
 
       List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
       // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,

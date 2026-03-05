@@ -66,7 +66,7 @@ public final class VisionConstant {
   }
 
   // just for sim
-  public static Transform3d robotToFrontCam = new Transform3d(0.3, 0, 0, new Rotation3d());
+  public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
 
   public static final int kExpectedStdDevArrayLength = 12;
