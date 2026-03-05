@@ -141,7 +141,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
     for (var result : results) {
       List<PhotonTrackedTarget> targets = result.getTargets();
-      //      inputs.rawAprilTagID = getAprilTagIDs(targets);
+      inputs.rawAprilTagID = getAprilTagIDs(targets);
 
       if (result.getMultiTagResult().isPresent()) {
         bestResult = result;
@@ -187,18 +187,18 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
           new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
     }
   }
-  //
-  //  private static int[] getAprilTagIDs(List<PhotonTrackedTarget> unreadTargets) {
-  //    if (unreadTargets == null || unreadTargets.isEmpty()) {
-  //      return new int[0];
-  //    } else {
-  //      int[] ids = new int[unreadTargets.size()];
-  //      for (PhotonTrackedTarget readTargets : unreadTargets) {
-  //        for (int i = 0; i < unreadTargets.size(); i++) {
-  //          ids[i] = readTargets.getFiducialId();
-  //        }
-  //      }
-  //      return ids;
-  //    }
-  //  }
+
+  private static int[] getAprilTagIDs(List<PhotonTrackedTarget> unreadTargets) {
+    if (unreadTargets == null || unreadTargets.isEmpty()) {
+      return new int[0];
+    } else {
+      int[] ids = new int[unreadTargets.size()];
+      for (PhotonTrackedTarget readTargets : unreadTargets) {
+        for (int i = 0; i < unreadTargets.size(); i++) {
+          ids[i] = readTargets.getFiducialId();
+        }
+      }
+      return ids;
+    }
+  }
 }

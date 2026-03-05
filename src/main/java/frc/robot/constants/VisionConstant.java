@@ -84,6 +84,7 @@ public final class VisionConstant {
   public static final Transform3d tagToHub3d =
       new Transform3d(new Translation3d(-0.5969, 0, 0.6096), new Rotation3d());
 
+  public static final int numAprilTagWillVisualize = 5;
   // TODO need measure & test
 
   public static final double MidGameMin = 5.939;
