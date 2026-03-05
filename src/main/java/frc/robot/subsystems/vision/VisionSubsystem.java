@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstant;
 import frc.robot.subsystems.drive.Drive;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -278,17 +280,24 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void logAprilTagPose(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    if (inputs.rawAprilTagID.length == 0) {
+
+    int[] ids = inputs.rawAprilTagID;
+
+    if (ids.length == 0) {
       return;
-    } else {
-      int[] ids = inputs.rawAprilTagID;
-      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
-      for (int i = 0; i < ids.length; i++) {
-        aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
-        Logger.recordOutput(
-            "Vision/AprilTagPoses", new Pose3d[] {aprilTagPoses[i], new Pose3d(robotPose.get())});
-      }
     }
+
+    List<Pose3d> poses = new ArrayList<>();
+
+    for (int id : ids) {
+      Optional<Pose3d> tagPose = VisionConstant.aprilTagFieldLayout.getTagPose(id);
+
+      tagPose.ifPresent(poses::add);
+    }
+
+    Logger.recordOutput("Vision/AprilTagPoses", poses.toArray(new Pose3d[0]));
+
+    Logger.recordOutput("Vision/RobotPose", new Pose3d(robotPose.get()));
   }
 
   private VisionMode decideVisionMode() {
