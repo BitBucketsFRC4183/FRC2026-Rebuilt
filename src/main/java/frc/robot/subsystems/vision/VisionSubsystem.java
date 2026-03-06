@@ -69,7 +69,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     /// logging
     logAutoAimInputs();
-    logAprilTagPose(CamOneInputs);
+    // logAprilTagPose(CamOneInputs);
     logAprilTagPose(CamTwoInputs);
 
     if (getFinalVisionMode() != defaultMode) {
@@ -278,8 +278,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void logAprilTagPose(VisionIOInputsAutoLogged inputs) {
-
-    if (inputs.rawAprilTagID.length == 0) {
+    if (!inputs.hasTarget) {
       return;
     } else {
       int[] ids = inputs.rawAprilTagID;

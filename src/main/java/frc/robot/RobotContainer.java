@@ -186,6 +186,9 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
+    autoChooser.addOption("StartBottomNeutralZIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartTopNeutralZIntake", autoSubsystem.StartTopNeutralZIntake());
+
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -281,7 +284,7 @@ public class RobotContainer {
                 shooterSubsystem,
                 visionSubsystem.getHubDistanceMeter(
                     driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.feed(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));

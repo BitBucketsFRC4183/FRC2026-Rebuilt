@@ -130,9 +130,9 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("MidStartToShootM", true);
   }
 
-  public Command goMidTower() {
-    return choreoPath("MidToTower", true);
-  }
+  //  public Command goMidTower() {
+  //    return choreoPath("MidToTower", true);
+  //  }
 
   public Command goBottomShootertoDepot() {
     return choreoPath("ShootMtoDepot", true);
@@ -146,21 +146,21 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("DepotToMid", true);
   }
 
-  public Command goBottomTower() {
-    return choreoPath("BottomToTower", true);
-  }
+  //  public Command goBottomTower() {
+  //    return choreoPath("BottomToTower", true);
+  //  }
 
-  public Command goTopTower() {
-    return choreoPath("TopToTower", true);
-  }
+  //  public Command goTopTower() {
+  //    return choreoPath("TopToTower", true);
+  //  }
 
-  public Command goShooterBtoTower() {
-    return choreoPath("ShootBtoTower", true);
-  }
+  //  public Command goShooterBtoTower() {
+  //    return choreoPath("ShootBtoTower", true);
+  //  }
 
-  public Command goShooterTtoTower() {
-    return choreoPath("ShootTtoTower", true);
-  }
+  //  public Command goShooterTtoTower() {
+  //    return choreoPath("ShootTtoTower", true);
+  //  }
 
   public Command goBottomToOutpost() {
     return choreoPath("BottomToOutpost", true);
