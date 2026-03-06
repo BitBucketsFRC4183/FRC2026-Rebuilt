@@ -279,16 +279,10 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // shooter Commands
-    double distance = 1;
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.storeDistance(
-                shooterSubsystem,
-                AutoAimCalculation.getDistanceFromRobotToHub(
-                    driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.visionShoot(AutoAimCalculation.getDistanceFromRobotToHub(
+                driveSubsystem.poseEstimator.getEstimatedPosition()), shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
