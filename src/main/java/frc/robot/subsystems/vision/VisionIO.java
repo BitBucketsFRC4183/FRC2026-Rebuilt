@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.constants.VisionConstant;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -15,6 +16,7 @@ public interface VisionIO {
     public double tx;
     public double ty;
     public double ta;
+    public double[] crosshairs = new double[4];
 
     public boolean hasMegaTag2;
 
@@ -25,7 +27,7 @@ public interface VisionIO {
     public double latency;
 
     public double[] rawStdDev = new double[12];
-    public int[] rawAprilTagID;
+    public int[] rawAprilTagID = new int[VisionConstant.numAprilTagWillVisualize];
     public double minAmbiguity;
   }
 

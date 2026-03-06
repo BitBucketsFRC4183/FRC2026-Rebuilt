@@ -80,7 +80,6 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOLimelight(),
                 () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
-                odometryHistory,
                 driveSubsystem);
 
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
@@ -111,7 +110,6 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOPhotonVisionSim(() -> driveSimulation.getSimulatedDriveTrainPose()),
                 () -> driveSimulation.getSimulatedDriveTrainPose(),
-                odometryHistory,
                 driveSubsystem);
 
         climberIO = new ClimberIOSim();
@@ -141,10 +139,7 @@ public class RobotContainer {
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         visionSubsystem =
             new VisionSubsystem(
-                visionIO,
-                () -> driveSimulation.getSimulatedDriveTrainPose(),
-                odometryHistory,
-                driveSubsystem);
+                visionIO, () -> driveSimulation.getSimulatedDriveTrainPose(), driveSubsystem);
 
         break;
     }
@@ -281,8 +276,12 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.visionShoot(AutoAimCalculation.getDistanceFromRobotToHub(
-                driveSubsystem.poseEstimator.getEstimatedPosition()), shooterSubsystem, hopperSubsystem))
+        .onTrue(
+            ShooterCommands.storeDistance(
+                shooterSubsystem,
+                visionSubsystem.getHubDistanceMeter(
+                    driveSubsystem.poseEstimator.getEstimatedPosition())))
+        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
@@ -307,8 +306,7 @@ public class RobotContainer {
         driveSubsystem,
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () ->
-            AutoAimCalculation.getTargetAngle(driveSubsystem.poseEstimator.getEstimatedPosition()));
+        () -> visionSubsystem.getAimAngle());
   }
 
   public Command getAutonomousCommand() {

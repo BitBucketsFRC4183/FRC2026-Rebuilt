@@ -45,8 +45,8 @@ public final class VisionConstant {
    */
   /// **********
   /// **********
-  public static final String LIMELIGHT_A = "limelight-side";
-  public static final String LIMELIGHT_B = "limelight-front";
+  public static final String LIMELIGHT_A = "limelight-front";
+  public static final String LIMELIGHT_B = "limelight-side";
 
   public static final int PIPELINE_DEFAULT_AprilTagTuning = 0;
   public static final int PIPELINE_DEFAULT_DriverCamera = 1;
@@ -68,22 +68,33 @@ public final class VisionConstant {
   // just for sim
   public static Transform3d robotToFrontCam = new Transform3d(0, 0, 0, new Rotation3d());
   public static Transform3d robotToBackCam = new Transform3d(0, 0, 0, new Rotation3d());
+  public static final double txSim = 3.3;
+  public static final double tySim = 5.5;
 
-  public static final int kExpectedStdDevArrayLength = 12;
   public static final double kLargeVariance = 1e6;
 
   // TODO need tune: max readable tag
   public static final double complementaryFilterAlphaIMU = 0.001;
 
-  public static final double maxDistanceFromRobotToApril = 17.0;
+  public static final double maxDistanceFromRobotToApril = 10.0;
 
   public static final double maxGyroChange = 360; // degrees
-  public static final double kTagMinAreaForSingleTagMegatag = 3.0;
+  public static final double kTagMinAreaForSingleTagMegatag = 0.05;
   public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
   public static final Transform3d tagToHub3d =
-      new Transform3d(new Translation3d(0.5969, 0, 0.6096), new Rotation3d());
+      new Transform3d(new Translation3d(-0.5969, 0, 0.6096), new Rotation3d());
 
+  /// camera One --> front
+  public static final double cameraOneMountAngleDegrees = 20;
+
+  // distance from the center of the Limelight lens to the floor
+  public static final double cameraOneLensHeightMeter = 0.271018;
+
+  // distance from the target to the floor
+  public static final double goalHeightMeter = 1.8288;
+
+  public static final int numAprilTagWillVisualize = 5;
   // TODO need measure & test
 
   public static final double MidGameMin = 5.939;

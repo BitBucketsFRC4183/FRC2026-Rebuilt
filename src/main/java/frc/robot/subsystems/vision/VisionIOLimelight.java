@@ -19,10 +19,6 @@ public class VisionIOLimelight implements VisionIO {
   private final NetworkTable limelightTwoTable =
       NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
 
-  // define, create a 0.0 double array
-  private static final double[] defaultStdDev =
-      new double[VisionConstant.kExpectedStdDevArrayLength];
-
   @Override
   public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
@@ -62,15 +58,15 @@ public class VisionIOLimelight implements VisionIO {
         }
 
         var rawFiducial = LimelightHelpers.getRawFiducials(cameraName);
-
         inputs.minAmbiguity = getMinAmbiguity(rawFiducial);
         inputs.rawAprilTagID = getAprilTagIDs(rawFiducial);
 
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
-        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(defaultStdDev);
+        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(new double[12]);
         //        System.out.println(inputs.rawStdDev);
+        inputs.crosshairs = table.getEntry("crosshairs").getDoubleArray(new double[4]);
 
       } catch (Exception e) {
         System.err.println("Error processing Limelight data: " + e.getMessage());
@@ -101,23 +97,23 @@ public class VisionIOLimelight implements VisionIO {
     LimelightHelpers.SetIMUAssistAlpha(cameraName, alpha);
   }
 
-  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
-    if (UnreadReadFiducial == null || UnreadReadFiducial.length == 0) {
+  private static int[] getAprilTagIDs(LimelightHelpers.RawFiducial[] unreadFiducial) {
+    if (unreadFiducial == null || unreadFiducial.length == 0) {
       return new int[0];
     } else {
-      int[] ids = new int[UnreadReadFiducial.length];
-      for (int i = 0; i < UnreadReadFiducial.length; i++) {
-        ids[i] = UnreadReadFiducial[i].id;
+      int[] ids = new int[unreadFiducial.length];
+      for (int i = 0; i < unreadFiducial.length; i++) {
+        ids[i] = unreadFiducial[i].id;
       }
       return ids;
     }
   }
 
-  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] UnreadReadFiducial) {
+  private static double getMinAmbiguity(LimelightHelpers.RawFiducial[] unreadFiducial) {
     /// ambiguity, new!
 
     double minAmbiguity = 999;
-    for (var readFludicial : UnreadReadFiducial) {
+    for (var readFludicial : unreadFiducial) {
       minAmbiguity = Math.min(minAmbiguity, readFludicial.ambiguity);
     }
     return minAmbiguity;

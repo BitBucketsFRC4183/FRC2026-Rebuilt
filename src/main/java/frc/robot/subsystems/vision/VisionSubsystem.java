@@ -23,7 +23,6 @@ public class VisionSubsystem extends SubsystemBase {
   /// ******************************
 
   private final VisionIO visionio;
-  private final OdometryHistory odometryHistory;
   private final Supplier<Pose2d> pose2dSupplier;
   private final Drive drive;
 
@@ -38,18 +37,15 @@ public class VisionSubsystem extends SubsystemBase {
   private VisionMode lastAutoMode = null;
   private VisionMode manualMode = null;
 
+  private boolean oneCameraMode = true;
+
   private VisionMode defaultMode = VisionMode.DISABLED;
 
   private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
 
-  public VisionSubsystem(
-      VisionIO visionio,
-      Supplier<Pose2d> pose2dSupplier,
-      OdometryHistory odometryHistory,
-      Drive drive) {
+  public VisionSubsystem(VisionIO visionio, Supplier<Pose2d> pose2dSupplier, Drive drive) {
     this.visionio = visionio;
     this.pose2dSupplier = pose2dSupplier;
-    this.odometryHistory = odometryHistory;
     this.drive = drive;
     this.lastGyroTimestamp = Timer.getFPGATimestamp();
     this.lastGyroDegs = pose2dSupplier.get().getRotation().getDegrees();
@@ -68,13 +64,13 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
-    Logger.processInputs("Vision/side", CamOneInputs);
-    Logger.processInputs("Vision/front_shooter", CamTwoInputs);
+    Logger.processInputs("Vision/front", CamOneInputs);
+    Logger.processInputs("Vision/side", CamTwoInputs);
 
     /// logging
-    logAutoAimInputs(pose2dSupplier);
-    visualizeAprilTags(CamTwoInputs, pose2dSupplier);
-    visualizeAprilTags(CamTwoInputs, pose2dSupplier);
+    logAutoAimInputs();
+    logAprilTagPose(CamOneInputs);
+    logAprilTagPose(CamTwoInputs);
 
     if (getFinalVisionMode() != defaultMode) {
       defaultMode = getFinalVisionMode();
@@ -98,6 +94,7 @@ public class VisionSubsystem extends SubsystemBase {
     Optional<VisionFusionResults> acceptedInputs = Optional.empty();
     if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
       acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
+      Logger.recordOutput("Vision/UsedAllCamera", false);
     } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
       acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
       Logger.recordOutput("Vision/UsedAllCamera", true);
@@ -130,9 +127,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     // Preview both estimates to the same timestamp
     Transform2d a_T_b =
-        odometryHistory
+        drive
+            .getOdometryHistory()
             .getPoseAt(b.getTimestampSeconds())
-            .minus(odometryHistory.getPoseAt(a.getTimestampSeconds()));
+            .minus(drive.getOdometryHistory().getPoseAt(a.getTimestampSeconds()));
 
     Pose2d poseA = a.getVisionRobotPoseMeters().transformBy(a_T_b);
     Pose2d poseB = b.getVisionRobotPoseMeters();
@@ -181,47 +179,65 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
-    Optional<VisionFusionResults> estimateOrEmpty = Optional.empty();
-    if (!isValidInputs(inputs)) {
-      return Optional.empty();
-    }
-    Optional<VisionFusionResults> mtEstimate = processMTPoseEstimate(inputs);
-    if (mtEstimate.isPresent()) {
-      estimateOrEmpty = mtEstimate;
-    }
-    return estimateOrEmpty;
-  }
+    boolean isBasicFiltered = passedBasicFilter(inputs);
+    boolean isAdvancedFiltered = passedAdvancedFilter(inputs);
+    boolean useMeasurement;
 
-  private Optional<VisionFusionResults> processMTPoseEstimate(VisionIOInputsAutoLogged inputs) {
+    if (oneCameraMode) {
+      useMeasurement = isBasicFiltered;
 
-    // Single‑tag extra checks
-    if (inputs.tagCount < 2) {
-      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
-        return Optional.empty();
-      }
+    } else {
+      useMeasurement = isBasicFiltered && isAdvancedFiltered;
     }
 
-    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
+    if (!useMeasurement) {
+      Logger.recordOutput("Vision/FilterOutResults", true);
       return Optional.empty();
     }
 
-    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
-      return Optional.empty();
-    }
-
-    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
-      return Optional.empty();
-    }
     double xStd = inputs.rawStdDev[6];
     double yStd = inputs.rawStdDev[7];
-    double xyStd = Math.max(xStd, yStd);
+    //    double theta = inputs.rawStdDev[11];
+
+    Logger.recordOutput("Vision/FilterOutResults", false);
 
     return Optional.of(
         new VisionFusionResults(
             inputs.megaTagPose,
             inputs.timestamp,
-            VecBuilder.fill(xyStd, xyStd, VisionConstant.kLargeVariance),
+            VecBuilder.fill(xStd, yStd, VisionConstant.kLargeVariance),
+            //            VecBuilder.fill(xStd, yStd, theta),
             inputs.tagCount));
+  }
+
+  private boolean passedAdvancedFilter(VisionIOInputsAutoLogged inputs) {
+
+    // Single‑tag extra checks
+    //    if (inputs.tagCount < 2) {
+    //      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
+    //        return Optional.empty();
+    //      }
+    //    }
+
+    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
+      return false;
+    }
+    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean passedBasicFilter(VisionIOInputsAutoLogged inputs) {
+
+    if (!isValidInputs(inputs)) {
+      return false;
+    }
+
+    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
+      return false;
+    }
+    return true;
   }
 
   /// are we a valid pose?
@@ -254,35 +270,25 @@ public class VisionSubsystem extends SubsystemBase {
     return Math.abs(deltaGryoDegs / deltaTime);
   }
 
-  private void logAutoAimInputs(Supplier<Pose2d> supplier) {
-    double angle = AutoAimCalculation.getTargetAngle(supplier.get()).getDegrees();
-    double[] targetHubPose3d =
-        new double[] {
-          AutoAimCalculation.getTargetHubPose3d().getX(),
-          AutoAimCalculation.getTargetHubPose3d().getY(),
-          AutoAimCalculation.getTargetHubPose3d().getZ(),
-          AutoAimCalculation.getTargetHubPose3d().getRotation().getZ()
-        };
+  private void logAutoAimInputs() {
 
-    double distance = AutoAimCalculation.getDistanceFromRobotToHub(supplier.get());
-
-    Logger.recordOutput("Vision/Aim/CurrentHubPose", targetHubPose3d);
-    Logger.recordOutput("Vision/Aim/HubTargetAngle", angle);
-    Logger.recordOutput("Vision/Aim/DistanceToHub", distance);
+    Logger.recordOutput("Vision/Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
+    Logger.recordOutput("Vision/Aim/TargetAngle", getAimAngle());
+    Logger.recordOutput("Vision/Aim/DistanceToHub", getHubDistanceMeter(pose2dSupplier.get()));
   }
 
-  public void visualizeAprilTags(VisionIOInputsAutoLogged inputs, Supplier<Pose2d> robotPose) {
-    //    Pose3d robot3d = new Pose3d(robotPose.get());
-    //    List<Pose3d> linePoses = new ArrayList<>();
-    //    for (var readAprilTagIDs : inputs.rawAprilTagID) {
-    //      Optional<Pose3d> aprilTagPose =
-    //          VisionConstant.aprilTagFieldLayout.getTagPose(readAprilTagIDs);
-    //      if (aprilTagPose.isPresent()) {
-    //        linePoses.add(aprilTagPose.get());
-    //        linePoses.add(robot3d);
-    //      }
-    //    }
-    //    Logger.recordOutput("seenAprilTags", linePoses);
+  private void logAprilTagPose(VisionIOInputsAutoLogged inputs) {
+
+    if (inputs.rawAprilTagID.length == 0) {
+      return;
+    } else {
+      int[] ids = inputs.rawAprilTagID;
+      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
+      for (int i = 0; i < ids.length; i++) {
+        aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
+      }
+      Logger.recordOutput("Vision/AprilTagPoses", aprilTagPoses);
+    }
   }
 
   private VisionMode decideVisionMode() {
@@ -366,6 +372,41 @@ public class VisionSubsystem extends SubsystemBase {
         applyAllIMUAlphaAssist();
       }
     }
+  }
+
+  public VisionMode getCurrentVisionMode() {
+    return defaultMode;
+  }
+
+  /// ONLY ONE CAMERA!! THAT IS THE FRONTSHOOTER CAMERA
+  public double getHubDistanceMeter(Pose2d robotPose) {
+    if (robotPose.getTranslation().getX() > VisionConstant.MidGameMin
+        && robotPose.getTranslation().getX() < VisionConstant.MidGameMax) {
+      Logger.recordOutput("Vision/Aim/WeInMidGame", true);
+      return 0;
+    }
+    Logger.recordOutput("Vision/Aim/WeInMidGame", false);
+    /// make sure only used in telop
+    if (getCurrentVisionMode() == VisionMode.AUTONOMOUS) {
+      return AutoAimUtil.getHubDistance_HubPose(robotPose);
+
+    } else {
+
+      if (!CamOneInputs.hasTarget) {
+        return 0;
+      }
+      double distanceCameraToHub =
+          (VisionConstant.goalHeightMeter - VisionConstant.cameraOneLensHeightMeter)
+              / Math.tan(
+                  Math.toRadians(VisionConstant.cameraOneMountAngleDegrees + CamOneInputs.ty));
+      Logger.recordOutput("Vision/Aim/distanceUsingTargetPose", distanceCameraToHub);
+      return distanceCameraToHub;
+    }
+  }
+
+  public Rotation2d getAimAngle() {
+    if (!CamOneInputs.hasTarget) return Rotation2d.kZero;
+    return drive.getRotation().plus(Rotation2d.fromDegrees(CamOneInputs.tx));
   }
 }
 
