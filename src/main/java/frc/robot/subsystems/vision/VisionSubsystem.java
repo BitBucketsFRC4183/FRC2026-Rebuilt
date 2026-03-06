@@ -273,7 +273,7 @@ public class VisionSubsystem extends SubsystemBase {
   private void logAutoAimInputs() {
 
     Logger.recordOutput("Vision/Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
-    Logger.recordOutput("Vision/Aim/TargetAngle", getAimAngle());
+    Logger.recordOutput("Vision/Aim/TargetAngle", getAimTargetAngle());
     Logger.recordOutput("Vision/Aim/DistanceToHub", getHubDistanceMeter(pose2dSupplier.get()));
   }
 
@@ -392,9 +392,9 @@ public class VisionSubsystem extends SubsystemBase {
 
     } else {
 
-      if (!CamOneInputs.hasTarget) {
-        return 0;
-      }
+      //      if (!CamOneInputs.hasTarget) {
+      //        return 0;
+      //      }
       double distanceCameraToHub =
           (VisionConstant.goalHeightMeter - VisionConstant.cameraOneLensHeightMeter)
               / Math.tan(
@@ -404,9 +404,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  public Rotation2d getAimAngle() {
-    if (!CamOneInputs.hasTarget) return Rotation2d.kZero;
-    return drive.getRotation().plus(Rotation2d.fromDegrees(CamOneInputs.tx));
+  public Rotation2d getAimTargetAngle() {
+    if (!CamOneInputs.hasTarget) return drive.getRotation();
+    return drive
+        .getRotation()
+        .plus(Rotation2d.fromDegrees(CamOneInputs.tx))
+        .rotateBy(new Rotation2d(Math.PI));
   }
 }
 

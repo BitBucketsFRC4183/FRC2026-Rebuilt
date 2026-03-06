@@ -22,8 +22,8 @@ public class ShooterCommands {
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 
-  public static Command visionShoot(double distance,
-      ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+  public static Command visionShoot(
+      double distance, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         // Waits for the distance from vision
         Commands.waitUntil(shooterSubsystem::distanceStored)

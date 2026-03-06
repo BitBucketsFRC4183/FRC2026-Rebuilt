@@ -306,7 +306,7 @@ public class RobotContainer {
         driveSubsystem,
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () -> visionSubsystem.getAimAngle());
+        () -> visionSubsystem.getAimTargetAngle());
   }
 
   public Command getAutonomousCommand() {
