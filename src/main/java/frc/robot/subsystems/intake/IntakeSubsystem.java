@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -24,7 +24,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private final LoggedMechanism2d mech = new LoggedMechanism2d(2, 2);
   private final LoggedMechanismRoot2d root = mech.getRoot("IntakeRoot", 1, 1);
   private final LoggedMechanismLigament2d intakeBar =
-          root.append(new LoggedMechanismLigament2d("Intake", 0.0, 0.0, 8.0, new Color8Bit(Color.kPurple)));
+      root.append(
+          new LoggedMechanismLigament2d("Intake", 0.0, 0.0, 8.0, new Color8Bit(Color.kPurple)));
 
   public IntakeSubsystem(IntakeIO io) {
     this.io = io;

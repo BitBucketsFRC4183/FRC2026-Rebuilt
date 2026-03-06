@@ -56,7 +56,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command shoot() {
     System.out.println("Beginning to Shoot");
-    return ShooterCommands.revFlywheels(shooter, hopper);
+    return ShooterCommands.feed(shooter, hopper);
   }
 
   public Command climb() {
