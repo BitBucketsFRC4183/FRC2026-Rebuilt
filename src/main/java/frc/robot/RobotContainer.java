@@ -72,7 +72,7 @@ public class RobotContainer {
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                new ModuleIOTalonFXHacked(TunerConstants.BackLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
                 (pose) -> {});
 
