@@ -270,10 +270,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
-        Commands.parallel(goMidToDepot(), IntakeCommands.intake(intake)).withTimeout(3.5),
-        new WaitCommand(6),
+            driveAndIntake(goMidToDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        Commands.parallel(goDepotToMid(), IntakeCommands.intake(intake)).withTimeout(2.3),
+            goDepotToMid(),
         shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
