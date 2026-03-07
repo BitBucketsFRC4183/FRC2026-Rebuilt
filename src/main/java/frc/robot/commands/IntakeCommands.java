@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
 import static frc.robot.constants.IntakeConstants.INTAKE_SERVO_DEPLOY_PULSEWIDTH;
@@ -51,12 +52,12 @@ public final class IntakeCommands {
   }
 
   public static Command moveServoTo0(IntakeSubsystem intake) {
-    return Commands.runOnce(() -> intake.io.setServoAngle(20.0), intake)
+    return Commands.runOnce(() -> intake.io.setServoAngle(IntakeConstants.SERVO_0), intake)
         .withName("Intake.MoveServo0");
   }
 
   public static Command moveServoTo90(IntakeSubsystem intake) {
-    return Commands.runOnce(() -> intake.io.setServoAngle(132.0), intake)
+    return Commands.runOnce(() -> intake.io.setServoAngle(IntakeConstants.SERVO_90), intake)
         .withName("Intake.MoveServo90");
   }
 

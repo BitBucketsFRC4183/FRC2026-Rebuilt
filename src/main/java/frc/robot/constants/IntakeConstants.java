@@ -39,5 +39,9 @@ public final class IntakeConstants {
   public static final int INTAKE_SERVO_STOW_PULSEWIDTH = 1000;
   public static final int INTAKE_SERVO_DEPLOY_PULSEWIDTH = 1500;
 
+  // Servo Stuff
+  public static final double SERVO_0 = -30;
+  public static final double SERVO_90 = 130;
+
   private IntakeConstants() {}
 }
