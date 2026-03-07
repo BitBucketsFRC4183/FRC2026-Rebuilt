@@ -186,7 +186,8 @@ public class RobotContainer {
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
     autoChooser.addOption("StartBottomNeutralZIntake", autoSubsystem.StartBottomNeutralZIntake());
     autoChooser.addOption("StartTopNeutralZIntake", autoSubsystem.StartTopNeutralZIntake());
-
+    autoChooser.addOption(
+        "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -289,7 +290,7 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));

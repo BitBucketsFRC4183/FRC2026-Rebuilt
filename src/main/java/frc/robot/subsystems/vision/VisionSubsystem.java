@@ -102,10 +102,11 @@ public class VisionSubsystem extends SubsystemBase {
     logAprilTagPose(CamTwoInputs);
 
     if (lastVisionMode != currentVisionMode) {
-      setVisionPipelineForAllCameras(currentVisionMode);
+      // setVisionPipelineForAllCameras(currentVisionMode);
       lastVisionMode = currentVisionMode;
     }
 
+    setVisionPipelineForAllCameras(VisionMode.AUTONOMOUS);
     seedGyroVisionMode(currentVisionMode);
 
     /// one
@@ -213,8 +214,8 @@ public class VisionSubsystem extends SubsystemBase {
       return Optional.empty();
     }
 
-    double xStd = 0.7;
-    double yStd = 0.7;
+    double xStd = 0.3;
+    double yStd = 0.3;
     //    double theta = inputs.rawStdDev[11];
 
     Logger.recordOutput("Vision/FilterOutResults", false);

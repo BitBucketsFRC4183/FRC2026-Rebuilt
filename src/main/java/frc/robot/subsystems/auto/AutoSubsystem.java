@@ -3,6 +3,10 @@ package frc.robot.subsystems.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.IntakeCommands;
@@ -118,9 +122,22 @@ public class AutoSubsystem extends SubsystemBase {
       // Loading the path from the deploy/choreo folder
       PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(trajName);
       Command followCommand = AutoBuilder.followPath(path);
+      
 
+      
       if (resetPose) {
-        return new InstantCommand(() -> drive.setPose(path.getStartingHolonomicPose().get()))
+        Pose2d startingPose;
+
+        if (DriverStation.getAlliance().isPresent()) {
+          if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+            startingPose = path.flipPath().getStartingHolonomicPose().get();
+          } else {
+            startingPose = path.getStartingHolonomicPose().get();
+          }
+        } else {
+          startingPose = path.getStartingHolonomicPose().get();
+        }
+        return new InstantCommand(() -> drive.setPose(startingPose))
             .andThen(followCommand);
       } else {
         return followCommand;
@@ -261,9 +278,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-            driveAndIntake(goBottomToOutpost()),
+        driveAndIntake(goBottomToOutpost()),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-            goOutpostToShootBPs(),
+        goOutpostToShootBPs(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
