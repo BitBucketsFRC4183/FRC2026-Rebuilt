@@ -85,9 +85,9 @@ public class AutoSubsystem extends SubsystemBase {
     return IntakeCommands.moveServoTo90(intake);
   }
   // Helper to drive while intaking
-  private Command driveAndIntake(Command pathCommand) {
+  /*private Command driveAndIntake(Command pathCommand) {
     return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
-  }
+  }*/
   // outtake in alliance zone
   private Command outtakeAtAlliance() {
     System.out.println("dumping balls in alliance zone!");
@@ -212,7 +212,10 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        driveAndIntake(goBottomStartToShootB()),
+        Commands.parallel(
+                goBottomStartToShootB(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
         shoot(ShootingPosition.POSITION_btm).withTimeout(7),
         stop(),
@@ -226,7 +229,10 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from top position to shooting position")),
-        driveAndIntake(goToptoShooterPs()),
+        Commands.parallel(
+                goToptoShooterPs(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
         shoot(ShootingPosition.POSITION_top).withTimeout(7),
         stop(),
@@ -239,7 +245,10 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
-        driveAndIntake(goMidToShooterPs()),
+        Commands.parallel(
+                goMidToShooterPs(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
         shoot(ShootingPosition.POSITION_mid).withTimeout(7),
         stop(),
@@ -251,10 +260,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-        driveAndIntake(goBottomToOutpost()),
+        Commands.parallel(
+                goBottomToOutpost(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-        driveAndIntake(goOutpostToShootBPs()),
+        Commands.parallel(
+                goOutpostToShootBPs(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2.2),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
@@ -265,10 +280,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
-        driveAndIntake(goMidToDepot()),
+        Commands.parallel(
+                goMidToDepot(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(3.5),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        driveAndIntake(goDepotToMid()),
+        Commands.parallel(
+                goDepotToMid(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2.3),
         shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
@@ -279,10 +300,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
-        driveAndIntake(goTopStartToDepot()),
+        Commands.parallel(
+                goTopStartToDepot(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(4.3),
         new WaitCommand(6),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        driveAndIntake(goDepotToShootT()),
+        Commands.parallel(
+                goDepotToShootT(),
+                IntakeCommands.intake(intake)
+                ).withTimeout(2),
         shoot(ShootingPosition.POSITION_top).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
@@ -293,10 +320,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
-        driveAndIntake(goBottomStartToShootB()),
+        Commands.parallel(
+                goBottomStartToShootB(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(1.6),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
-        driveAndIntake(goBottomShootertoDepot()),
+        Commands.parallel(
+                goBottomShootertoDepot(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(2),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -306,10 +339,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
-        driveAndIntake(goMidToShooterPs()),
+        Commands.parallel(
+                goMidToShooterPs(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(1.5),
         shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
-        driveAndIntake(goMidShootertoDepot()),
+        Commands.parallel(
+                goMidShootertoDepot(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(4),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -319,10 +358,16 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
-        driveAndIntake(goToptoShooterPs()),
+        Commands.parallel(
+                goToptoShooterPs(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(1.8),
         shoot(ShootingPosition.POSITION_top).withTimeout(6),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
-        driveAndIntake(goTopShootertoDepot()),
+        Commands.parallel(
+                goTopShootertoDepot(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(4.8),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -332,9 +377,15 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone")),
-        driveAndIntake(goBottomStartToNeutralZ()),
-        IntakeOnly().withTimeout(3),
-        driveAndIntake(goIntakeBtmToAlliance()),
+        Commands.parallel(
+                goBottomStartToNeutralZ(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(8.5),
+            //IntakeOnly().withTimeout(3),
+        Commands.parallel(
+                goIntakeBtmToAlliance(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(7.5),
         outtakeAtAlliance().withTimeout(3),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
@@ -345,9 +396,15 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        driveAndIntake(goTopStartToneutralZ()),
-        IntakeOnly().withTimeout(3),
-        driveAndIntake(goIntakeTopToAlliance()),
+        Commands.parallel(
+                goTopStartToneutralZ(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(8),
+        //IntakeOnly().withTimeout(3),
+        Commands.parallel(
+                goIntakeTopToAlliance(),
+                IntakeCommands.intake(intake)
+        ).withTimeout(6),
         outtakeAtAlliance().withTimeout(3),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
