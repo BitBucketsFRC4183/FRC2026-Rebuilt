@@ -102,10 +102,11 @@ public class VisionSubsystem extends SubsystemBase {
     logAprilTagPose(CamTwoInputs);
 
     if (lastVisionMode != currentVisionMode) {
-      setVisionPipelineForAllCameras(currentVisionMode);
+      // setVisionPipelineForAllCameras(currentVisionMode);
       lastVisionMode = currentVisionMode;
     }
 
+    setVisionPipelineForAllCameras(VisionMode.AUTONOMOUS);
     seedGyroVisionMode(currentVisionMode);
 
     /// one

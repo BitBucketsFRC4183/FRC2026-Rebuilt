@@ -126,7 +126,6 @@ public class AutoSubsystem extends SubsystemBase {
 
       
       if (resetPose) {
-
         Pose2d startingPose;
 
         if (DriverStation.getAlliance().isPresent()) {
