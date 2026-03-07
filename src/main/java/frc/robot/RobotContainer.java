@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -33,8 +32,10 @@ import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
@@ -50,8 +51,6 @@ public class RobotContainer {
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
-  private OdometryHistory odometryHistory;
-  private VisionFusionResults visionFusionResults;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -204,6 +203,8 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    AutoLogOutputManager.addPackage("frc.r");
   }
 
   private void configureButtonBindings() {
@@ -216,53 +217,19 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    //    // Lock to 0° when A button is held
-    //    driverController
-    //        .a()
-    //        .whileTrue(
-    //            DriveCommands.joystickDriveAtAngle(
-    //                driveSubsystem,
-    //                () -> -driverController.getLeftY(),
-    //                () -> -driverController.getLeftX(),
-    //                () -> Rotation2d.kZero));
-    driverController
-           .povUp()
-           .whileTrue(
-               DriveCommands.joystickDriveAtAngle(
-                   driveSubsystem,
-                   () -> -driverController.getLeftY(),
-                   () -> -driverController.getLeftX(),
-                   () -> Rotation2d.kZero));
-    driverController
-           .povRight()
-           .whileTrue(
-               DriveCommands.joystickDriveAtAngle(
-                   driveSubsystem,
-                   () -> -driverController.getLeftY(),
-                   () -> -driverController.getLeftX(),
-                   () -> Rotation2d.kCW_90deg));
-    driverController
-           .povDown()
-           .whileTrue(
-               DriveCommands.joystickDriveAtAngle(
-                   driveSubsystem,
-                   () -> -driverController.getLeftY(),
-                   () -> -driverController.getLeftX(),
-                   () -> Rotation2d.k180deg));
-    driverController
-           .povLeft()
-           .whileTrue(
-               DriveCommands.joystickDriveAtAngle(
-                   driveSubsystem,
-                   () -> -driverController.getLeftY(),
-                   () -> -driverController.getLeftX(),
-                   () -> Rotation2d.kCCW_90deg));
+    driverController.povUp().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kZero));
+    driverController.povRight().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kCW_90deg));
+    driverController.povDown().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.k180deg));
+    driverController.povLeft().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kCCW_90deg));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
-    driverController.a().whileTrue(autoAim());
-    
+    driverController
+        .a()
+        .whileTrue(
+            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngletoHub(driveSubsystem.getPose())));
+
     // temp only
     // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
     // driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
@@ -284,7 +251,6 @@ public class RobotContainer {
 
     operatorController
         .leftBumper()
-        .debounce(0.2)
         .onTrue(
             Commands.runOnce(
                 () -> {
@@ -295,8 +261,8 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
+    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
     operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
     operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
@@ -336,16 +302,15 @@ public class RobotContainer {
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
-  public Command autoAim() {
+  public Command driverJoystickDriveAtAngle(Supplier<Rotation2d> rotation) {
     return DriveCommands.joystickDriveAtAngle(
         driveSubsystem,
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () -> visionSubsystem.getAimTargetAngle());
+        rotation);
   }
 
   public Command getAutonomousCommand() {
-
     return autoChooser.getSelected();
   }
 

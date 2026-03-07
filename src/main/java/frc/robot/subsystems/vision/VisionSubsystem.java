@@ -68,7 +68,6 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.processInputs("Vision/side", CamTwoInputs);
 
     /// logging
-    logAutoAimInputs();
     // logAprilTagPose(CamOneInputs);
     logAprilTagPose(CamTwoInputs);
 
@@ -109,13 +108,6 @@ public class VisionSubsystem extends SubsystemBase {
           Logger.recordOutput("Vision/SuccessfullyFused", true);
         });
   }
-  /*
-  ********************
-  ********************
-  SEPARATION LINE
-  ********************
-  ********************
-  */
 
   private VisionFusionResults getFuseEstimation(VisionFusionResults a, VisionFusionResults b) {
     // Ensure b is the newer measurement
@@ -270,13 +262,6 @@ public class VisionSubsystem extends SubsystemBase {
     return Math.abs(deltaGryoDegs / deltaTime);
   }
 
-  private void logAutoAimInputs() {
-
-    Logger.recordOutput("Vision/Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
-    Logger.recordOutput("Vision/Aim/TargetAngle", getAimTargetAngle());
-    Logger.recordOutput("Vision/Aim/DistanceToHub", getHubDistanceMeter(pose2dSupplier.get()));
-  }
-
   private void logAprilTagPose(VisionIOInputsAutoLogged inputs) {
     if (!inputs.hasTarget) {
       return;
@@ -387,7 +372,7 @@ public class VisionSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision/Aim/WeInMidGame", false);
     /// make sure only used in telop
     if (getCurrentVisionMode() == VisionMode.AUTONOMOUS) {
-      return AutoAimUtil.getHubDistance_HubPose(robotPose);
+      return AutoAimUtil.getDistanceToHub(robotPose);
 
     } else {
 
@@ -401,14 +386,6 @@ public class VisionSubsystem extends SubsystemBase {
       Logger.recordOutput("Vision/Aim/distanceUsingTargetPose", distanceCameraToHub);
       return distanceCameraToHub;
     }
-  }
-
-  public Rotation2d getAimTargetAngle() {
-    if (!CamOneInputs.hasTarget) return drive.getRotation();
-    return drive
-        .getRotation()
-        .plus(Rotation2d.fromDegrees(CamOneInputs.tx))
-        .rotateBy(new Rotation2d(Math.PI));
   }
 }
 
