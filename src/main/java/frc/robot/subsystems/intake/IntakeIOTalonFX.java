@@ -129,4 +129,3 @@ public class IntakeIOTalonFX implements IntakeIO {
     servoChannel2.setPulseWidth(pulseWidth);
   }
 }
-
