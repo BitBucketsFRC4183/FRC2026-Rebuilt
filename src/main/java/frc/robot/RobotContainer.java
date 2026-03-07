@@ -225,15 +225,47 @@ public class RobotContainer {
     //                () -> -driverController.getLeftY(),
     //                () -> -driverController.getLeftX(),
     //                () -> Rotation2d.kZero));
+    driverController
+           .povUp()
+           .whileTrue(
+               DriveCommands.joystickDriveAtAngle(
+                   driveSubsystem,
+                   () -> -driverController.getLeftY(),
+                   () -> -driverController.getLeftX(),
+                   () -> Rotation2d.kZero));
+    driverController
+           .povRight()
+           .whileTrue(
+               DriveCommands.joystickDriveAtAngle(
+                   driveSubsystem,
+                   () -> -driverController.getLeftY(),
+                   () -> -driverController.getLeftX(),
+                   () -> Rotation2d.kCW_90deg));
+    driverController
+           .povDown()
+           .whileTrue(
+               DriveCommands.joystickDriveAtAngle(
+                   driveSubsystem,
+                   () -> -driverController.getLeftY(),
+                   () -> -driverController.getLeftX(),
+                   () -> Rotation2d.k180deg));
+    driverController
+           .povLeft()
+           .whileTrue(
+               DriveCommands.joystickDriveAtAngle(
+                   driveSubsystem,
+                   () -> -driverController.getLeftY(),
+                   () -> -driverController.getLeftX(),
+                   () -> Rotation2d.kCCW_90deg));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
     driverController.a().whileTrue(autoAim());
-
+    
     // temp only
-    driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-    driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+    // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    // driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
