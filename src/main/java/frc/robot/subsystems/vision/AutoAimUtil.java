@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.*;
 import frc.robot.constants.AprilTagLabel;
-import org.littletonrobotics.junction.Logger;
 
 public class AutoAimUtil {
   /// fancy notation
@@ -14,14 +13,12 @@ public class AutoAimUtil {
   // For Logging
   public static Pose2d getTargetHubPose2d() {
     var p = getTargetHubPose3d().toPose2d();
-    Logger.recordOutput("Aim/HubPose", p);
     return getTargetHubPose3d().toPose2d();
   }
 
   // dist to hub meters
   public static double getDistanceToHub(Pose2d robotPose) {
     var d = robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
-    Logger.recordOutput("Aim/DistToHub", d);
     return d;
   }
 
@@ -33,7 +30,6 @@ public class AutoAimUtil {
     double theta = Math.atan2(y_diff, x_diff);
 
     var r = Rotation2d.fromRadians(theta);
-    Logger.recordOutput("Aim/AngleToHub", r);
     return r;
   }
 }

@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.VisionConstant;
+import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -132,8 +133,8 @@ public class VisionSubsystem extends SubsystemBase {
     var varianceB = b.getVisionMeasurementStdDevs().elementTimes(b.getVisionMeasurementStdDevs());
 
     Rotation2d fusedHeading = poseB.getRotation();
-    if (varianceA.get(2, 0) < VisionConstant.kLargeVariance
-        && varianceB.get(2, 0) < VisionConstant.kLargeVariance) {
+    if (varianceA.get(2, 0) < VisionConstants.kLargeVariance
+        && varianceB.get(2, 0) < VisionConstants.kLargeVariance) {
       fusedHeading =
           new Rotation2d(
               poseA.getRotation().getCos() / varianceA.get(2, 0)
@@ -197,7 +198,7 @@ public class VisionSubsystem extends SubsystemBase {
         new VisionFusionResults(
             inputs.megaTagPose,
             inputs.timestamp,
-            VecBuilder.fill(xStd, yStd, VisionConstant.kLargeVariance),
+            VecBuilder.fill(xStd, yStd, VisionConstants.kLargeVariance),
             //            VecBuilder.fill(xStd, yStd, theta),
             inputs.tagCount));
   }
@@ -211,10 +212,10 @@ public class VisionSubsystem extends SubsystemBase {
     //      }
     //    }
 
-    if (proportionalDistance(inputs) > VisionConstant.maxDistanceFromRobotToApril) {
+    if (proportionalDistance(inputs) > VisionConstants.maxDistanceFromRobotToApril) {
       return false;
     }
-    if (inputs.ta < VisionConstant.kTagMinAreaForSingleTagMegatag) {
+    if (inputs.ta < VisionConstants.kTagMinAreaForSingleTagMegatag) {
       return false;
     }
     return true;
@@ -226,7 +227,7 @@ public class VisionSubsystem extends SubsystemBase {
       return false;
     }
 
-    if (getGyroChange(pose2dSupplier) > VisionConstant.maxGyroChange) {
+    if (getGyroChange(pose2dSupplier) > VisionConstants.maxGyroChange) {
       return false;
     }
     return true;
@@ -269,7 +270,7 @@ public class VisionSubsystem extends SubsystemBase {
       int[] ids = inputs.rawAprilTagID;
       Pose3d[] aprilTagPoses = new Pose3d[ids.length];
       for (int i = 0; i < ids.length; i++) {
-        aprilTagPoses[i] = VisionConstant.aprilTagFieldLayout.getTagPose(ids[i]).get();
+        aprilTagPoses[i] = VisionConstants.aprilTagFieldLayout.getTagPose(ids[i]).get();
       }
       Logger.recordOutput("Vision/AprilTagPoses", aprilTagPoses);
     }
@@ -303,7 +304,9 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private static final String[] CAMERAS = {VisionConstant.LIMELIGHT_A, VisionConstant.LIMELIGHT_B};
+  private static final String[] CAMERAS = {
+    VisionConstants.LIMELIGHT_A, VisionConstants.LIMELIGHT_B
+  };
 
   private void forAllCameras(Consumer<String> action) {
     for (String cameraName : CAMERAS) {
@@ -321,7 +324,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void applyAllIMUAlphaAssist() {
     forAllCameras(
-        cam -> visionio.setIMUAssistAlpha(cam, VisionConstant.complementaryFilterAlphaIMU));
+        cam -> visionio.setIMUAssistAlpha(cam, VisionConstants.complementaryFilterAlphaIMU));
   }
 
   private void applyAllOrientation() {
@@ -333,13 +336,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     switch (visionMode) {
       case DISABLED -> {
-        applyAllPipeline(VisionConstant.PIPELINE_DEFAULT_OFF);
+        applyAllPipeline(VisionConstants.PIPELINE_DEFAULT_OFF);
       }
       case AUTONOMOUS -> {
-        applyAllPipeline(VisionConstant.PIPELINE_Autonomous);
+        applyAllPipeline(VisionConstants.PIPELINE_Autonomous);
       }
       case TELEOP -> {
-        applyAllPipeline(VisionConstant.PIPELINE_Teleop);
+        applyAllPipeline(VisionConstants.PIPELINE_Teleop);
       }
     }
   }
@@ -362,30 +365,9 @@ public class VisionSubsystem extends SubsystemBase {
     return defaultMode;
   }
 
-  /// ONLY ONE CAMERA!! THAT IS THE FRONTSHOOTER CAMERA
+  @AutoLogOutput(key = "Aim/DistanceToHub")
   public double getHubDistanceMeter(Pose2d robotPose) {
-    if (robotPose.getTranslation().getX() > VisionConstant.MidGameMin
-        && robotPose.getTranslation().getX() < VisionConstant.MidGameMax) {
-      Logger.recordOutput("Vision/Aim/WeInMidGame", true);
-      return 0;
-    }
-    Logger.recordOutput("Vision/Aim/WeInMidGame", false);
-    /// make sure only used in telop
-    if (getCurrentVisionMode() == VisionMode.AUTONOMOUS) {
-      return AutoAimUtil.getDistanceToHub(robotPose);
-
-    } else {
-
-      //      if (!CamOneInputs.hasTarget) {
-      //        return 0;
-      //      }
-      double distanceCameraToHub =
-          (VisionConstant.goalHeightMeter - VisionConstant.cameraOneLensHeightMeter)
-              / Math.tan(
-                  Math.toRadians(VisionConstant.cameraOneMountAngleDegrees + CamOneInputs.ty));
-      Logger.recordOutput("Vision/Aim/distanceUsingTargetPose", distanceCameraToHub);
-      return distanceCameraToHub;
-    }
+    return AutoAimUtil.getDistanceToHub(robotPose);
   }
 }
 

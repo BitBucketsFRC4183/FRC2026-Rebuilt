@@ -75,7 +75,7 @@ public class Drive extends SubsystemBase {
 
   // robot weight 135
   private static final double ROBOT_MASS_KG =
-      Units.lbsToKilograms(130); // with bumper and battery remember
+      Units.lbsToKilograms(136.2); // with bumper and battery remember
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof; // ~1.426
   private static final RobotConfig PP_CONFIG =

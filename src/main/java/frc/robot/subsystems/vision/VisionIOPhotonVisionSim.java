@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.VisionConstant;
+import frc.robot.constants.VisionConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");
-      visionSim.addAprilTags(VisionConstant.aprilTagFieldLayout);
+      visionSim.addAprilTags(VisionConstants.aprilTagFieldLayout);
     }
     // so we will have some Photon camera
     PHOTON_FRONT = new PhotonCamera("PhotonFront");
@@ -68,8 +68,8 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     //    backCamSim.enableDrawWireframe(true);
 
     // add properties that's it
-    visionSim.addCamera(frontCamSim, VisionConstant.robotToFrontCam);
-    visionSim.addCamera(backCamSim, VisionConstant.robotToBackCam);
+    visionSim.addCamera(frontCamSim, VisionConstants.robotToFrontCam);
+    visionSim.addCamera(backCamSim, VisionConstants.robotToBackCam);
   }
 
   @Override
@@ -172,7 +172,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
         inputs.tagCount = 1;
         var bestTarget = bestResult.getBestTarget();
         best =
-            VisionConstant.aprilTagFieldLayout
+            VisionConstants.aprilTagFieldLayout
                 .getTagPose(bestTarget.getFiducialId())
                 .get()
                 .minus(Pose3d.kZero)

@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import java.io.IOException;
 
-public final class VisionConstant {
+public final class VisionConstants {
   // They are all capitalized in case you didn't realize it is a constant
   // We need to change that in the settings
 
@@ -52,8 +52,8 @@ public final class VisionConstant {
   public static final int PIPELINE_DEFAULT_DriverCamera = 1;
   public static final int PIPELINE_DEFAULT_OFF = 2;
 
-  public static final int PIPELINE_Autonomous = 3;
-  public static final int PIPELINE_Teleop = 4;
+  public static final int PIPELINE_Autonomous = 0;
+  public static final int PIPELINE_Teleop = 0;
 
   public static AprilTagFieldLayout aprilTagFieldLayout;
 
@@ -78,7 +78,7 @@ public final class VisionConstant {
 
   public static final double maxDistanceFromRobotToApril = 10.0;
 
-  public static final double maxGyroChange = 360; // degrees
+  public static final double maxGyroChange = 520; // degrees
   public static final double kTagMinAreaForSingleTagMegatag = 0.05;
   public static final double kDefaultNormThreshold = 1.0;
   public static final double kMinAmbiguityToFlip = 666;
@@ -100,5 +100,5 @@ public final class VisionConstant {
   public static final double MidGameMin = 5.939;
   public static final double MidGameMax = 10.637;
 
-  private VisionConstant() {}
+  private VisionConstants() {}
 }

@@ -12,6 +12,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +36,6 @@ import frc.robot.subsystems.vision.*;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
@@ -45,7 +45,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private PowerDistributionSubsystem powerSubsystem;
-
+  private final Field2d field;
   private AutoSubsystem autoSubsystem;
   private final SendableChooser<Command> autoChooser;
 
@@ -63,7 +63,6 @@ public class RobotContainer {
   private SwerveDriveSimulation driveSimulation = null;
 
   public RobotContainer() {
-
     switch (Constants.currentMode) {
       case REAL:
         driveSubsystem =
@@ -151,8 +150,6 @@ public class RobotContainer {
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    // building autochooser
     autoChooser = AutoBuilder.buildAutoChooser();
 
     // putting chooser on dashboard
@@ -203,8 +200,12 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    field = new Field2d();
+    SmartDashboard.putData(field);
+  }
 
-    AutoLogOutputManager.addPackage("frc.r");
+  public void robotPeriodic() {
+    field.setRobotPose(driveSubsystem.getPose());
   }
 
   private void configureButtonBindings() {
@@ -279,8 +280,7 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(
             ShooterCommands.visionShoot(
-                visionSubsystem.getHubDistanceMeter(
-                    driveSubsystem.poseEstimator.getEstimatedPosition()),
+                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
                 shooterSubsystem,
                 hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
