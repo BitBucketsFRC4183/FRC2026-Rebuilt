@@ -57,26 +57,21 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentState) {
       case STOWED:
         io.retract();
-        io.stopMotor();
         break;
 
       case DEPLOYED:
         io.extend();
-        io.stopMotor();
         break;
 
       case INTAKING:
-        io.extend();
         io.setVelocity(IntakeConstants.INTAKE_SPEED);
         break;
 
       case OUTTAKING:
-        io.extend();
         io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
         break;
 
       case HOLD:
-        io.extend();
         io.stopMotor();
         break;
     }
