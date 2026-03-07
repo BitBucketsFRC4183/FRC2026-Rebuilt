@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
@@ -65,7 +66,11 @@ public class VisionIOLimelight implements VisionIO {
         inputs.tx = LimelightHelpers.getTX(cameraName);
         inputs.ty = LimelightHelpers.getTY(cameraName);
         inputs.ta = LimelightHelpers.getTA(cameraName);
-        inputs.rawStdDev = table.getEntry("stddevs").getDoubleArray(new double[12]);
+        DoubleArraySubscriber stddevs =
+            NetworkTableInstance.getDefault()
+                .getDoubleArrayTopic("/limelight-front/stddevs")
+                .subscribe(new double[] {});
+        inputs.rawStdDev = stddevs.get();
         //        System.out.println(inputs.rawStdDev);
         inputs.crosshairs = table.getEntry("crosshairs").getDoubleArray(new double[4]);
 

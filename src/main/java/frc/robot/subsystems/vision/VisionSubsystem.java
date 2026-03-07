@@ -5,6 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -74,7 +75,15 @@ public class VisionSubsystem extends SubsystemBase {
   public void setLimelightIMUGyro(Rotation2d rotation) {
 
     setIMUModeForAllCameras(1);
-    forAllCameras(cam -> visionio.setRobotOrientation(cam, rotation.getDegrees()));
+    double flip = 0;
+    if (DriverStation.getAlliance().isPresent()) {
+      if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+        flip = 180;
+      }
+    }
+
+    double heading = rotation.getDegrees() + flip;
+    forAllCameras(cam -> visionio.setRobotOrientation(cam, heading));
 
     Command delaySwitch =
         Commands.sequence(
@@ -204,8 +213,8 @@ public class VisionSubsystem extends SubsystemBase {
       return Optional.empty();
     }
 
-    double xStd = inputs.rawStdDev[6];
-    double yStd = inputs.rawStdDev[7];
+    double xStd = 0.7;
+    double yStd = 0.7;
     //    double theta = inputs.rawStdDev[11];
 
     Logger.recordOutput("Vision/FilterOutResults", false);
