@@ -19,12 +19,11 @@ public class ShooterSubsystem extends SubsystemBase {
       new LoggedNetworkNumber("Flywheel RPS", ShooterConstants.flywheelDefaultSpeed);
   private final SysIdRoutine sysId;
   private double storedDistance = -1;
-
   private final double[][] lookupTable =
       new double[][] {
-        {0.0, 0.0},
-        {6.0, 45.0},
-        {13.0, 55.0}
+        {0.0 * 0.305, 0.0},
+        {6.0 * 0.305, 45.0},
+        {13.0 * 0.305, 55.0}
       };
 
   public ShooterSubsystem(ShooterIO io) {
