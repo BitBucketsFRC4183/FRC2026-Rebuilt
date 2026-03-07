@@ -98,6 +98,12 @@ public class AutoSubsystem extends SubsystemBase {
     System.out.println("intaking at neutral zone");
     return IntakeCommands.intake(intake);
   }
+
+  //deadline where intake stops running when traj finishes
+  private Command driveAndIntake(Command pathCommand) {
+    return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
+  }
+
   /*public Command deployIntake() {
     return IntakeCommands.deploy(intake);
   }*/
