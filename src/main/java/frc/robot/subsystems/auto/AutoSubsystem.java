@@ -72,6 +72,11 @@ public class AutoSubsystem extends SubsystemBase {
     System.out.println("Beginning to Shoot");
     return ShooterCommands.shootAtRPS(position.velocity, shooter, hopper);
   }
+
+  public Command stopshooter(ShootingPosition position) {
+    System.out.println("Beginning to Shoot");
+    return ShooterCommands.reset(shooter, hopper);
+  }
   // 40.89397 for bottom shooting ps
   // 31.62039 for top shooting ps
   // 32.74425 for mid shooting ps
@@ -140,15 +145,15 @@ public class AutoSubsystem extends SubsystemBase {
   //  }
 
   public Command goBottomShootertoDepot() {
-    return choreoPath("ShootBtoDepot", true);
+    return choreoPath("ShootBtoDepot", false);
   }
 
   public Command goMidShootertoDepot() {
-    return choreoPath("ShootMtoDepot", true);
+    return choreoPath("ShootMtoDepot", false);
   }
 
   public Command goDepotToMid() {
-    return choreoPath("DepotToMid", true);
+    return choreoPath("DepotToMid", false);
   }
 
   //  public Command goBottomTower() {
@@ -172,7 +177,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goOutpostToShootBPs() {
-    return choreoPath("OutpostToShooterB", true);
+    return choreoPath("OutpostToShooterB", false);
   }
 
   public Command goMidToDepot() {
@@ -184,15 +189,15 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goDepotToShootT() {
-    return choreoPath("DepotToShootT", true);
+    return choreoPath("DepotToShootT", false);
   }
 
   public Command goBottomStartToShootB() {
-    return choreoPath("BottomStartToShootB", true);
+    return choreoPath("BottomStartToShootB", false);
   }
 
   public Command goTopShootertoDepot() {
-    return choreoPath("ShootTtoDepot", true);
+    return choreoPath("ShootTtoDepot", false);
   }
 
   public Command goBottomStartToNeutralZ() {
@@ -200,15 +205,15 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goIntakeBtmToAlliance() {
-    return choreoPath("IntakeBtmToAlliance", true);
+    return choreoPath("IntakeBtmToAlliance", false);
   }
 
   public Command goTopStartToneutralZ() {
-    return choreoPath("topStartToneutralZ", true);
+    return choreoPath("topStartToneutralZ", false);
   }
 
   public Command goIntakeTopToAlliance() {
-    return choreoPath("IntakeToptoAlliance", true);
+    return choreoPath("IntakeToptoAlliance", false);
   }
   // AUTOROUTINES
   public Command bottomStartToShootOnly() {
