@@ -266,8 +266,8 @@ public class RobotContainer {
                 intakeSubsystem));
 
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
-    operatorController.povLeft().whileTrue(IntakeCommands.setServoPulseNegative(intakeSubsystem));
-    operatorController.povRight().whileTrue(IntakeCommands.setServoPulsePositive(intakeSubsystem));
+    operatorController.povLeft().whileTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
+    operatorController.povRight().whileTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
     // Hopper runs, will change to intake later
     operatorController

@@ -61,9 +61,9 @@ public class VisionSubsystem extends SubsystemBase {
         });
     SmartDashboard.putData("Vision Mode Chooser", visionModeChooser.getSendableChooser());
 
-    RobotModeTriggers.autonomous().toggleOnTrue(changeVisionMode(VisionMode.AUTONOMOUS));
-    RobotModeTriggers.teleop().toggleOnTrue(changeVisionMode(VisionMode.TELEOP));
-    RobotModeTriggers.disabled().toggleOnTrue(changeVisionMode(VisionMode.DISABLED));
+    RobotModeTriggers.autonomous().onTrue(changeVisionMode(VisionMode.AUTONOMOUS));
+    RobotModeTriggers.teleop().onTrue(changeVisionMode(VisionMode.TELEOP));
+    RobotModeTriggers.disabled().onTrue(changeVisionMode(VisionMode.DISABLED));
   }
 
   private Command changeVisionMode(VisionMode mode) {
