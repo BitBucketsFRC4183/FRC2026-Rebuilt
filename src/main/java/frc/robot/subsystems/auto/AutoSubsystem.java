@@ -222,7 +222,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        Commands.parallel(goBottomStartToShootB(), IntakeCommands.intake(intake)).withTimeout(2),
+        goBottomStartToShootB(),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
         shoot(ShootingPosition.POSITION_btm).withTimeout(7),
         stop(),
@@ -236,7 +236,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from top position to shooting position")),
-        Commands.parallel(goToptoShooterPs(), IntakeCommands.intake(intake)).withTimeout(2),
+        goToptoShooterPs(),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
         shoot(ShootingPosition.POSITION_top).withTimeout(7),
         stop(),
@@ -249,7 +249,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
-        Commands.parallel(goMidToShooterPs(), IntakeCommands.intake(intake)).withTimeout(2),
+        goMidToShooterPs(),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
         shoot(ShootingPosition.POSITION_mid).withTimeout(7),
         stop(),
@@ -261,10 +261,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-        Commands.parallel(goBottomToOutpost(), IntakeCommands.intake(intake)).withTimeout(2),
-        new WaitCommand(6),
+            driveAndIntake(goBottomToOutpost()),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-        Commands.parallel(goOutpostToShootBPs(), IntakeCommands.intake(intake)).withTimeout(2.2),
+            goOutpostToShootBPs(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
