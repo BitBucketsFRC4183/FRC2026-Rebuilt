@@ -26,6 +26,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private double targetVelocityRPS;
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
   private double lastServoAngleDegrees = 0.0;
+  private int lastPulseRequest = 0;
 
   public IntakeIOTalonFX() {
     intakeMotor = new TalonFX(INTAKE_MOTOR_ID);
@@ -122,4 +123,10 @@ public class IntakeIOTalonFX implements IntakeIO {
   private int angleToPulseWidth(double angleDegrees) {
     return 500 + (int) (2000.0 * Math.min(Math.max(angleDegrees / 180.0, 0.0), 1.0));
   }
+
+  @Override
+  public void setServoPulseWidth(int pulseWidth) {
+    servoChannel2.setPulseWidth(pulseWidth);
+  }
 }
+
