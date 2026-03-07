@@ -19,6 +19,7 @@ public class ShooterSubsystem extends SubsystemBase {
       new LoggedNetworkNumber("Flywheel RPS", ShooterConstants.flywheelDefaultSpeed);
   private final SysIdRoutine sysId;
   private double storedDistance = -1;
+  private boolean dataRecieved = false;
   private final double[][] lookupTable =
       new double[][] {
         {0.0 * 0.305, 0.0},
@@ -92,6 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Stores a distance to be used calculateTargetVelocity()
   public void setStoredDistance(double distance) {
     storedDistance = distance;
+    dataRecieved = true;
   }
 
   public boolean distanceStored() {
@@ -106,6 +108,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stop() {
     flywheelsRunning = false;
     io.stopMotor();
+    dataRecieved = false;
   }
 
   public void startFeeding() {
@@ -130,6 +133,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Vision Data Received", dataRecieved);
     shooterInputs.targetFlywheelSpeed = targetVelocity.get();
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);

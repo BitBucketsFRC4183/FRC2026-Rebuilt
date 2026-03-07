@@ -279,12 +279,12 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.storeDistance(
-                shooterSubsystem,
+        .whileTrue(
+            ShooterCommands.visionShoot(
                 visionSubsystem.getHubDistanceMeter(
-                    driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.feed(shooterSubsystem, hopperSubsystem))
+                    driveSubsystem.poseEstimator.getEstimatedPosition()),
+                shooterSubsystem,
+                hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
