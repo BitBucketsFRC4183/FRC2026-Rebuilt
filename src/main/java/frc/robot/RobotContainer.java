@@ -13,7 +13,6 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,6 +36,7 @@ import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
@@ -47,7 +47,7 @@ public class RobotContainer {
   private PowerDistributionSubsystem powerSubsystem;
   private final Field2d field;
   private AutoSubsystem autoSubsystem;
-  private final SendableChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
@@ -85,6 +85,8 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
+
+        driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
         break;
 
       case SIM:
@@ -148,12 +150,13 @@ public class RobotContainer {
 
     // WARMUP commands
     FollowPathCommand.warmupCommand().schedule();
-    PathfindingCommand.warmupCommand().schedule();
+    // PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
-    autoChooser = AutoBuilder.buildAutoChooser();
+    var chooser = AutoBuilder.buildAutoChooser();
+    autoChooser = new LoggedDashboardChooser<>("/SmartDashboard/Auto Chooser", chooser);
 
     // putting chooser on dashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
 
     // Set up SysId routines
     //    autoChooser.addOption(
@@ -311,7 +314,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return autoChooser.get();
   }
 
   public void resetSimulation(Pose2d newPose) {

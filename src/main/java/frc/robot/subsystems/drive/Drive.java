@@ -130,6 +130,8 @@ public class Drive extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
+  public Consumer<Rotation2d> setLimelightIMUCallback = (rot) -> {};
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -401,6 +403,7 @@ public class Drive extends SubsystemBase {
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     resetSimulationPoseCallBack.accept(pose);
+    setLimelightIMUCallback.accept(pose.getRotation());
   }
 
   /** Adds a new timestamped vision measurement. */

@@ -5,11 +5,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class VisionSubsystem extends SubsystemBase {
   /// ******************************
@@ -34,15 +36,12 @@ public class VisionSubsystem extends SubsystemBase {
   private final VisionIOInputsAutoLogged CamOneInputs = new VisionIOInputsAutoLogged();
   private final VisionIOInputsAutoLogged CamTwoInputs = new VisionIOInputsAutoLogged();
 
-  private VisionMode pipelineState = null;
-  private VisionMode lastAutoMode = null;
-  private VisionMode manualMode = null;
+  private VisionMode currentVisionMode;
+  private VisionMode lastVisionMode;
 
   private boolean oneCameraMode = true;
 
-  private VisionMode defaultMode = VisionMode.DISABLED;
-
-  private final SendableChooser<VisionMode> visionModeChooser = new SendableChooser<>();
+  private final LoggedDashboardChooser<VisionMode> visionModeChooser;
 
   public VisionSubsystem(VisionIO visionio, Supplier<Pose2d> pose2dSupplier, Drive drive) {
     this.visionio = visionio;
@@ -51,15 +50,34 @@ public class VisionSubsystem extends SubsystemBase {
     this.lastGyroTimestamp = Timer.getFPGATimestamp();
     this.lastGyroDegs = pose2dSupplier.get().getRotation().getDegrees();
 
-    visionModeChooser.addOption("DISABLED", VisionMode.DISABLED);
+    visionModeChooser =
+        new LoggedDashboardChooser<VisionMode>("/SmartDashboard/VisionMode Chooser");
+    visionModeChooser.addDefaultOption("DISABLED", VisionMode.DISABLED);
     visionModeChooser.addOption("AUTONOMOUS", VisionMode.AUTONOMOUS);
     visionModeChooser.addOption("TELEOP", VisionMode.TELEOP);
     visionModeChooser.onChange(
-        mode -> {
-          manualMode = mode;
+        (mode) -> {
+          currentVisionMode = mode;
         });
+    SmartDashboard.putData("Vision Mode Chooser", visionModeChooser.getSendableChooser());
 
-    SmartDashboard.putData("Vision Mode Chooser", visionModeChooser);
+    RobotModeTriggers.autonomous().toggleOnTrue(changeVisionMode(VisionMode.AUTONOMOUS));
+    RobotModeTriggers.teleop().toggleOnTrue(changeVisionMode(VisionMode.TELEOP));
+    RobotModeTriggers.disabled().toggleOnTrue(changeVisionMode(VisionMode.DISABLED));
+  }
+
+  private Command changeVisionMode(VisionMode mode) {
+    return Commands.runOnce(() -> currentVisionMode = mode);
+  }
+
+  // seed once when reseting the pose of the robot
+  public void setLimelightIMUGyro(Rotation2d rotation) {
+    setIMUModeForAllCameras(1);
+    forAllCameras(cam -> visionio.setRobotOrientation(cam, rotation.getDegrees()));
+    Command delaySwitch =
+        Commands.sequence(
+            Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(4)));
+    delaySwitch.schedule();
   }
 
   @Override
@@ -72,16 +90,12 @@ public class VisionSubsystem extends SubsystemBase {
     // logAprilTagPose(CamOneInputs);
     logAprilTagPose(CamTwoInputs);
 
-    if (getFinalVisionMode() != defaultMode) {
-      defaultMode = getFinalVisionMode();
+    if (lastVisionMode != currentVisionMode) {
+      setVisionPipelineForAllCameras(currentVisionMode);
+      lastVisionMode = currentVisionMode;
     }
-    applyContVisionMode(defaultMode);
 
-    // they are separated because we don't want to feed pipeline continuously
-    if (defaultMode != pipelineState) {
-      pipelineState = defaultMode;
-      applyOnceVisionMode(defaultMode);
-    }
+    seedGyroVisionMode(currentVisionMode);
 
     /// one
     var maybeMTA = processMegaTags(CamOneInputs);
@@ -276,34 +290,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private VisionMode decideVisionMode() {
-    if (DriverStation.isDisabled()) {
-      return VisionMode.DISABLED;
-    } else if (DriverStation.isAutonomous()) {
-      return VisionMode.AUTONOMOUS;
-    } else if (DriverStation.isTeleop()) {
-      return VisionMode.TELEOP;
-    }
-    return VisionMode.DISABLED;
-  }
-
-  private VisionMode getFinalVisionMode() {
-    VisionMode autoMode = decideVisionMode();
-
-    if (lastAutoMode == null) {
-      lastAutoMode = autoMode;
-    } else if (autoMode != lastAutoMode) {
-      lastAutoMode = autoMode;
-      manualMode = null;
-    }
-
-    if (manualMode != null) {
-      return manualMode;
-    } else {
-      return autoMode;
-    }
-  }
-
   private static final String[] CAMERAS = {
     VisionConstants.LIMELIGHT_A, VisionConstants.LIMELIGHT_B
   };
@@ -314,55 +300,51 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private void applyAllPipeline(int pipelineNumber) {
+  private void setPipelineForAllCameras(int pipelineNumber) {
     forAllCameras(cam -> visionio.setPipeline(cam, pipelineNumber));
   }
 
-  private void applyAllIMU(int mode) {
+  private void setIMUModeForAllCameras(int mode) {
     forAllCameras(cam -> visionio.setIMUMode(cam, mode));
   }
 
-  private void applyAllIMUAlphaAssist() {
+  private void applyIMUAssistForAllCameras() {
     forAllCameras(
         cam -> visionio.setIMUAssistAlpha(cam, VisionConstants.complementaryFilterAlphaIMU));
   }
 
-  private void applyAllOrientation() {
+  private void setIMUOrientationForAllCameras() {
     forAllCameras(
         cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
   }
 
-  private void applyOnceVisionMode(VisionMode visionMode) {
-
+  private void setVisionPipelineForAllCameras(VisionMode visionMode) {
     switch (visionMode) {
       case DISABLED -> {
-        applyAllPipeline(VisionConstants.PIPELINE_DEFAULT_OFF);
+        setIMUModeForAllCameras(1);
+        setPipelineForAllCameras(VisionConstants.PIPELINE_DEFAULT_OFF);
       }
       case AUTONOMOUS -> {
-        applyAllPipeline(VisionConstants.PIPELINE_Autonomous);
+        setIMUModeForAllCameras(4);
+        setPipelineForAllCameras(VisionConstants.PIPELINE_Autonomous);
       }
       case TELEOP -> {
-        applyAllPipeline(VisionConstants.PIPELINE_Teleop);
+        setIMUModeForAllCameras(4);
+        setPipelineForAllCameras(VisionConstants.PIPELINE_Teleop);
       }
     }
+    Logger.recordOutput("Vision/CurrentVisionMode", visionMode.toString());
   }
 
-  private void applyContVisionMode(VisionMode visionMode) {
-    applyAllOrientation();
-    Logger.recordOutput("Vision/CurrentVisionMode", visionMode.toString());
+  private void seedGyroVisionMode(VisionMode visionMode) {
     switch (visionMode) {
       case DISABLED -> {
-        applyAllIMU(1);
+        setIMUOrientationForAllCameras();
       }
       case AUTONOMOUS, TELEOP -> {
-        applyAllIMU(4);
-        applyAllIMUAlphaAssist();
+        applyIMUAssistForAllCameras();
       }
     }
-  }
-
-  public VisionMode getCurrentVisionMode() {
-    return defaultMode;
   }
 
   @AutoLogOutput(key = "Aim/DistanceToHub")
