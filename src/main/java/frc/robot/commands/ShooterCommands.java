@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
+
 public class ShooterCommands {
   public static Command storeDistance(ShooterSubsystem shooterSubsystem, double distance) {
     return Commands.none();
@@ -14,7 +16,7 @@ public class ShooterCommands {
       double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
-        Commands.waitUntil(shooterSubsystem::targetReached)
+        waitUntil(shooterSubsystem::targetReached).andThen(Commands.waitSeconds(0.5))
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 
