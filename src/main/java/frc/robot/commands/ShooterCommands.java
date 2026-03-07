@@ -17,7 +17,7 @@ public class ShooterCommands {
     return Commands.sequence(
         Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
         waitUntil(shooterSubsystem::targetReached)
-            .andThen(Commands.waitSeconds(0.25))
+            .andThen(Commands.waitSeconds(0.5))
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 

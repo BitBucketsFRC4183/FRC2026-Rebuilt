@@ -278,9 +278,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-            driveAndIntake(goBottomToOutpost()),
+        driveAndIntake(goBottomToOutpost()),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-            goOutpostToShootBPs(),
+        goOutpostToShootBPs(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
