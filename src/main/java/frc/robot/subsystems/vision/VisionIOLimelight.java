@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.LimelightHelpers;
 import frc.robot.constants.VisionConstants;
 
@@ -47,16 +46,8 @@ public class VisionIOLimelight implements VisionIO {
     if (inputs.hasTarget) {
       try {
         /** MEGA TAG 2 * */
-
-        LimelightHelpers.PoseEstimate megaTag2Results = null;
-        if (DriverStation.getAlliance().isPresent()) {
-          if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-            megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
-          } else {
-            megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(cameraName);
-          }
-
-        }
+        LimelightHelpers.PoseEstimate megaTag2Results =
+            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
         if (megaTag2Results != null && inputs.tagCount >= 0) {
           inputs.hasMegaTag2 = true;
