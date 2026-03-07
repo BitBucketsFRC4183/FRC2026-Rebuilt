@@ -46,7 +46,8 @@ public class VisionIOLimelight implements VisionIO {
     if (inputs.hasTarget) {
       try {
         /** MEGA TAG 2 * */
-        var megaTag2Results = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+        LimelightHelpers.PoseEstimate megaTag2Results =
+            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
         if (megaTag2Results != null && inputs.tagCount >= 0) {
           inputs.hasMegaTag2 = true;

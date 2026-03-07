@@ -278,13 +278,18 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
+    //    operatorController
+    //        .rightTrigger()
+    //        .whileTrue(
+    //            ShooterCommands.visionShoot(
+    //                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
+    //                shooterSubsystem,
+    //                hopperSubsystem))
+    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
     operatorController
         .rightTrigger()
-        .whileTrue(
-            ShooterCommands.visionShoot(
-                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
-                shooterSubsystem,
-                hopperSubsystem))
+        .whileTrue(ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
