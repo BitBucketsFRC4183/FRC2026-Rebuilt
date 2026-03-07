@@ -3,7 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.LimelightHelpers;
-import frc.robot.constants.VisionConstant;
+import frc.robot.constants.VisionConstants;
 
 public class VisionIOLimelight implements VisionIO {
 
@@ -14,16 +14,16 @@ public class VisionIOLimelight implements VisionIO {
   // getTable(""), inside the "", is webUI/table name
   // name doesn't matter here as well
   private final NetworkTable limelightOneTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_A);
+      NetworkTableInstance.getDefault().getTable(VisionConstants.LIMELIGHT_A);
 
   private final NetworkTable limelightTwoTable =
-      NetworkTableInstance.getDefault().getTable(VisionConstant.LIMELIGHT_B);
+      NetworkTableInstance.getDefault().getTable(VisionConstants.LIMELIGHT_B);
 
   @Override
   public void updateInputs(VisionIOInputs camOneData, VisionIOInputs camTwoData) {
     // we use the method, give it the variable of its wanted type
-    readCameraData(limelightOneTable, camOneData, VisionConstant.LIMELIGHT_A);
-    readCameraData(limelightTwoTable, camTwoData, VisionConstant.LIMELIGHT_B);
+    readCameraData(limelightOneTable, camOneData, VisionConstants.LIMELIGHT_A);
+    readCameraData(limelightTwoTable, camTwoData, VisionConstants.LIMELIGHT_B);
   }
 
   // LimelightHelper basically uses data from NetworkTables, and turn it into simple and easier to

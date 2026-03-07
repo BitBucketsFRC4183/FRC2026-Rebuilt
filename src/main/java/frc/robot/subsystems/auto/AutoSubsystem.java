@@ -106,7 +106,6 @@ public class AutoSubsystem extends SubsystemBase {
     try {
       // Loading the path from the deploy/choreo folder
       PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(trajName);
-
       Command followCommand = AutoBuilder.followPath(path);
 
       if (resetPose) {

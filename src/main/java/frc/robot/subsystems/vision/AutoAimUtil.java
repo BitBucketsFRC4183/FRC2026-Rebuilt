@@ -1,58 +1,35 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.AprilTagLabel;
 
 public class AutoAimUtil {
   /// fancy notation
   /// function that give you hub pose based on alliance color
   public static Pose3d getTargetHubPose3d() {
-    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
-    return (alliance == DriverStation.Alliance.Red)
-        ? AprilTagLabel.RedHubPose3d
-        : AprilTagLabel.BlueHubPose3d;
+    return AprilTagLabel.BlueHubPose3d;
   }
+
   // For Logging
   public static Pose2d getTargetHubPose2d() {
+    var p = getTargetHubPose3d().toPose2d();
     return getTargetHubPose3d().toPose2d();
   }
 
-  public static double getHubDistance_HubPose(Pose2d robotPose) {
-
-    //    if (robotPose.getX() > VisionConstant.MidGameMin
-    //        && robotPose.getX() < VisionConstant.MidGameMax) {
-    //      return 0;
-    //    }
-    return robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
+  // dist to hub meters
+  public static double getDistanceToHub(Pose2d robotPose) {
+    var d = robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
+    return d;
   }
 
-  /// targetRad
-  public static Rotation2d getTargetAngle_HubPose(Pose2d robotPose) {
-    // Vector--> robot to hub; code--> hub - robot
-    // could from any degrees -> 360
+  // pointed angle to hub, where 0rads is where the balls exit, therefore adding 180 is not
+  // neccessary
+  public static Rotation2d getAngletoHub(Pose2d robotPose) {
+    double x_diff = robotPose.getX() - getTargetHubPose2d().getX();
+    double y_diff = robotPose.getY() - getTargetHubPose2d().getY();
+    double theta = Math.atan2(y_diff, x_diff);
 
-    /// kinda struggle over this concept, so this link will help you
-    // https://maththebeautiful.com/angle-between-points/
-    // https://gamedev.stackexchange.com/questions/14602/what-are-atan-and-atan2-used-for-in-games
-    // https://stackoverflow.com/questions/283406/what-is-the-difference-between-atan-and-atan2-in-c
-    Translation2d diff = getTargetHubPose2d().getTranslation().minus(robotPose.getTranslation());
-    Rotation2d fieldAngle = diff.getAngle().rotateBy(new Rotation2d(Math.PI));
-    return fieldAngle;
+    var r = Rotation2d.fromRadians(theta);
+    return r;
   }
-
-  //  public static double getAngleToHubRad(Pose2d robotPose) {
-  //    return getAngleToHub(robotPose).getRadians();
-  //  }
-
-  /// doesn't really needed
-  // error
-  // https://youtu.be/55FDgyuhWTM?si=_PU5S1oCPOQ_Kzcc
-  //    public static Rotation2d getTurningAngle(Pose2d robotPose) {
-  //        return getAngleToHub(robotPose).minus(robotPose.getRotation());
-  //    }
-
-  //    public static double getTurningAngleRad(Pose2d robotPose) {
-  //        return getTurningAngle(robotPose).getRadians();
-  //    }
 }

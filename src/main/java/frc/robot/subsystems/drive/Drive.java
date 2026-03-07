@@ -75,7 +75,7 @@ public class Drive extends SubsystemBase {
 
   // robot weight 135
   private static final double ROBOT_MASS_KG =
-      Units.lbsToKilograms(130); // with bumper and battery remember
+      Units.lbsToKilograms(136.2); // with bumper and battery remember
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof; // ~1.426
   private static final RobotConfig PP_CONFIG =
@@ -129,6 +129,8 @@ public class Drive extends SubsystemBase {
       };
   public SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+
+  public Consumer<Rotation2d> setLimelightIMUCallback = (rot) -> {};
 
   public Drive(
       GyroIO gyroIO,
@@ -401,6 +403,7 @@ public class Drive extends SubsystemBase {
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     resetSimulationPoseCallBack.accept(pose);
+    setLimelightIMUCallback.accept(pose.getRotation());
   }
 
   /** Adds a new timestamped vision measurement. */
