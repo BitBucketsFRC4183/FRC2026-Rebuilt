@@ -99,7 +99,7 @@ public class AutoSubsystem extends SubsystemBase {
     return IntakeCommands.intake(intake);
   }
 
-  //deadline where intake stops running when traj finishes
+  // deadline where intake stops running when traj finishes
   private Command driveAndIntake(Command pathCommand) {
     return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
   }
@@ -270,9 +270,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
-            driveAndIntake(goMidToDepot()),
+        driveAndIntake(goMidToDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-            goDepotToMid(),
+        goDepotToMid(),
         shoot(ShootingPosition.POSITION_mid).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
@@ -283,9 +283,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
-            driveAndIntake(goTopStartToDepot()),
+        driveAndIntake(goTopStartToDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-            (goDepotToShootT()),
+        (goDepotToShootT()),
         shoot(ShootingPosition.POSITION_top).withTimeout(6),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));

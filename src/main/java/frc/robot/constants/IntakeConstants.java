@@ -36,8 +36,8 @@ public final class IntakeConstants {
   public static final int RIGHT_PISTON_REVERSE_CHANNEL = 3;
 
   public static final int hubCANID = 12;
-  public static final int INTAKE_SERVO_STOW_US = 500;
-  public static final int INTAKE_SERVO_DEPLOY_US = 1500;
+  public static final int INTAKE_SERVO_STOW_PULSEWIDTH = 1000;
+  public static final int INTAKE_SERVO_DEPLOY_PULSEWIDTH = 1500;
 
   private IntakeConstants() {}
 }

@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -267,8 +266,8 @@ public class RobotContainer {
                 intakeSubsystem));
 
     operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
-    operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
-    operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
+    operatorController.povLeft().whileTrue(IntakeCommands.setServoPulseNegative(intakeSubsystem));
+    operatorController.povRight().whileTrue(IntakeCommands.setServoPulsePositive(intakeSubsystem));
 
     // Hopper runs, will change to intake later
     operatorController

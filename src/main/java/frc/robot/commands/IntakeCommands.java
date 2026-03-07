@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
+import static frc.robot.constants.IntakeConstants.INTAKE_SERVO_DEPLOY_PULSEWIDTH;
+import static frc.robot.constants.IntakeConstants.INTAKE_SERVO_STOW_PULSEWIDTH;
+
 /**
  * Factory class for Intake-related commands. All commands assume IntakeSubsystem owns its internal
  * state machine.
@@ -55,5 +58,15 @@ public final class IntakeCommands {
   public static Command moveServoTo90(IntakeSubsystem intake) {
     return Commands.runOnce(() -> intake.io.setServoAngle(132.0), intake)
         .withName("Intake.MoveServo90");
+  }
+
+  public static Command setServoPulsePositive(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoPulseWidth(INTAKE_SERVO_DEPLOY_PULSEWIDTH), intake)
+            .withName("Intake.MoveServo90");
+  }
+
+  public static Command setServoPulseNegative(IntakeSubsystem intake) {
+    return Commands.runOnce(() -> intake.io.setServoPulseWidth(INTAKE_SERVO_STOW_PULSEWIDTH), intake)
+            .withName("Intake.MoveServo90");
   }
 }
