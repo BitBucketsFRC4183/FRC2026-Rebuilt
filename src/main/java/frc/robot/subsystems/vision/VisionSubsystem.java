@@ -61,9 +61,9 @@ public class VisionSubsystem extends SubsystemBase {
         });
     SmartDashboard.putData("Vision Mode Chooser", visionModeChooser.getSendableChooser());
 
-    RobotModeTriggers.autonomous().toggleOnTrue(changeVisionMode(VisionMode.AUTONOMOUS));
-    RobotModeTriggers.teleop().toggleOnTrue(changeVisionMode(VisionMode.TELEOP));
-    RobotModeTriggers.disabled().toggleOnTrue(changeVisionMode(VisionMode.DISABLED));
+    RobotModeTriggers.autonomous().onTrue(changeVisionMode(VisionMode.AUTONOMOUS));
+    RobotModeTriggers.teleop().onTrue(changeVisionMode(VisionMode.TELEOP));
+    RobotModeTriggers.disabled().onTrue(changeVisionMode(VisionMode.DISABLED));
   }
 
   private Command changeVisionMode(VisionMode mode) {
@@ -72,8 +72,10 @@ public class VisionSubsystem extends SubsystemBase {
 
   // seed once when reseting the pose of the robot
   public void setLimelightIMUGyro(Rotation2d rotation) {
+
     setIMUModeForAllCameras(1);
     forAllCameras(cam -> visionio.setRobotOrientation(cam, rotation.getDegrees()));
+
     Command delaySwitch =
         Commands.sequence(
             Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(4)));
@@ -321,15 +323,12 @@ public class VisionSubsystem extends SubsystemBase {
   private void setVisionPipelineForAllCameras(VisionMode visionMode) {
     switch (visionMode) {
       case DISABLED -> {
-        setIMUModeForAllCameras(1);
         setPipelineForAllCameras(VisionConstants.PIPELINE_DEFAULT_OFF);
       }
       case AUTONOMOUS -> {
-        setIMUModeForAllCameras(4);
         setPipelineForAllCameras(VisionConstants.PIPELINE_Autonomous);
       }
       case TELEOP -> {
-        setIMUModeForAllCameras(4);
         setPipelineForAllCameras(VisionConstants.PIPELINE_Teleop);
       }
     }
@@ -339,9 +338,11 @@ public class VisionSubsystem extends SubsystemBase {
   private void seedGyroVisionMode(VisionMode visionMode) {
     switch (visionMode) {
       case DISABLED -> {
+        setIMUModeForAllCameras(1);
         setIMUOrientationForAllCameras();
       }
       case AUTONOMOUS, TELEOP -> {
+        setIMUModeForAllCameras(4);
         applyIMUAssistForAllCameras();
       }
     }
