@@ -87,7 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     Command delaySwitch =
         Commands.sequence(
-            Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(4)));
+            Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(3)));
     delaySwitch.schedule();
   }
 
@@ -352,8 +352,8 @@ public class VisionSubsystem extends SubsystemBase {
         setIMUOrientationForAllCameras();
       }
       case AUTONOMOUS, TELEOP -> {
-        setIMUModeForAllCameras(4);
-        applyIMUAssistForAllCameras();
+        setIMUModeForAllCameras(3);
+        // applyIMUAssistForAllCameras();
       }
     }
   }

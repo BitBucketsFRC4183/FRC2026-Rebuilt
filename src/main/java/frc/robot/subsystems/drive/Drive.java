@@ -408,6 +408,15 @@ public class Drive extends SubsystemBase {
     setLimelightIMUCallback.accept(pose.getRotation());
   }
 
+  // but no vis
+  public void setPose(Pose2d pose, boolean resetVision) {
+    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    resetSimulationPoseCallBack.accept(pose);
+    if (resetVision) {
+      setLimelightIMUCallback.accept(pose.getRotation());
+    }
+  }
+
   /** Adds a new timestamped vision measurement. */
 
   // *********

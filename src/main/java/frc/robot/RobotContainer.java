@@ -244,7 +244,7 @@ public class RobotContainer {
             ? () -> resetSimulation(new Pose2d(3, 3, new Rotation2d()))
             : () ->
                 driveSubsystem.setPose(
-                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
+                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()), false);
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
     // Overrides the DPD Subsystem
