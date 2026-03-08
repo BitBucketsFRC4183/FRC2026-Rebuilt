@@ -88,6 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setTargetVelocity(double targetVelocity) {
     io.setFlywheelSpeed(targetVelocity);
     flywheelsRunning = true;
+    this.targetVelocity.set(targetVelocity);
   }
 
   // Stores a distance to be used calculateTargetVelocity()
