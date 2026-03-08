@@ -31,6 +31,7 @@ public class ShooterCommands {
                 })
             // Runs the flywheel until the controller is released
             .until(shooterSubsystem::targetReached)
+            .andThen(Commands.waitSeconds(0.5))
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 

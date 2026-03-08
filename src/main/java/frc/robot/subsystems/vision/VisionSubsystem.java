@@ -352,8 +352,8 @@ public class VisionSubsystem extends SubsystemBase {
         setIMUOrientationForAllCameras();
       }
       case AUTONOMOUS, TELEOP -> {
-        setIMUModeForAllCameras(4);
-        applyIMUAssistForAllCameras();
+        setIMUModeForAllCameras(3);
+        // applyIMUAssistForAllCameras();
       }
     }
   }

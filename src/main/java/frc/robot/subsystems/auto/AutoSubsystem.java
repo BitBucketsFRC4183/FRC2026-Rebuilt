@@ -3,7 +3,6 @@ package frc.robot.subsystems.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -122,23 +121,24 @@ public class AutoSubsystem extends SubsystemBase {
       // Loading the path from the deploy/choreo folder
       PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(trajName);
       Command followCommand = AutoBuilder.followPath(path);
-      
 
-      
       if (resetPose) {
         Pose2d startingPose;
 
         if (DriverStation.getAlliance().isPresent()) {
           if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-            startingPose = path.flipPath().getStartingHolonomicPose().get();
+            System.out.println("if this does print, we are cooked");
+            // startingPose = path.flipPath().getStartingHolonomicPose().get();
           } else {
-            startingPose = path.getStartingHolonomicPose().get();
+            System.out.println("if this does not print, we are cooked");
+            // startingPose = path.getStartingHolonomicPose().get();
           }
         } else {
-          startingPose = path.getStartingHolonomicPose().get();
+          // startingPose = path.getStartingHolonomicPose().get();
         }
-        return new InstantCommand(() -> drive.setPose(startingPose))
-            .andThen(followCommand);
+
+        startingPose = path.getStartingHolonomicPose().get();
+        return new InstantCommand(() -> drive.setPose(startingPose)).andThen(followCommand);
       } else {
         return followCommand;
       }
