@@ -28,4 +28,6 @@ public interface IntakeIO {
   default void retract() {}
 
   default void setServoAngle(double angleDegrees) {}
+
+  default void setServoPulseWidth(int pulseWidth) {}
 }

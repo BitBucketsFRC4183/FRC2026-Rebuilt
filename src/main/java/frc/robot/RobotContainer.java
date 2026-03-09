@@ -7,13 +7,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,9 +31,11 @@ import frc.robot.subsystems.intake.*;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
@@ -44,14 +44,12 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private PowerDistributionSubsystem powerSubsystem;
-
+  private final Field2d field;
   private AutoSubsystem autoSubsystem;
-  private final SendableChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
-  private OdometryHistory odometryHistory;
-  private VisionFusionResults visionFusionResults;
 
   // Added missing subsystem fields
   private ClimberIO climberIO;
@@ -64,7 +62,6 @@ public class RobotContainer {
   private SwerveDriveSimulation driveSimulation = null;
 
   public RobotContainer() {
-
     switch (Constants.currentMode) {
       case REAL:
         driveSubsystem =
@@ -72,7 +69,7 @@ public class RobotContainer {
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.FrontRight),
-                new ModuleIOTalonFXHacked(TunerConstants.BackLeft),
+                new ModuleIOTalonFXAnalog(TunerConstants.BackLeft),
                 new ModuleIOTalonFXAnalog(TunerConstants.BackRight),
                 (pose) -> {});
 
@@ -80,7 +77,6 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOLimelight(),
                 () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
-                odometryHistory,
                 driveSubsystem);
 
         climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
@@ -88,6 +84,8 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
+
+        driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
         break;
 
       case SIM:
@@ -111,7 +109,6 @@ public class RobotContainer {
             new VisionSubsystem(
                 new VisionIOPhotonVisionSim(() -> driveSimulation.getSimulatedDriveTrainPose()),
                 () -> driveSimulation.getSimulatedDriveTrainPose(),
-                odometryHistory,
                 driveSubsystem);
 
         climberIO = new ClimberIOSim();
@@ -141,10 +138,7 @@ public class RobotContainer {
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         visionSubsystem =
             new VisionSubsystem(
-                visionIO,
-                () -> driveSimulation.getSimulatedDriveTrainPose(),
-                odometryHistory,
-                driveSubsystem);
+                visionIO, () -> driveSimulation.getSimulatedDriveTrainPose(), driveSubsystem);
 
         break;
     }
@@ -155,14 +149,13 @@ public class RobotContainer {
 
     // WARMUP commands
     FollowPathCommand.warmupCommand().schedule();
-    PathfindingCommand.warmupCommand().schedule();
+    // PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    // building autochooser
-    autoChooser = AutoBuilder.buildAutoChooser();
+    var chooser = AutoBuilder.buildAutoChooser();
+    autoChooser = new LoggedDashboardChooser<>("/SmartDashboard/Auto Chooser", chooser);
 
     // putting chooser on dashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
 
     // Set up SysId routines
     //    autoChooser.addOption(
@@ -191,6 +184,10 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
+    autoChooser.addOption("StartBottomNeutralZIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartTopNeutralZIntake", autoSubsystem.StartTopNeutralZIntake());
+    autoChooser.addOption(
+        "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -206,6 +203,12 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    field = new Field2d();
+    SmartDashboard.putData(field);
+  }
+
+  public void robotPeriodic() {
+    field.setRobotPose(driveSubsystem.getPose());
   }
 
   private void configureButtonBindings() {
@@ -218,24 +221,22 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    //    // Lock to 0° when A button is held
-    //    driverController
-    //        .a()
-    //        .whileTrue(
-    //            DriveCommands.joystickDriveAtAngle(
-    //                driveSubsystem,
-    //                () -> -driverController.getLeftY(),
-    //                () -> -driverController.getLeftX(),
-    //                () -> Rotation2d.kZero));
+    driverController.povUp().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kZero));
+    driverController.povRight().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kCW_90deg));
+    driverController.povDown().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.k180deg));
+    driverController.povLeft().whileTrue(driverJoystickDriveAtAngle(() -> Rotation2d.kCCW_90deg));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
-    driverController.a().whileTrue(autoAim());
+    driverController
+        .a()
+        .whileTrue(
+            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngletoHub(driveSubsystem.getPose())));
 
     // temp only
-    driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-    driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+    // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    // driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
@@ -243,7 +244,7 @@ public class RobotContainer {
             ? () -> resetSimulation(new Pose2d(3, 3, new Rotation2d()))
             : () ->
                 driveSubsystem.setPose(
-                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()));
+                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()), false);
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
     // Overrides the DPD Subsystem
@@ -254,7 +255,6 @@ public class RobotContainer {
 
     operatorController
         .leftBumper()
-        .debounce(0.2)
         .onTrue(
             Commands.runOnce(
                 () -> {
@@ -265,10 +265,10 @@ public class RobotContainer {
                   }
                 },
                 intakeSubsystem));
-    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
-    operatorController.povLeft().onTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
-    operatorController.povRight().onTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
+    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
+    operatorController.povLeft().whileTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
+    operatorController.povRight().whileTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
     // Hopper runs, will change to intake later
     operatorController
@@ -279,16 +279,18 @@ public class RobotContainer {
                 hopperSubsystem::stopConveyor,
                 hopperSubsystem));
 
-    // shooter Commands
-    double distance = 1;
+    //    operatorController
+    //        .rightTrigger()
+    //        .whileTrue(
+    //            ShooterCommands.visionShoot(
+    //                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
+    //                shooterSubsystem,
+    //                hopperSubsystem))
+    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.storeDistance(
-                shooterSubsystem,
-                AutoAimCalculation.getDistanceFromRobotToHub(
-                    driveSubsystem.poseEstimator.getEstimatedPosition())))
-        .whileTrue(ShooterCommands.visionShoot(shooterSubsystem, hopperSubsystem))
+        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
@@ -308,18 +310,16 @@ public class RobotContainer {
         .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
   }
 
-  public Command autoAim() {
+  public Command driverJoystickDriveAtAngle(Supplier<Rotation2d> rotation) {
     return DriveCommands.joystickDriveAtAngle(
         driveSubsystem,
         () -> -driverController.getLeftY(),
         () -> -driverController.getLeftX(),
-        () ->
-            AutoAimCalculation.getTargetAngle(driveSubsystem.poseEstimator.getEstimatedPosition()));
+        rotation);
   }
 
   public Command getAutonomousCommand() {
-
-    return autoChooser.getSelected();
+    return autoChooser.get();
   }
 
   public void resetSimulation(Pose2d newPose) {

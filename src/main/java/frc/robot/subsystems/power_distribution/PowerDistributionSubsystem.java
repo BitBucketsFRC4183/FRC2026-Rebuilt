@@ -40,7 +40,7 @@ public class PowerDistributionSubsystem extends SubsystemBase {
 
     switch (currentState) {
       case INTAKE_DRIVE:
-        driveFactor = 0.7;
+        driveFactor = 0.5;
         break;
 
       case SHOOTING_DRIVE:

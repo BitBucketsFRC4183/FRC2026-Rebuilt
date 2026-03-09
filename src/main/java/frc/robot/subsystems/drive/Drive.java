@@ -75,7 +75,7 @@ public class Drive extends SubsystemBase {
 
   // robot weight 135
   private static final double ROBOT_MASS_KG =
-      Units.lbsToKilograms(130); // with bumper and battery remember
+      Units.lbsToKilograms(136.2); // with bumper and battery remember
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof; // ~1.426
   private static final RobotConfig PP_CONFIG =
@@ -130,6 +130,8 @@ public class Drive extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
+  public Consumer<Rotation2d> setLimelightIMUCallback = (rot) -> {};
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -161,7 +163,9 @@ public class Drive extends SubsystemBase {
         new PPHolonomicDriveController(
             new PIDConstants(5.2, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
-        () -> false,
+        () ->
+            DriverStation.getAlliance().isPresent()
+                && !DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue),
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -401,6 +405,16 @@ public class Drive extends SubsystemBase {
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     resetSimulationPoseCallBack.accept(pose);
+    setLimelightIMUCallback.accept(pose.getRotation());
+  }
+
+  // but no vis
+  public void setPose(Pose2d pose, boolean resetVision) {
+    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    resetSimulationPoseCallBack.accept(pose);
+    if (resetVision) {
+      setLimelightIMUCallback.accept(pose.getRotation());
+    }
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -412,6 +426,10 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public OdometryHistory getOdometryHistory() {
+    return odometryHistory;
   }
 
   public final void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs) {

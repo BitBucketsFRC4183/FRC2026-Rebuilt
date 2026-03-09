@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -7,28 +9,29 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class ShooterCommands {
   public static Command storeDistance(ShooterSubsystem shooterSubsystem, double distance) {
-    return Commands.runOnce(
-        () -> {
-          shooterSubsystem.setStoredDistance(distance);
-          shooterSubsystem.calculateVelocity();
-        });
+    return Commands.none();
   }
 
   public static Command shootAtRPS(
       double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
-        Commands.waitUntil(shooterSubsystem::targetReached)
+        waitUntil(shooterSubsystem::targetReached)
+            .andThen(Commands.waitSeconds(0.80))
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 
   public static Command visionShoot(
-      ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+      double distance, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
-        // Waits for the distance from vision
-        Commands.waitUntil(shooterSubsystem::distanceStored)
+        Commands.runOnce(
+                () -> {
+                  shooterSubsystem.setStoredDistance(distance);
+                  shooterSubsystem.calculateVelocity();
+                })
             // Runs the flywheel until the controller is released
             .until(shooterSubsystem::targetReached)
+            .andThen(Commands.waitSeconds(0.5))
             .andThen(feed(shooterSubsystem, hopperSubsystem)));
   }
 

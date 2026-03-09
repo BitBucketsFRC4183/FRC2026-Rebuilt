@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.VisionConstant;
+import frc.robot.constants.VisionConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   // set the stage
@@ -37,7 +38,7 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
     if (visionSim == null) {
       visionSim = new VisionSystemSim("PhotonSim");
-      visionSim.addAprilTags(VisionConstant.aprilTagFieldLayout);
+      visionSim.addAprilTags(VisionConstants.aprilTagFieldLayout);
     }
     // so we will have some Photon camera
     PHOTON_FRONT = new PhotonCamera("PhotonFront");
@@ -53,9 +54,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
     // lets put "real" camera to the sim construction
     frontCamSim = new PhotonCameraSim(PHOTON_FRONT, camProps);
-    frontCamSim.setMinTargetAreaPixels(1000);
+    frontCamSim.setMinTargetAreaPixels(100);
     backCamSim = new PhotonCameraSim(PHOTON_BACK, camProps);
-    backCamSim.setMinTargetAreaPixels(1000);
+    backCamSim.setMinTargetAreaPixels(100);
 
     // streaming
     //    frontCamSim.enableRawStream(true);
@@ -67,8 +68,8 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     //    backCamSim.enableDrawWireframe(true);
 
     // add properties that's it
-    visionSim.addCamera(frontCamSim, VisionConstant.robotToFrontCam);
-    visionSim.addCamera(backCamSim, VisionConstant.robotToBackCam);
+    visionSim.addCamera(frontCamSim, VisionConstants.robotToFrontCam);
+    visionSim.addCamera(backCamSim, VisionConstants.robotToBackCam);
   }
 
   @Override
@@ -77,6 +78,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     visionSim.update(poseSupplier.get());
 
     /// write to the table we have for limelight
+    frontCamInputs.hasTarget = true;
+    backCamInputs.hasTarget = true;
+
     updateCameraInputs(PHOTON_FRONT.getAllUnreadResults(), frontCamInputs, frontCamSim);
     updateCameraInputs(PHOTON_BACK.getAllUnreadResults(), backCamInputs, backCamSim);
     super.updateInputs(frontCamInputs, backCamInputs);
@@ -139,6 +143,9 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     PhotonPipelineResult bestResult = null;
 
     for (var result : results) {
+      List<PhotonTrackedTarget> targets = result.getTargets();
+      inputs.rawAprilTagID = getAprilTagIDs(targets);
+
       if (result.getMultiTagResult().isPresent()) {
         bestResult = result;
         foundMT = true;
@@ -165,14 +172,14 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
         inputs.tagCount = 1;
         var bestTarget = bestResult.getBestTarget();
         best =
-            VisionConstant.aprilTagFieldLayout
+            VisionConstants.aprilTagFieldLayout
                 .getTagPose(bestTarget.getFiducialId())
                 .get()
                 .minus(Pose3d.kZero)
                 .plus(bestTarget.bestCameraToTarget.inverse());
         inputs.ta = bestTarget.getArea();
       }
-      inputs.rawStdDev = new double[] {0.3, 0.3, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5, 5, 0.0, 0.0, 0.0, 0.3};
 
       List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
       // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,
@@ -181,6 +188,20 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
       inputs.megaTagPose =
           new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+    }
+  }
+
+  private static int[] getAprilTagIDs(List<PhotonTrackedTarget> unreadTargets) {
+    if (unreadTargets == null || unreadTargets.isEmpty()) {
+      return new int[0];
+    } else {
+      int[] ids = new int[unreadTargets.size()];
+      for (PhotonTrackedTarget readTargets : unreadTargets) {
+        for (int i = 0; i < unreadTargets.size(); i++) {
+          ids[i] = readTargets.getFiducialId();
+        }
+      }
+      return ids;
     }
   }
 }
