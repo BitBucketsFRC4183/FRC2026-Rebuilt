@@ -7,10 +7,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.VisionConstants;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
@@ -139,26 +137,49 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
   private void updateCameraInputs(
       List<PhotonPipelineResult> results, VisionIOInputs inputs, PhotonCameraSim cameraSim) {
 
+
     boolean foundMT = false;
     PhotonPipelineResult bestResult = null;
 
+    Set<Short> tagIds = new HashSet<>();
+    List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : results) {
-      List<PhotonTrackedTarget> targets = result.getTargets();
-      inputs.rawAprilTagID = getAprilTagIDs(targets);
+      //      inputs.rawAprilTagID = getAprilTagIDs(targets);
+
 
       if (result.getMultiTagResult().isPresent()) {
+        var multitagResult = result.multitagResult.get();
+
         bestResult = result;
         foundMT = true;
         inputs.hasTarget = true;
         inputs.hasMegaTag2 = true;
         inputs.timestamp = result.getTimestampSeconds();
+        tagIds.addAll(multitagResult.fiducialIDsUsed);
+
+
+        // Add observation
+        poseObservations.add(
+                new PoseObservation(
+                        new Pose3d(inputs.megaTagPose),
+                        multitagResult.fiducialIDsUsed.size() ));
 
       } else if (result.hasTargets() && foundMT == false) {
+        var target = result.targets.get(0);
+
         bestResult = result;
         inputs.hasTarget = true;
         inputs.hasMegaTag2 = false;
         inputs.latency = result.metadata.getLatencyMillis();
         inputs.timestamp = result.getTimestampSeconds();
+
+        tagIds.add((short) target.fiducialId);
+        Transform3d cameraToTarget = target.bestCameraToTarget;
+
+        // Add observation
+        poseObservations.add(
+                new PoseObservation(new Pose3d(inputs.megaTagPose),
+                1));
       }
     }
 
@@ -188,7 +209,22 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
 
       inputs.megaTagPose =
           new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+
+      inputs.rawPoseObservations = new PoseObservation[poseObservations.size()];
+      for (int i = 0; i < poseObservations.size(); i++) {
+        inputs.rawPoseObservations[i] = poseObservations.get(i);
+      }
+
+      // Save tag IDs to inputs objects
+      inputs.rawTagIds = new int[tagIds.size()];
+      int i = 0;
+      for (int id : tagIds) {
+        inputs.rawTagIds[i++] = id;
+      }
+
     }
+
+
   }
 
   private static int[] getAprilTagIDs(List<PhotonTrackedTarget> unreadTargets) {
