@@ -1,7 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.constants.VisionConstants;
+import edu.wpi.first.math.geometry.Pose3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -16,6 +16,9 @@ public interface VisionIO {
     public double tx;
     public double ty;
     public double ta;
+    public PoseObservation[] rawPoseObservations = new PoseObservation[0];
+    public int[] rawTagIds = new int[0];
+
     public double[] crosshairs = new double[4];
 
     public boolean hasMegaTag2;
@@ -27,9 +30,11 @@ public interface VisionIO {
     public double latency;
 
     public double[] rawStdDev = new double[12];
-    public int[] rawAprilTagID = new int[VisionConstants.numAprilTagWillVisualize];
+    //    public int[] rawAprilTagID = new int[VisionConstants.numAprilTagWillVisualize];
     public double minAmbiguity;
   }
+
+  public static record PoseObservation(Pose3d pose, int tagCount) {}
 
   // name doesn't matter here
   default void setPipeline(String cameraName, int pipelineNumber) {}
