@@ -102,6 +102,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setStoredDistance(double distance) {
     storedDistance = distance;
     dataRecieved = true;
+    System.out.println(distance);
   }
 
   public boolean distanceStored() {
