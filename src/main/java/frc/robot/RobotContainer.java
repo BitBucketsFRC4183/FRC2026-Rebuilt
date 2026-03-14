@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -148,7 +147,7 @@ public class RobotContainer {
             driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
 
     // WARMUP commands
-    FollowPathCommand.warmupCommand().schedule();
+    // FollowPathCommand.warmupCommand().schedule();
     // PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
     var chooser = AutoBuilder.buildAutoChooser();
@@ -273,25 +272,22 @@ public class RobotContainer {
     // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                hopperSubsystem::runConveyorForward,
-                hopperSubsystem::stopConveyor,
-                hopperSubsystem));
-
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(
-    //            ShooterCommands.visionShoot(
-    //                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
-    //                shooterSubsystem,
-    //                hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+        .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+        .whileTrue(
+            ShooterCommands.visionShoot(
+                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
+                shooterSubsystem,
+                hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
+    //    operatorController
+    //        .rightTrigger()
+    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
     //     Climber Setpoint Commands

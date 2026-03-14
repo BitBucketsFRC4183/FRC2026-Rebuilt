@@ -20,12 +20,19 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SysIdRoutine sysId;
   private double storedDistance = -1;
   private boolean dataRecieved = false;
+  //FIRST column is distances (in meters), second column is RPS
   private final double[][] lookupTable =
-      new double[][] {
-        {0.0 * 0.305, 0.0},
-        {6.0 * 0.305, 45.0},
-        {13.0 * 0.305, 55.0}
-      };
+          new double[][] {
+                  {1.397, 41.0},
+                  {1.8034, 43.0},
+                  {2.0828, 44.0},
+                  {2.4638, 46.0},
+                  {2.7432, 47.0},
+                  {2.9718, 49.0},
+                  {3.2766, 51.0},
+                  {3.6068, 53.0},
+                  {4.1148, 54.0},
+            };
 
   public ShooterSubsystem(ShooterIO io) {
     this.io = io;
@@ -106,26 +113,25 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Stops both Intermediate and Flywheel Motors
-  public void stop() {
+  public void stopFlywheel() {
     flywheelsRunning = false;
-    io.stopMotor();
+    io.stopFlywheel();
     dataRecieved = false;
   }
 
-  public void startFeeding() {
-    io.startFeeding();
+  public void startIntermediateMotor() {
+    io.startIntermediateMotor();
+  }
+
+  public void stopIntermediateMotor() {
+    io.stopIntermediateMotor();
   }
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
-  // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
     return
-    //            shooterInputs.flywheelVelocity <= (targetVelocity.get() +
-    // ShooterConstants.tolerance)
     shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
-        //        && shooterInputs.flywheelVelocity2 <= (targetVelocity.get() +
-        // ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
+            && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {

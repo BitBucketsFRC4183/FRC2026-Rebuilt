@@ -27,9 +27,11 @@ public interface ShooterIO {
 
   public default void setFlywheelSpeed(double targetSpeed) {}
 
-  public default void startFeeding() {}
+  public default void startIntermediateMotor() {}
 
-  public default void stopMotor() {}
+  public default void stopIntermediateMotor() {}
+
+  public default void stopFlywheel() {}
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 }

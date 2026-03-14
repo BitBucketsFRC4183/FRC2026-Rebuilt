@@ -8,17 +8,13 @@ import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 public class ShooterCommands {
-  public static Command storeDistance(ShooterSubsystem shooterSubsystem, double distance) {
-    return Commands.none();
-  }
-
   public static Command shootAtRPS(
       double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
         Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
         waitUntil(shooterSubsystem::targetReached)
             .andThen(Commands.waitSeconds(0.80))
-            .andThen(feed(shooterSubsystem, hopperSubsystem)));
+                .andThen(startFeeding(shooterSubsystem, hopperSubsystem)));
   }
 
   public static Command visionShoot(
@@ -31,20 +27,22 @@ public class ShooterCommands {
                 })
             // Runs the flywheel until the controller is released
             .until(shooterSubsystem::targetReached)
-            .andThen(Commands.waitSeconds(0.5))
-            .andThen(feed(shooterSubsystem, hopperSubsystem)));
+            .andThen(Commands.waitSeconds(0.80))
+                .andThen(Commands.parallel(startFeeding(shooterSubsystem, hopperSubsystem), Commands.run(hopperSubsystem::runConveyorForward))));
   }
 
-  public static Command feed(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
-    return Commands.parallel(
-        Commands.run(shooterSubsystem::startFeeding),
-        Commands.run(hopperSubsystem::runConveyorForward));
+  public static Command startFeeding(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+    return Commands.parallel(Commands.run(shooterSubsystem::startIntermediateMotor), Commands.run(hopperSubsystem::runConveyorForward));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.parallel(
         Commands.runOnce(shooterSubsystem::resetStoredDistance),
-        Commands.runOnce(shooterSubsystem::stop),
-        Commands.runOnce(hopperSubsystem::stopConveyor));
+        Commands.runOnce(shooterSubsystem::stopFlywheel),
+        stopFeeding(shooterSubsystem, hopperSubsystem));
+  }
+
+  public static Command stopFeeding(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+    return Commands.parallel(Commands.runOnce(shooterSubsystem::stopIntermediateMotor), Commands.runOnce(hopperSubsystem::stopConveyor));
   }
 }
