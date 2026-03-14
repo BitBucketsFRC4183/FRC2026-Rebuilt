@@ -148,7 +148,7 @@ public class RobotContainer {
             driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
 
     // WARMUP commands
-    FollowPathCommand.warmupCommand().schedule();
+    //FollowPathCommand.warmupCommand().schedule();
     // PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
     var chooser = AutoBuilder.buildAutoChooser();
@@ -175,17 +175,18 @@ public class RobotContainer {
     //        "DriveSubsystem SysId (Dynamic Reverse)",
     //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("bottomStartToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption("topStartToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption("midStartToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
     autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
     autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
-    autoChooser.addOption(" StartMidShootDepot", autoSubsystem.StartMidShootDepot());
+    autoChooser.addOption("StartMidShootDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption("StartBottomNeutralZIntake", autoSubsystem.StartBottomNeutralZIntake());
-    autoChooser.addOption("StartTopNeutralZIntake", autoSubsystem.StartTopNeutralZIntake());
+    autoChooser.addOption("StartBottomGoNeutralZoneIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartTopGoNeutralZoneIntake", autoSubsystem.StartTopNeutralZIntake());
+
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
     autoChooser.addOption(
