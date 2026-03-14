@@ -376,12 +376,7 @@ public class VisionSubsystem extends SubsystemBase {
     return AutoAimUtil.getDistanceToHub(robotPose);
   }
 
-  @AutoLogOutput(key = "Aim/getAngleToHub")
-  public Rotation2d getAngleToHubRad(Pose2d robotPose) {
-    return AutoAimUtil.getAngletoHub(robotPose);
-  }
-
-  private void logCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {}
+//  private void logCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {}
 }
 
 /// +++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++

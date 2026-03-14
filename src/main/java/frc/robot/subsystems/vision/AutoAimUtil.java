@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.constants.AprilTagLabel;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoAimUtil {
   /// fancy notation
@@ -34,7 +36,7 @@ public class AutoAimUtil {
 
   // pointed angle to hub, where 0rads is where the balls exit, therefore adding 180 is not
   // neccessary
-  public static Rotation2d getAngletoHub(Pose2d robotPose) {
+  public static Rotation2d getAngleToHub(Pose2d robotPose) {
 
     double flip = 0;
     if (DriverStation.getAlliance().isPresent()) {
@@ -48,6 +50,8 @@ public class AutoAimUtil {
     double theta = Math.atan2(y_diff, x_diff);
 
     var r = Rotation2d.fromRadians(theta + flip);
+
+    Logger.recordOutput("Aim/angleToHub", r);
     return r;
   }
 }

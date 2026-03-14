@@ -232,7 +232,7 @@ public class RobotContainer {
     driverController
         .a()
         .whileTrue(
-            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngletoHub(driveSubsystem.getPose())));
+            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngleToHub(driveSubsystem.getPose())));
 
     // temp only
     // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
