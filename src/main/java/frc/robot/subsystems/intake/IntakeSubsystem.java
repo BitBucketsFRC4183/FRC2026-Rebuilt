@@ -64,11 +64,11 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
 
       case INTAKING:
-        io.setVelocity(IntakeConstants.INTAKE_SPEED);
+        io.setVoltage(IntakeConstants.INTAKE_VOLTAGE);
         break;
 
       case OUTTAKING:
-        io.setVelocity(IntakeConstants.OUTTAKE_SPEED);
+        io.setVoltage(IntakeConstants.OUTTAKE_VOLTAGE);
         break;
 
       case HOLD:
