@@ -178,14 +178,14 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
     autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption("StartBottomToOutpostShoot", autoSubsystem.StartBottomToOutpostShoot());
-    autoChooser.addOption("StartMidToDepotShoot", autoSubsystem.StartMidToDepotShoot());
-    autoChooser.addOption("StartTopToDepotShoot", autoSubsystem.StartTopToDepotShoot());
-    autoChooser.addOption("StartBottomShootOutpost", autoSubsystem.StartBottomShootOutpost());
-    autoChooser.addOption("StartMidShootDepot", autoSubsystem.StartMidShootDepot());
-    autoChooser.addOption("StartTopShootDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption("StartBottomGoNeutralZoneIntake", autoSubsystem.StartBottomNeutralZIntake());
-    autoChooser.addOption("StartTopGoNeutralZoneIntake", autoSubsystem.StartTopNeutralZIntake());
+    autoChooser.addOption("StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
+    autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
+    autoChooser.addOption("StartBottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
+    autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
+    autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
+    autoChooser.addOption("StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
 
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
