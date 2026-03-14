@@ -272,11 +272,8 @@ public class RobotContainer {
     // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                hopperSubsystem::runConveyorForward,
-                hopperSubsystem::stopConveyor,
-                hopperSubsystem));
+        .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
+            .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
     //    operatorController
     //        .rightTrigger()

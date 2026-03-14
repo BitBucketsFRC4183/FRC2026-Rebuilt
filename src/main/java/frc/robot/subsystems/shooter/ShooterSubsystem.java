@@ -113,26 +113,25 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // Stops both Intermediate and Flywheel Motors
-  public void stop() {
+  public void stopFlywheel() {
     flywheelsRunning = false;
-    io.stopMotor();
+    io.stopFlywheel();
     dataRecieved = false;
   }
 
-  public void startFeeding() {
-    io.startFeeding();
+  public void startIntermediateMotor() {
+    io.startIntermediateMotor();
+  }
+
+  public void stopIntermediateMotor() {
+    io.stopIntermediateMotor();
   }
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
-  // Operator is going to have one button, and they don't even have to hold it down :sob:
   public boolean targetReached() {
     return
-    //            shooterInputs.flywheelVelocity <= (targetVelocity.get() +
-    // ShooterConstants.tolerance)
     shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
-        //        && shooterInputs.flywheelVelocity2 <= (targetVelocity.get() +
-        // ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
+            && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
