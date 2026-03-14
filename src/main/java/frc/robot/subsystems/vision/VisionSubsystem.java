@@ -17,7 +17,6 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -97,6 +96,8 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/side", CamTwoInputs);
+
+    logAutoAimInputs(pose2dSupplier);
 
     if (lastVisionMode != currentVisionMode) {
       // setVisionPipelineForAllCameras(currentVisionMode);
@@ -248,7 +249,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     boolean areaValid = inputs.ta > VisionConstants.kTagMinAreaForSingleTagMegatag;
 
-    Logger.recordOutput("Vision/" + cameraName + "/Filter/Distance", distance);
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/ProportionalDistance", distance);
 
     Logger.recordOutput("Vision/" + cameraName + "/Filter/DistanceValid", distanceValid);
 
@@ -276,6 +277,11 @@ public class VisionSubsystem extends SubsystemBase {
     return tagValid && gyroValid;
   }
 
+  private void logAutoAimInputs(Supplier<Pose2d> supplier) {
+    Logger.recordOutput("Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
+    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier.get()));
+    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier.get()));
+  }
   /// are we a valid pose?
   /// yes sir!
   private boolean isValidInputs(VisionIOInputsAutoLogged inputs) {
@@ -371,12 +377,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  @AutoLogOutput(key = "Aim/DistanceToHub")
+  //  @AutoLogOutput(key = "Aim/DistanceToHub")
   public double getHubDistanceMeter(Pose2d robotPose) {
     return AutoAimUtil.getDistanceToHub(robotPose);
   }
 
-//  private void logCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {}
+  //  private void logCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {}
 }
 
 /// +++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++

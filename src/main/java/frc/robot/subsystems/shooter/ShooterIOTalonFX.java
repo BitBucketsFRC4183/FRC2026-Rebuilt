@@ -71,7 +71,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
-  public void startIntermediateMotor() {interMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));}
+  public void startIntermediateMotor() {
+    interMotor.setControl(target.withVelocity(ShooterConstants.intermediateSpeed));
+  }
 
   @Override
   public void stopIntermediateMotor() {
