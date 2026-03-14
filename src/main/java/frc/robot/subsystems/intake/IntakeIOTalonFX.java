@@ -4,9 +4,8 @@ import static frc.robot.constants.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.revrobotics.servohub.ServoChannel;
@@ -23,10 +22,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final ServoHub servoHub;
   private final ServoChannel servoChannel2;
 
-  private double targetVelocityRPS;
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
+  private double targetVoltage;
+  private final VoltageOut voltageRequest = new VoltageOut(0);
   private double lastServoAngleDegrees = 0.0;
-  private int lastPulseRequest = 0;
 
   public IntakeIOTalonFX() {
     intakeMotor = new TalonFX(INTAKE_MOTOR_ID);
@@ -35,14 +33,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     MotorOutputConfigs outputConfigs = motorConfig.MotorOutput;
     outputConfigs.Inverted =
         MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-
-    Slot0Configs slot0 = motorConfig.Slot0;
-    slot0.kP = kP;
-    slot0.kI = kI;
-    slot0.kD = kD;
-    slot0.kA = kA;
-    slot0.kV = kV;
-    slot0.kS = kS;
 
     CurrentLimitsConfigs currentConfigs = motorConfig.CurrentLimits;
     currentConfigs.SupplyCurrentLimitEnable = true;
@@ -79,7 +69,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.motorVelocityRPS = intakeMotor.getVelocity().getValueAsDouble();
     inputs.motorVoltage = intakeMotor.getMotorVoltage().getValueAsDouble();
     inputs.motorCurrentAmps = intakeMotor.getSupplyCurrent().getValueAsDouble();
-    inputs.motorTargetVelocityRPS = targetVelocityRPS;
 
     boolean extended =
         leftPiston.get() == DoubleSolenoid.Value.kForward
@@ -91,14 +80,14 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    targetVelocityRPS = velocity;
-    intakeMotor.setControl(velocityRequest.withVelocity(velocity));
+  public void setVoltage(double volts) {
+    targetVoltage = volts;
+    intakeMotor.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
   public void stopMotor() {
-    setVelocity(0.0);
+    setVoltage(0.0);
   }
 
   @Override
