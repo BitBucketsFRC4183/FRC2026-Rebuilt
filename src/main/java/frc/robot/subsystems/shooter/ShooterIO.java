@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   class ShooterIOInputs {
+    public double storedDistance;
     public double targetFlywheelSpeed;
 
     public double flywheelVelocity;

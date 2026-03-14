@@ -8,21 +8,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
   private boolean flywheelsRunning = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private final LoggedNetworkNumber targetVelocity =
-      new LoggedNetworkNumber("Flywheel RPS", ShooterConstants.flywheelDefaultSpeed);
+  private static double targetVelocity = ShooterConstants.flywheelDefaultSpeed;
   private final SysIdRoutine sysId;
-  private double storedDistance = -1;
+  private double storedDistance = 0;
   private boolean dataRecieved = false;
   // FIRST column is distances (in meters), second column is RPS
   private final double[][] lookupTable =
       new double[][] {
+        {0, 0},
         {1.397, 41.0},
         {1.8034, 43.0},
         {2.0828, 44.0},
@@ -81,36 +80,32 @@ public class ShooterSubsystem extends SubsystemBase {
               / (lookupTable[index][0] - lookupTable[index - 1][0]);
       System.out.println(
           (slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]));
-      targetVelocity.set(
-          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]);
+      targetVelocity =
+          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
     } else {
-      targetVelocity.set(lookupTable[index][1]);
+      targetVelocity = lookupTable[index][1];
     }
     if (storedDistance == 0) {
-      targetVelocity.set(ShooterConstants.flywheelDefaultSpeed);
+      targetVelocity = ShooterConstants.flywheelDefaultSpeed;
     }
-    setTargetVelocity(targetVelocity.get());
+    setTargetVelocity(targetVelocity);
   }
 
   public void setTargetVelocity(double targetVelocity) {
     io.setFlywheelSpeed(targetVelocity);
     flywheelsRunning = true;
-    this.targetVelocity.set(targetVelocity);
+    ShooterSubsystem.targetVelocity = targetVelocity;
   }
 
   // Stores a distance to be used calculateTargetVelocity()
   public void setStoredDistance(double distance) {
     storedDistance = distance;
     dataRecieved = true;
-    System.out.println(distance);
-  }
-
-  public boolean distanceStored() {
-    return storedDistance > -1;
+    calculateVelocity();
   }
 
   public void resetStoredDistance() {
-    storedDistance = -1;
+    storedDistance = 0;
   }
 
   // Stops both Intermediate and Flywheel Motors
@@ -130,18 +125,22 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity >= (targetVelocity - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 >= (targetVelocity - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
     return flywheelsRunning;
   }
 
+  public static double getTargetVelocity() {
+    return targetVelocity;
+  }
+
   @Override
   public void periodic() {
     Logger.recordOutput("Vision Data Received", dataRecieved);
-    shooterInputs.targetFlywheelSpeed = targetVelocity.get();
+    Logger.recordOutput("Stored Distance", storedDistance);
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);
   }

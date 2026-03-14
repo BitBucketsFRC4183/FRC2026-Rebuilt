@@ -23,7 +23,6 @@ public class ShooterCommands {
         Commands.runOnce(
                 () -> {
                   shooterSubsystem.setStoredDistance(distance);
-                  shooterSubsystem.calculateVelocity();
                 })
             // Runs the flywheel until the controller is released
             .until(shooterSubsystem::targetReached)
