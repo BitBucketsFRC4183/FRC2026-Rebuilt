@@ -31,6 +31,7 @@ public class AutoAimUtil {
   // dist to hub meters
   public static double getDistanceToHub(Pose2d robotPose) {
     var d = robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
+    Logger.recordOutput("Aim/distanceToHub", d);
     return d;
   }
 
