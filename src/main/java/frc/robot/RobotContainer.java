@@ -273,21 +273,21 @@ public class RobotContainer {
     operatorController
         .rightBumper()
         .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
-            .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
-
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(
-    //            ShooterCommands.visionShoot(
-    //                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
-    //                shooterSubsystem,
-    //                hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+        .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+        .whileTrue(
+            ShooterCommands.visionShoot(
+                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
+                shooterSubsystem,
+                hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
+    //    operatorController
+    //        .rightTrigger()
+    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
     //     Climber Setpoint Commands
