@@ -27,16 +27,15 @@ public class ShooterCommands {
             Commands.runOnce(
                     () -> {
                       shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
-                    })
+                    }),
 
                 // Runs the flywheel until the target velocity is reached
-                .until(shooterSubsystem::targetReached)
+                waitUntil(shooterSubsystem::targetReached)
                 .andThen(Commands.waitSeconds(0.80))
                 .andThen(
                     Commands.parallel(
-                        startFeeding(shooterSubsystem, hopperSubsystem),
-                        Commands.run(hopperSubsystem::runConveyorForward))))
-        .withTimeout(0.1);
+                        startFeeding(shooterSubsystem, hopperSubsystem))))
+        .withTimeout(0.5);
   }
 
   public static Command startFeeding(
