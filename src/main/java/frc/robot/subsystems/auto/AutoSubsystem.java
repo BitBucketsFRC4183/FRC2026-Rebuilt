@@ -228,7 +228,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
         goBottomStartToShootB(),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(7),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -244,7 +244,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from top position to shooting position")),
         goToptoShooterPs(),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
-        shoot(ShootingPosition.POSITION_top).withTimeout(7),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -259,7 +259,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from mid position to shooting position")),
         goMidToShooterPs(),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(7),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -276,7 +276,7 @@ public class AutoSubsystem extends SubsystemBase {
         new WaitCommand(3),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
         goOutpostToShootBPs(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
   }
@@ -293,7 +293,7 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         goDepotToMid(),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(6),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -309,7 +309,7 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         goDepotToShootT(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(6),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -322,7 +322,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
         goBottomStartToShootB(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
         goBottomShootertoDepot(),
         stop(),
@@ -337,7 +337,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
         goMidToShooterPs(),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(6),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
         goMidShootertoDepot(),
         driveAndIntake(intakeAtDepot()),
@@ -352,8 +352,8 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         goToptoShooterPs(),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         driveAndIntake(intakeAtDepot()),
-        shoot(ShootingPosition.POSITION_top).withTimeout(6),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
         goTopShootertoDepot(),
         stop(),
