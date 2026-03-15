@@ -281,8 +281,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void logAutoAimInputs(Supplier<Pose2d> supplier) {
     Logger.recordOutput("Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
-    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier.get()));
-    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier.get()));
+    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier));
+    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier));
   }
   /// are we a valid pose?
   /// yes sir!
@@ -382,7 +382,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   //  @AutoLogOutput(key = "Aim/DistanceToHub")
-  public double getHubDistanceMeter(Pose2d robotPose) {
+  public double getHubDistanceMeter(Supplier<Pose2d> robotPose) {
     return AutoAimUtil.getDistanceToHub(robotPose);
   }
 

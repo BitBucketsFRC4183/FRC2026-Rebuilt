@@ -7,6 +7,8 @@ import frc.robot.constants.AprilTagLabel;
 import frc.robot.constants.VisionConstants;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.Supplier;
+
 public class AutoAimUtil {
   /// fancy notation
   /// function that give you hub pose based on alliance color
@@ -29,23 +31,23 @@ public class AutoAimUtil {
   }
 
   // dist to hub meters
-  public static double getDistanceToHub(Pose2d robotPose) {
+  public static double getDistanceToHub(Supplier<Pose2d> robotPose) {
     boolean weInNeutralZone = false;
-    if (robotPose.getX() > VisionConstants.MidGameMin
-        && robotPose.getX() < VisionConstants.MidGameMax) {
+    if (robotPose.get().getX() > VisionConstants.MidGameMin
+        && robotPose.get().getX() < VisionConstants.MidGameMax) {
       weInNeutralZone = true;
       return 0;
     }
     Logger.recordOutput("Aim/weInNeutralZone", weInNeutralZone);
 
-    var d = robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
+    var d = robotPose.get().getTranslation().getDistance(getTargetHubPose2d().getTranslation());
 
     return d;
   }
 
   // pointed angle to hub, where 0rads is where the balls exit, therefore adding 180 is not
   // neccessary
-  public static Rotation2d getAngleToHub(Pose2d robotPose) {
+  public static Rotation2d getAngleToHub(Supplier<Pose2d> robotPose) {
 
     double flip = 0;
     if (DriverStation.getAlliance().isPresent()) {
@@ -54,8 +56,8 @@ public class AutoAimUtil {
       }
     }
 
-    double x_diff = robotPose.getX() - getTargetHubPose2d().getX();
-    double y_diff = robotPose.getY() - getTargetHubPose2d().getY();
+    double x_diff = robotPose.get().getX() - getTargetHubPose2d().getX();
+    double y_diff = robotPose.get().getY() - getTargetHubPose2d().getY();
     double theta = Math.atan2(y_diff, x_diff);
 
     var r = Rotation2d.fromRadians(theta + flip);
