@@ -92,10 +92,7 @@ public class AutoSubsystem extends SubsystemBase {
     System.out.println("extending kickerbar");
     return IntakeCommands.moveServoTo90(intake);
   }
-  // Helper to drive while intaking
-  /*private Command driveAndIntake(Command pathCommand) {
-    return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
-  }*/
+
   // outtake in alliance zone
   private Command outtakeAtAlliance() {
     System.out.println("dumping balls in alliance zone!");
@@ -112,9 +109,6 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.deadline(pathCommand, IntakeCommands.intake(intake));
   }
 
-  /*public Command deployIntake() {
-    return IntakeCommands.deploy(intake);
-  }*/
   // loading autoroutines from choreo to pathplanner
   public Command choreoPath(String trajName, boolean resetPose) {
     try {
@@ -128,13 +122,11 @@ public class AutoSubsystem extends SubsystemBase {
         if (DriverStation.getAlliance().isPresent()) {
           if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
             System.out.println("if this does print, we are cooked");
-            // startingPose = path.flipPath().getStartingHolonomicPose().get();
           } else {
             System.out.println("if this does not print, we are cooked");
-            // startingPose = path.getStartingHolonomicPose().get();
           }
         } else {
-          // startingPose = path.getStartingHolonomicPose().get();
+
         }
 
         startingPose = path.getStartingHolonomicPose().get();
@@ -213,20 +205,21 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("IntakeToptoAlliance", false);
   }
 
-  public Command intakeNeutralZBtm(){
+  public Command intakeNeutralZBtm() {
     return choreoPath("NeutralZBtmIntake", false);
   }
 
-  public Command intakeNeutralZTop(){
+  public Command intakeNeutralZTop() {
     return choreoPath("NeutralZTopIntake", false);
   }
 
-  public Command intakeAtDepot(){
+  public Command intakeAtDepot() {
     return choreoPath("DepotIntake", false);
   }
 
   // AUTOROUTINES
-  //this routine starts at the bottom start position, moves to a shooting position, and shoots the 8 balls we started with
+  // this routine starts at the bottom start position, moves to a shooting position, and shoots the
+  // 8 balls we started with
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -240,7 +233,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //this routine starts at the top start position, moves to a shooting position, and shoots the 8 balls we started with
+  // this routine starts at the top start position, moves to a shooting position, and shoots the 8
+  // balls we started with
   public Command topStartToShootOnly() {
 
     return Commands.sequence(
@@ -255,7 +249,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //this routine starts at the middle start position, moves to a shooting position, and shoots the 8 balls we started with
+  // this routine starts at the middle start position, moves to a shooting position, and shoots the
+  // 8 balls we started with
   public Command midStartToShootOnly() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -268,14 +263,17 @@ public class AutoSubsystem extends SubsystemBase {
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
-  //this routine starts at the bottom starting position, and moves directly to the outppst,human player opens it, robot holds more fuel,
-  //and then the robot moves to a shooting position and shoots
+  // this routine starts at the bottom starting position, and moves directly to the outppst and
+  // waits for 3s,human
+  // player opens it, robot holds more fuel,
+  // and then the robot moves to a shooting position and shoots
   public Command StartBottomToOutpostShoot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
         goBottomToOutpost(),
+        new WaitCommand(3),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
         goOutpostToShootBPs(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
@@ -283,8 +281,9 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("complete routine")));
   }
 
-  //this routine starts at the middle starting position, and moves directly to the depot,intakes fuel,
-  //and then the robot moves to a shooting position and shoots
+  // this routine starts at the middle starting position, and moves directly to the depot,intakes
+  // fuel,
+  // and then the robot moves to a shooting position and shoots
   public Command StartMidToDepotShoot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -299,8 +298,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //this routine starts at the top starting position, and moves directly to the depot,intakes fuel,
-  //and then the robot moves to a shooting position and shoots
+  // this routine starts at the top starting position, and moves directly to the depot,intakes fuel,
+  // and then the robot moves to a shooting position and shoots
   public Command StartTopToDepotShoot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -315,7 +314,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //this routine starts at the bottom starting position, moves to a shooting position, shoots, and then goes to the outpost to fuel up
+  // this routine starts at the bottom starting position, moves to a shooting position, shoots, and
+  // then goes to the outpost to fuel up
   public Command StartBottomShootOutpost() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -329,7 +329,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //this routine starts at the middle starting position, moves to a shooting position, shoots, and then goes to the depot to fuel up
+  // this routine starts at the middle starting position, moves to a shooting position, shoots, and
+  // then goes to the depot to fuel up
   public Command StartMidShootDepot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -343,7 +344,8 @@ public class AutoSubsystem extends SubsystemBase {
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
-  //this routine starts at the top starting position, moves to a shooting position, shoots, and then goes to the depot to fuel up
+  // this routine starts at the top starting position, moves to a shooting position, shoots, and
+  // then goes to the depot to fuel up
   public Command StartTopShootDepot() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -357,8 +359,9 @@ public class AutoSubsystem extends SubsystemBase {
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
-  //robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone smh), and then intakes fuel
-  //after intaking, the robot comes back into the alliance zone, and outtakes the balls
+  // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
+  // smh), and then intakes fuel
+  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
   public Command StartBottomNeutralZIntake() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
@@ -372,8 +375,9 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  //robot starts at the top starting position, goes to the neutral zone (the Z stands for zone smh), and then intakes fuel
-  //after intaking, the robot comes back into the alliance zone, and outtakes the balls
+  // robot starts at the top starting position, goes to the neutral zone (the Z stands for zone
+  // smh), and then intakes fuel
+  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
   public Command StartTopNeutralZIntake() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
