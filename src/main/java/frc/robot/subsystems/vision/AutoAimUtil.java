@@ -36,7 +36,7 @@ public class AutoAimUtil {
       weInNeutralZone = true;
       return 0;
     }
-    Logger.recordOutput("Vision/Aim/weInNeutralZone", weInNeutralZone);
+    Logger.recordOutput("Aim/weInNeutralZone", weInNeutralZone);
 
     var d = robotPose.getTranslation().getDistance(getTargetHubPose2d().getTranslation());
 
