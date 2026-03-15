@@ -5,9 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.constants.AprilTagLabel;
 import frc.robot.constants.VisionConstants;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoAimUtil {
   /// fancy notation

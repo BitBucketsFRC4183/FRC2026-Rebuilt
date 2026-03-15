@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import java.util.function.DoubleSupplier;
 
 public class ShooterCommands {
   public static Command shootAtRPS(
@@ -18,19 +19,24 @@ public class ShooterCommands {
   }
 
   public static Command visionShoot(
-      double distance, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
+      DoubleSupplier distanceSupplier,
+      ShooterSubsystem shooterSubsystem,
+      HopperSubsystem hopperSubsystem) {
+
     return Commands.sequence(
-        Commands.runOnce(
-                () -> {
-                  shooterSubsystem.setStoredDistance(distance);
-                })
-            // Runs the flywheel until the controller is released
-            .until(shooterSubsystem::targetReached)
-            .andThen(Commands.waitSeconds(0.80))
-            .andThen(
-                Commands.parallel(
-                    startFeeding(shooterSubsystem, hopperSubsystem),
-                    Commands.run(hopperSubsystem::runConveyorForward))));
+            Commands.runOnce(
+                    () -> {
+                      shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
+                    })
+
+                // Runs the flywheel until the target velocity is reached
+                .until(shooterSubsystem::targetReached)
+                .andThen(Commands.waitSeconds(0.80))
+                .andThen(
+                    Commands.parallel(
+                        startFeeding(shooterSubsystem, hopperSubsystem),
+                        Commands.run(hopperSubsystem::runConveyorForward))))
+        .withTimeout(0.1);
   }
 
   public static Command startFeeding(

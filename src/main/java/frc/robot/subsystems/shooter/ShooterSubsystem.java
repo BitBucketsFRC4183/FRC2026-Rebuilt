@@ -100,6 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Stores a distance to be used calculateTargetVelocity()
   public void setStoredDistance(double distance) {
     storedDistance = distance;
+    Logger.recordOutput("storedDistance", storedDistance);
     dataRecieved = true;
     calculateVelocity();
   }
@@ -140,7 +141,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.recordOutput("Vision Data Received", dataRecieved);
-    Logger.recordOutput("Stored Distance", storedDistance);
+    //    Logger.recordOutput("Stored Distance", storedDistance);
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);
   }
