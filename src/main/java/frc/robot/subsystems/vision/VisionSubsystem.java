@@ -82,9 +82,8 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     double heading = rotation.getDegrees() + flip;
-    Logger.recordOutput("Vision/robotHeading", heading);
     forAllCameras(cam -> visionio.setRobotOrientation(cam, heading));
-
+    Logger.recordOutput("Vision/GyroInputs/WhenSetPose:robotHeading", heading);
     Command delaySwitch =
         Commands.sequence(
             Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(3)));
@@ -96,6 +95,9 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/side", CamTwoInputs);
+    //    Logger.recordOutput("Vision/GyroInputs/poseSupplier", pose2dSupplier.get());
+    //    Logger.recordOutput(
+    //        "Vision/GyroInputs/robotHeadingFromPose", pose2dSupplier.get().getRotation());
 
     logAutoAimInputs(pose2dSupplier);
 
@@ -279,8 +281,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void logAutoAimInputs(Supplier<Pose2d> supplier) {
     Logger.recordOutput("Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
-    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier.get()));
-    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier.get()));
+    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier));
+    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier));
   }
   /// are we a valid pose?
   /// yes sir!
@@ -332,6 +334,7 @@ public class VisionSubsystem extends SubsystemBase {
     forAllCameras(cam -> visionio.setPipeline(cam, pipelineNumber));
   }
 
+  /// set orientation from pose supplier
   private void setIMUModeForAllCameras(int mode) {
     forAllCameras(cam -> visionio.setIMUMode(cam, mode));
   }
@@ -342,8 +345,9 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void setIMUOrientationForAllCameras() {
-    forAllCameras(
-        cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
+    double robotHeading = pose2dSupplier.get().getRotation().getDegrees();
+    forAllCameras(cam -> visionio.setRobotOrientation(cam, robotHeading));
+    Logger.recordOutput("Vision/GyroInputs/WhileDisabled:robotHeading", robotHeading);
   }
 
   /// all helper
@@ -378,7 +382,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   //  @AutoLogOutput(key = "Aim/DistanceToHub")
-  public double getHubDistanceMeter(Pose2d robotPose) {
+  public double getHubDistanceMeter(Supplier<Pose2d> robotPose) {
     return AutoAimUtil.getDistanceToHub(robotPose);
   }
 

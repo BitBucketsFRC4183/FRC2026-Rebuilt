@@ -231,7 +231,7 @@ public class RobotContainer {
     driverController
         .a()
         .whileTrue(
-            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngleToHub(driveSubsystem.getPose())));
+            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngleToHub(()->driveSubsystem.getPose())));
 
     // temp only
     // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
@@ -277,7 +277,11 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.visionShoot(10, shooterSubsystem, hopperSubsystem))
+        .whileTrue(
+            ShooterCommands.visionShoot(
+                visionSubsystem.getHubDistanceMeter(()->driveSubsystem.getPose()),
+                shooterSubsystem,
+                hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController
