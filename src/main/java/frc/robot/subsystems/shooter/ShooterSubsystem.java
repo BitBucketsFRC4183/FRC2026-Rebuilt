@@ -6,6 +6,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -64,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    //Linear Regression
+    // Linear Regression
     targetVelocity = 0.13 * storedDistance * 39.3701 + 28.9;
     setTargetVelocity(targetVelocity);
   }
@@ -102,6 +103,10 @@ public class ShooterSubsystem extends SubsystemBase {
     io.stopIntermediateMotor();
   }
 
+  public void charge() {
+    io.setFlywheelVoltage(12);
+  }
+
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
     return shooterInputs.flywheelVelocity >= (targetVelocity - ShooterConstants.tolerance)
@@ -119,7 +124,6 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.recordOutput("Vision Data Received", dataRecieved);
-    //    Logger.recordOutput("Stored Distance", storedDistance);
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);
   }

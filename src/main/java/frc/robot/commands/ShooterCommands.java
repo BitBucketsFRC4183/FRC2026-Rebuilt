@@ -6,9 +6,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleSupplier;
 
 public class ShooterCommands {
+  private static boolean charged = false;
   public static Command shootAtRPS(
       double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
@@ -22,10 +25,10 @@ public class ShooterCommands {
       DoubleSupplier distanceSupplier,
       ShooterSubsystem shooterSubsystem,
       HopperSubsystem hopperSubsystem) {
-
     return Commands.sequence(
             Commands.runOnce(
                     () -> {
+                      charged = false;
                       shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
                     }),
 
@@ -34,15 +37,20 @@ public class ShooterCommands {
                 .andThen(Commands.waitSeconds(0.80))
                 .andThen(
                     Commands.parallel(
-                        startFeeding(shooterSubsystem, hopperSubsystem))))
-        .withTimeout(0.5);
+                        startFeeding(shooterSubsystem, hopperSubsystem), Commands.runOnce(shooterSubsystem::charge))
+                )
+                        .andThen(Commands.waitSeconds(0.02))
+                        .andThen(shooterSubsystem::calculateVelocity))
+        .withTimeout(2.0);
   }
 
   public static Command startFeeding(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.parallel(
         Commands.run(shooterSubsystem::startIntermediateMotor),
-        Commands.run(hopperSubsystem::runConveyorForward));
+        Commands.run(hopperSubsystem::runConveyorForward),
+            Commands.run(() -> charged = true)
+    );
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
@@ -58,4 +66,12 @@ public class ShooterCommands {
         Commands.runOnce(shooterSubsystem::stopIntermediateMotor),
         Commands.runOnce(hopperSubsystem::stopConveyor));
   }
+
+    public static boolean isCharged() {
+        return charged;
+    }
+
+    public static void setCharged(boolean charged) {
+        ShooterCommands.charged = charged;
+    }
 }
