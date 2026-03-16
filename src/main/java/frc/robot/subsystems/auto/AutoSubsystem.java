@@ -122,14 +122,14 @@ public class AutoSubsystem extends SubsystemBase {
         if (DriverStation.getAlliance().isPresent()) {
           if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
             System.out.println("if this does print, we are cooked");
+            startingPose = path.flipPath().getStartingHolonomicPose().get();
           } else {
             System.out.println("if this does not print, we are cooked");
+            startingPose = path.getStartingHolonomicPose().get();
           }
         } else {
-
+          startingPose = path.getStartingHolonomicPose().get();
         }
-
-        startingPose = path.getStartingHolonomicPose().get();
         return new InstantCommand(() -> drive.setPose(startingPose)).andThen(followCommand);
       } else {
         return followCommand;
