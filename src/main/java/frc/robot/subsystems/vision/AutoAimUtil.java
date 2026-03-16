@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.constants.AprilTagLabel;
-import frc.robot.constants.VisionConstants;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -32,11 +31,11 @@ public class AutoAimUtil {
   // dist to hub meters
   public static double getDistanceToHub(Supplier<Pose2d> robotPose) {
     boolean weInNeutralZone = false;
-    if (robotPose.get().getX() > VisionConstants.MidGameMin
-        && robotPose.get().getX() < VisionConstants.MidGameMax) {
-      weInNeutralZone = true;
-      return 0;
-    }
+    //    if (robotPose.get().getX() > VisionConstants.MidGameMin
+    //        && robotPose.get().getX() < VisionConstants.MidGameMax) {
+    //      weInNeutralZone = true;
+    //      return 0;
+    //    }
     Logger.recordOutput("Aim/weInNeutralZone", weInNeutralZone);
 
     var d = robotPose.get().getTranslation().getDistance(getTargetHubPose2d().getTranslation());
