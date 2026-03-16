@@ -81,8 +81,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(
-                      -xSupplier.getAsDouble(), -ySupplier.getAsDouble());
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
               double xSpeed = xLimiter.calculate(linearVelocity.getX());
               double ySpeed = yLimiter.calculate(linearVelocity.getY());
@@ -101,9 +100,7 @@ public class DriveCommands {
                           * powerSubsystem.getDriveFactor(),
                       omega * driveSubsystem.getMaxAngularSpeedRadPerSec());
 
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+              boolean isFlipped = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
 
               driveSubsystem.runVelocityPP(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -157,12 +154,11 @@ public class DriveCommands {
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
                   new ChassisSpeeds(
-                      -linearVelocity.getX() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
-                      -linearVelocity.getY() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getX() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * driveSubsystem.getMaxLinearSpeedMetersPerSec(),
                       omega);
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+              boolean isFlipped = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+
               driveSubsystem.runVelocityPP(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,

@@ -46,6 +46,7 @@ public class RobotContainer {
   private final Field2d field;
   private AutoSubsystem autoSubsystem;
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Rotation2d> gyroChooser;
 
   private VisionSubsystem visionSubsystem;
   private VisionIO visionIO;
@@ -204,6 +205,20 @@ public class RobotContainer {
     configureButtonBindings();
     field = new Field2d();
     SmartDashboard.putData(field);
+
+    gyroChooser = new LoggedDashboardChooser<>("SmartDashboard");
+    gyroChooser.addDefaultOption("None", Rotation2d.kZero);
+    gyroChooser.addOption("Zero", Rotation2d.kZero);
+    gyroChooser.addOption("CW90", Rotation2d.kCW_90deg);
+    gyroChooser.addOption("CCW90", Rotation2d.kCCW_90deg);
+    gyroChooser.addOption("180", Rotation2d.k180deg);
+    gyroChooser.onChange(
+        (rot) -> {
+          driveSubsystem.setPose(
+              new Pose2d(driveSubsystem.getPose().getTranslation(), (Rotation2d) rot), true);
+        });
+
+    SmartDashboard.putData("GyroChooser", gyroChooser.getSendableChooser());
   }
 
   public void robotPeriodic() {

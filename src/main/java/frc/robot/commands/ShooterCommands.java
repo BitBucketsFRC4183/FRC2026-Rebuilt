@@ -25,16 +25,14 @@ public class ShooterCommands {
 
     return Commands.sequence(
             Commands.runOnce(
-                    () -> {
-                      shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
-                    }),
+                () -> {
+                  shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
+                }),
 
-                // Runs the flywheel until the target velocity is reached
-                waitUntil(shooterSubsystem::targetReached)
+            // Runs the flywheel until the target velocity is reached
+            waitUntil(shooterSubsystem::targetReached)
                 .andThen(Commands.waitSeconds(0.80))
-                .andThen(
-                    Commands.parallel(
-                        startFeeding(shooterSubsystem, hopperSubsystem))))
+                .andThen(Commands.parallel(startFeeding(shooterSubsystem, hopperSubsystem))))
         .withTimeout(0.5);
   }
 

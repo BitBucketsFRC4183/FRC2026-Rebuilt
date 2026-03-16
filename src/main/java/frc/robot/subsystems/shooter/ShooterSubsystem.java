@@ -64,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    //Linear Regression
+    // Linear Regression
     targetVelocity = 0.13 * storedDistance * 39.3701 + 28.9;
     setTargetVelocity(targetVelocity);
   }
