@@ -22,6 +22,8 @@ public final class ShooterConstants extends SubsystemBase {
   // Not a perfect FF :sigh:
   public static final double tolerance = 0.5;
 
+  public static final double distanceOffset = 0.93345;
+
   // PID Constants for flywheel
   public static final double flywheel_kP = 0.16843;
   public static final double flywheel_kI = 0.0;

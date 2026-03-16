@@ -22,15 +22,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private final double[][] lookupTable =
       new double[][] {
         {0, 0},
-        {1.397, 41.0},
-        {1.8034, 43.0},
-        {2.0828, 44.0},
-        {2.4638, 46.0},
-        {2.7432, 47.0},
-        {2.9718, 49.0},
-        {3.2766, 51.0},
-        {3.6068, 53.0},
-        {4.1148, 54.0},
+        {1.397 + ShooterConstants.distanceOffset, 41.0},
+        {1.8034 + ShooterConstants.distanceOffset, 43.0},
+        {2.0828 + ShooterConstants.distanceOffset, 44.0},
+        {2.4638 + ShooterConstants.distanceOffset, 46.0},
+        {2.7432 + ShooterConstants.distanceOffset, 47.0},
+        {2.9718 + ShooterConstants.distanceOffset, 49.0},
+        {3.2766 + ShooterConstants.distanceOffset, 51.0},
+        {3.6068 + ShooterConstants.distanceOffset, 53.0},
+        {4.1148 + ShooterConstants.distanceOffset, 54.0},
       };
 
   public ShooterSubsystem(ShooterIO io) {
