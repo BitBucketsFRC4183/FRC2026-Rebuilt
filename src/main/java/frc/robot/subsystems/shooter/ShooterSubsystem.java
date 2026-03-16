@@ -64,30 +64,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void calculateVelocity() {
-    int index;
-    for (index = 0; index < lookupTable.length; index++) {
-      if (lookupTable[index][0] >= storedDistance) {
-        break;
-      }
-    }
-    if (index >= lookupTable.length) {
-      index--;
-    }
-    if (lookupTable[index][0] != storedDistance) {
-      // Calculates linear graph between 2 closest distances to estimate the best RPS to output
-      double slope =
-          (lookupTable[index][1] - lookupTable[index - 1][1])
-              / (lookupTable[index][0] - lookupTable[index - 1][0]);
-      System.out.println(
-          (slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1]));
-      targetVelocity =
-          slope * (storedDistance - lookupTable[index - 1][0]) + lookupTable[index - 1][1];
-    } else {
-      targetVelocity = lookupTable[index][1];
-    }
-    if (storedDistance == 0) {
-      targetVelocity = ShooterConstants.flywheelDefaultSpeed;
-    }
+    //Linear Regression
+    targetVelocity = 0.13 * storedDistance * 39.3701 + 28.9;
     setTargetVelocity(targetVelocity);
   }
 
