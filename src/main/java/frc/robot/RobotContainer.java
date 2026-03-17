@@ -43,7 +43,7 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private PowerDistributionSubsystem powerSubsystem;
-  private final Field2d field;
+  public static final Field2d field = new Field2d();
   private AutoSubsystem autoSubsystem;
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -207,7 +207,6 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    field = new Field2d();
     SmartDashboard.putData(field);
   }
 

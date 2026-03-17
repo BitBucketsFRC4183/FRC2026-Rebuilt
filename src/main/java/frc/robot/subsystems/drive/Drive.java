@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.OdometryHistory;
 import frc.robot.util.LocalADStarAK;
@@ -170,10 +171,12 @@ public class Drive extends SubsystemBase {
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
+          RobotContainer.field.getObject("path").setPoses(activePath.toArray(new Pose2d[0]));
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
+          RobotContainer.field.getObject("target pose").setPose(targetPose);
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
