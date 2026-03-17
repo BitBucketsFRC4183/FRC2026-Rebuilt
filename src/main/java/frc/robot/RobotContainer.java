@@ -150,6 +150,7 @@ public class RobotContainer {
     // FollowPathCommand.warmupCommand().schedule();
     // PathfindingCommand.warmupCommand().schedule();
     // Set up auto routines
+
     var chooser = AutoBuilder.buildAutoChooser();
     autoChooser = new LoggedDashboardChooser<>("/SmartDashboard/Auto Chooser", chooser);
 

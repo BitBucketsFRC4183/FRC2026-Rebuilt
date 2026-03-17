@@ -117,23 +117,19 @@ public class AutoSubsystem extends SubsystemBase {
       Command followCommand = AutoBuilder.followPath(path);
 
       if (resetPose) {
-        Pose2d startingPose;
-
-        if (DriverStation.getAlliance().isPresent()) {
-          if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-            System.out.println("if this does print, we are cooked");
-            startingPose = path.flipPath().getStartingHolonomicPose().get();
-          } else {
-            System.out.println("if this does not print, we are cooked");
-            startingPose = path.getStartingHolonomicPose().get();
-          }
-        } else {
-          startingPose = path.getStartingHolonomicPose().get();
-        }
-        return new InstantCommand(() -> drive.setPose(startingPose)).andThen(followCommand);
+        return new InstantCommand(
+                () -> {
+                  Pose2d startingPose =
+                      DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Red
+                          ? path.getStartingHolonomicPose().get()
+                          : path.flipPath().getStartingHolonomicPose().get();
+                  drive.setPose(startingPose);
+                })
+            .andThen(followCommand);
       } else {
         return followCommand;
       }
+
     } catch (Exception e) {
       System.err.println("Failed to load Choreo trajectory: " + trajName);
       e.printStackTrace();
