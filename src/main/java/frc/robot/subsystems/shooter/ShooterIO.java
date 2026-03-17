@@ -6,7 +6,6 @@ public interface ShooterIO {
   @AutoLog
   class ShooterIOInputs {
     public double storedDistance;
-    public double targetFlywheelSpeed;
 
     public double flywheelVelocity;
     public double flywheelVelocity2;

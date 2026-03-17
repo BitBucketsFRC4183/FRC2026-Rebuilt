@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
   private boolean flywheelsRunning = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private static double targetVelocity = ShooterConstants.flywheelDefaultSpeed;
+  private static LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Shooter Target RPS", ShooterConstants.flywheelDefaultSpeed);
   private final SysIdRoutine sysId;
   private double storedDistance = 0;
   private boolean dataRecieved = false;
@@ -66,14 +67,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void calculateVelocity() {
     // Linear Regression
-    targetVelocity = 0.13 * storedDistance * 39.3701 + 28.9;
-    setTargetVelocity(targetVelocity);
+    targetVelocity.set(0.13 * storedDistance
+    //Conversion to Inches lol
+            * 39.3701 + 28.9);
+    setTargetVelocity(targetVelocity.get());
   }
 
   public void setTargetVelocity(double targetVelocity) {
     io.setFlywheelSpeed(targetVelocity);
     flywheelsRunning = true;
-    ShooterSubsystem.targetVelocity = targetVelocity;
+    ShooterSubsystem.targetVelocity.set(targetVelocity);
   }
 
   // Stores a distance to be used calculateTargetVelocity()
@@ -109,8 +112,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity >= (targetVelocity - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
@@ -118,7 +121,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public static double getTargetVelocity() {
-    return targetVelocity;
+    return targetVelocity.get();
   }
 
   @Override

@@ -88,8 +88,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.targetFlywheelSpeed = ShooterSubsystem.getTargetVelocity();
-
     inputs.flywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
     inputs.flywheelVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
 
