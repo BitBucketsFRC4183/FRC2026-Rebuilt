@@ -72,16 +72,9 @@ public class VisionSubsystem extends SubsystemBase {
 
   // seed once when reseting the pose of the robot
   public void setLimelightIMUGyro(Rotation2d rotation) {
-
     setIMUModeForAllCameras(1);
-    double flip = 0;
-    if (DriverStation.getAlliance().isPresent()) {
-      if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
-        flip = 180;
-      }
-    }
 
-    double heading = rotation.getDegrees() + flip;
+    double heading = rotation.getDegrees();
     forAllCameras(cam -> visionio.setRobotOrientation(cam, heading));
     Logger.recordOutput("Vision/GyroInputs/WhenSetPose:robotHeading", heading);
     Command delaySwitch =
