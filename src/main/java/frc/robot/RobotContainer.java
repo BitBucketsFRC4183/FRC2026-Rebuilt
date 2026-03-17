@@ -10,6 +10,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -214,8 +216,15 @@ public class RobotContainer {
     gyroChooser.addOption("180", Rotation2d.k180deg);
     gyroChooser.onChange(
         (rot) -> {
+          Rotation2d flip =
+              DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
+                  ? Rotation2d.k180deg
+                  : Rotation2d.kZero;
+
           driveSubsystem.setPose(
-              new Pose2d(driveSubsystem.getPose().getTranslation(), (Rotation2d) rot), true);
+              new Pose2d(
+                  driveSubsystem.getPose().getTranslation(), (Rotation2d) rot.rotateBy(flip)),
+              true);
         });
 
     SmartDashboard.putData("GyroChooser", gyroChooser.getSendableChooser());
@@ -257,9 +266,14 @@ public class RobotContainer {
     final Runnable resetOdometry =
         Constants.currentMode == Constants.Mode.SIM
             ? () -> resetSimulation(new Pose2d(3, 3, new Rotation2d()))
-            : () ->
-                driveSubsystem.setPose(
-                    new Pose2d(driveSubsystem.getPose().getTranslation(), new Rotation2d()), false);
+            : () -> {
+              Rotation2d flip =
+                  DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
+                      ? Rotation2d.k180deg
+                      : Rotation2d.kZero;
+              driveSubsystem.setPose(
+                  new Pose2d(driveSubsystem.getPose().getTranslation(), flip), false);
+            };
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
     // Overrides the DPD Subsystem
