@@ -279,10 +279,7 @@ public class RobotContainer {
     operatorController
         .rightTrigger()
         .onTrue(
-            ShooterCommands.visionShoot(
-                () ->
-                    visionSubsystem.getHubDistanceMeter(
-                        () -> driveSubsystem.poseEstimator.getEstimatedPosition()),
+            ShooterCommands.visionShoot(visionSubsystem, driveSubsystem,
                 shooterSubsystem,
                 hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));

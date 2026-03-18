@@ -2,13 +2,18 @@ package frc.robot.commands;
 
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.vision.AutoAimUtil;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class ShooterCommands {
   private static boolean charged = false;
@@ -22,14 +27,15 @@ public class ShooterCommands {
   }
 
   public static Command visionShoot(
-      DoubleSupplier distanceSupplier,
+      VisionSubsystem vision,
+      Drive drive,
       ShooterSubsystem shooterSubsystem,
       HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
             Commands.runOnce(
                     () -> {
                       charged = false;
-                      shooterSubsystem.setStoredDistance(distanceSupplier.getAsDouble());
+                      shooterSubsystem.setStoredDistance(vision.getHubDistanceMeter((Supplier<Pose2d>) drive.poseEstimator.getEstimatedPosition()));
                     }),
 
                 // Runs the flywheel until the target velocity is reached
