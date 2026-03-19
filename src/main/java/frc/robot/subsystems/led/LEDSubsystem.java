@@ -60,9 +60,9 @@ public class LEDSubsystem extends SubsystemBase {
           Rotation2d currentRot = currentPose.getRotation();
           double tolerance_degs = 2;
 
-          if ((AutoAimUtil.getAngletoHub(currentPose).getDegrees() + tolerance_degs
+          if ((AutoAimUtil.getAngleToHub(poseSupplier).getDegrees() + tolerance_degs
                   > currentRot.getDegrees())
-              && (AutoAimUtil.getAngletoHub(currentPose).getDegrees() - tolerance_degs
+              && (AutoAimUtil.getAngleToHub(poseSupplier).getDegrees() - tolerance_degs
                   < currentRot.getDegrees())) {
             newState = Optional.of(candidateState);
           }
