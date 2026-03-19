@@ -15,6 +15,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class AutoSubsystem extends SubsystemBase {
 
@@ -23,18 +24,22 @@ public class AutoSubsystem extends SubsystemBase {
   private final ClimberSubsystem climber;
   private final HopperSubsystem hopper;
   private final IntakeSubsystem intake;
+  private final VisionSubsystem vision;
+  private boolean useVisionShooting = true;
 
   public AutoSubsystem(
       Drive drive,
       ShooterSubsystem shooter,
       ClimberSubsystem climber,
       HopperSubsystem hopper,
-      IntakeSubsystem intake) {
+      IntakeSubsystem intake,
+      VisionSubsystem vision) {
     this.drive = drive;
     this.shooter = shooter;
     this.climber = climber;
     this.hopper = hopper;
     this.intake = intake;
+    this.vision = vision;
     registerNamedCommands();
   }
 
@@ -57,9 +62,9 @@ public class AutoSubsystem extends SubsystemBase {
 
     NamedCommands.registerCommand("Stop", stop());
 
-    NamedCommands.registerCommand("ShootMid", shootSetpoint(ShootingPosition.POSITION_mid));
-    NamedCommands.registerCommand("ShootTop", shootSetpoint(ShootingPosition.POSITION_top));
-    NamedCommands.registerCommand("ShootBtm", shootSetpoint(ShootingPosition.POSITION_btm));
+    NamedCommands.registerCommand("ShootMid", shoot(ShootingPosition.POSITION_mid));
+    NamedCommands.registerCommand("ShootTop", shoot(ShootingPosition.POSITION_top));
+    NamedCommands.registerCommand("ShootBtm", shoot(ShootingPosition.POSITION_btm));
 
     NamedCommands.registerCommand("Climb", climb());
 
@@ -74,6 +79,21 @@ public class AutoSubsystem extends SubsystemBase {
   // 40.89397 for bottom shooting ps
   // 31.62039 for top shooting ps
   // 32.74425 for mid shooting ps
+  public void setUseVisionShooting(boolean useVision){
+    this.useVisionShooting= useVision;
+  }
+
+  //conditional method
+  public Command shoot(ShootingPosition position){
+    if(useVisionShooting){
+      System.out.println("shooting with vision");
+      return ShooterCommands.visionShoot(vision, drive, shooter, hopper);
+    }else{
+      System.out.println("shooting with setpoint");
+      return shootSetpoint(position);
+    }
+  }
+  //shooting w setpoint method
   public Command shootSetpoint(ShootingPosition position) {
     System.out.println("Beginning to Shoot with Setpoint");
     return ShooterCommands.shootAtRPS(position.velocity, shooter, hopper);
@@ -233,7 +253,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
         goBottomStartToShootB(),
         new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shootSetpoint(ShootingPosition.POSITION_btm).withTimeout(5),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -249,7 +269,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from top position to shooting position")),
         goToptoShooterPs(),
         new InstantCommand(() -> System.out.println("Reached top shooting position")),
-        shootSetpoint(ShootingPosition.POSITION_top).withTimeout(5),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -264,7 +284,7 @@ public class AutoSubsystem extends SubsystemBase {
             () -> System.out.println("Moving from mid position to shooting position")),
         goMidToShooterPs(),
         new InstantCommand(() -> System.out.println("Reached mid shooting position")),
-        shootSetpoint(ShootingPosition.POSITION_mid).withTimeout(5),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -281,7 +301,7 @@ public class AutoSubsystem extends SubsystemBase {
         new WaitCommand(3),
         new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
         goOutpostToShootBPs(),
-        shootSetpoint(ShootingPosition.POSITION_btm).withTimeout(5),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("complete routine")));
   }
@@ -298,7 +318,7 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         goDepotToMid(),
-        shootSetpoint(ShootingPosition.POSITION_mid).withTimeout(5),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -314,7 +334,7 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("We are moving to shooting position")),
         goDepotToShootT(),
-        shootSetpoint(ShootingPosition.POSITION_top).withTimeout(5),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -327,7 +347,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
         goBottomStartToShootB(),
-        shootSetpoint(ShootingPosition.POSITION_btm).withTimeout(5),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
         new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
         goBottomShootertoDepot(),
         stop(),
@@ -342,7 +362,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
         goMidToShooterPs(),
-        shootSetpoint(ShootingPosition.POSITION_mid).withTimeout(5),
+        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
         goMidShootertoDepot(),
         driveAndIntake(intakeAtDepot()),
@@ -357,7 +377,7 @@ public class AutoSubsystem extends SubsystemBase {
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         goToptoShooterPs(),
-        shootSetpoint(ShootingPosition.POSITION_top).withTimeout(5),
+        shoot(ShootingPosition.POSITION_top).withTimeout(5),
         driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
         goTopShootertoDepot(),
@@ -408,7 +428,7 @@ public class AutoSubsystem extends SubsystemBase {
             driveAndIntake(intakeNeutralZTop()),
             NeutralZAimAllianceTop(),
             new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-            shootSetpoint(ShootingPosition.POSITION_btm).withTimeout(12),
+            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
             stop(),
             new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -425,7 +445,7 @@ public class AutoSubsystem extends SubsystemBase {
             driveAndIntake(intakeNeutralZTop()),
             NeutralZAimAllianceBtm(),
             new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-            shootSetpoint(ShootingPosition.POSITION_btm).withTimeout(12),
+            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
             stop(),
             new InstantCommand(() -> System.out.println("routine complete")));
   }

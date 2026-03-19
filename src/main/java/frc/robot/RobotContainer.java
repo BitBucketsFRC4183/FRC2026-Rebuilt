@@ -147,7 +147,7 @@ public class RobotContainer {
 
     autoSubsystem =
         new AutoSubsystem(
-            driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem);
+            driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem, visionSubsystem);
 
     // WARMUP commands
     // FollowPathCommand.warmupCommand().schedule();
