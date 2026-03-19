@@ -33,13 +33,16 @@ public class VisionShootCommand extends Command {
 
     public void initialize() {
         shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
-        waitUntil(shooter::targetReached);
-        waitSeconds(0.8);
-        startFeeding(shooter, hopper);
-        shooter.charge();
-        waitSeconds(0.02);
-        shooter.calculateVelocity();
-        withTimeout(2.0);
+    }
+
+    public void execute() {
+        Commands.sequence(Commands.waitUntil(shooter::targetReached),
+                waitSeconds(0.8),
+                startFeeding(shooter, hopper),
+                Commands.runOnce(shooter::charge),
+                waitSeconds(0.02),
+                Commands.runOnce(shooter::calculateVelocity)
+                ).withTimeout(2.0);
     }
 
     public void end(boolean interrupted) {
