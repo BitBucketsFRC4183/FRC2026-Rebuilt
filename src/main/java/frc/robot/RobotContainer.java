@@ -234,7 +234,8 @@ public class RobotContainer {
     driverController
         .a()
         .whileTrue(
-            driverJoystickDriveAtAngle(() -> AutoAimUtil.getAngletoHub(driveSubsystem.getPose())));
+            driverJoystickDriveAtAngle(
+                () -> AutoAimUtil.getAngleToHub(() -> driveSubsystem.getPose())));
 
     // temp only
     // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
@@ -275,25 +276,21 @@ public class RobotContainer {
     // Hopper runs, will change to intake later
     operatorController
         .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                hopperSubsystem::runConveyorForward,
-                hopperSubsystem::stopConveyor,
-                hopperSubsystem));
-
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(
-    //            ShooterCommands.visionShoot(
-    //                visionSubsystem.getHubDistanceMeter(driveSubsystem.getPose()),
-    //                shooterSubsystem,
-    //                hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+        .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
+        .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
     operatorController
         .rightTrigger()
-        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+        .onTrue(
+            ShooterCommands.visionShoot(visionSubsystem, driveSubsystem,
+                shooterSubsystem,
+                hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+
+    //    operatorController
+    //        .rightTrigger()
+    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
+    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
     //     Climber Setpoint Commands

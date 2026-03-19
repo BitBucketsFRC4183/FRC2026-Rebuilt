@@ -17,7 +17,6 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -84,7 +83,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     double heading = rotation.getDegrees() + flip;
     forAllCameras(cam -> visionio.setRobotOrientation(cam, heading));
-
+    Logger.recordOutput("Vision/GyroInputs/WhenSetPose:robotHeading", heading);
     Command delaySwitch =
         Commands.sequence(
             Commands.waitSeconds(0.1), Commands.runOnce(() -> setIMUModeForAllCameras(3)));
@@ -96,23 +95,25 @@ public class VisionSubsystem extends SubsystemBase {
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/side", CamTwoInputs);
+    //    Logger.recordOutput("Vision/GyroInputs/poseSupplier", pose2dSupplier.get());
+    //    Logger.recordOutput(
+    //        "Vision/GyroInputs/robotHeadingFromPose", pose2dSupplier.get().getRotation());
 
-    /// logging
-    // logAprilTagPose(CamOneInputs);
-    logAprilTagPose(CamTwoInputs);
+    logAutoAimInputs(pose2dSupplier);
 
     if (lastVisionMode != currentVisionMode) {
       // setVisionPipelineForAllCameras(currentVisionMode);
       lastVisionMode = currentVisionMode;
     }
+    Logger.recordOutput("Vision/Mode/currentGyroVisionMode", currentVisionMode.toString());
 
-    setVisionPipelineForAllCameras(VisionMode.AUTONOMOUS);
+    setVisionPipelineForAllCameras(VisionMode.TELEOP);
     seedGyroVisionMode(currentVisionMode);
 
     /// one
-    var maybeMTA = processMegaTags(CamOneInputs);
+    var maybeMTA = processMegaTags(CamOneInputs, "front");
     /// two
-    var maybeMTB = processMegaTags(CamTwoInputs);
+    var maybeMTB = processMegaTags(CamTwoInputs, "side");
 
     /// if we have good estimation from MTA, then use MTA; the other way around for MTB as well
     /// if both does not provide good estimation, then we fuse both results
@@ -120,19 +121,23 @@ public class VisionSubsystem extends SubsystemBase {
     Optional<VisionFusionResults> acceptedInputs = Optional.empty();
     if (maybeMTA.isPresent() != maybeMTB.isPresent()) {
       acceptedInputs = maybeMTA.isPresent() ? maybeMTA : maybeMTB;
-      Logger.recordOutput("Vision/UsedAllCamera", false);
     } else if (maybeMTA.isPresent() && maybeMTB.isPresent()) {
       acceptedInputs = Optional.of(getFuseEstimation(maybeMTA.get(), maybeMTB.get()));
-      Logger.recordOutput("Vision/UsedAllCamera", true);
     }
 
+    Logger.recordOutput("Vision/HasVisionEstimate", acceptedInputs.isPresent());
     acceptedInputs.ifPresent(
         visionFusionResults -> {
           drive.addVisionMeasurement(
               visionFusionResults.getVisionRobotPoseMeters(),
               visionFusionResults.getTimestampSeconds(),
               visionFusionResults.getVisionMeasurementStdDevs());
-          Logger.recordOutput("Vision/SuccessfullyFused", true);
+          Logger.recordOutput(
+              "Vision/Estimator/robotPose", visionFusionResults.getVisionRobotPoseMeters());
+          Logger.recordOutput(
+              "Vision/Estimator/timestamps", visionFusionResults.getTimestampSeconds());
+          Logger.recordOutput(
+              "Vision/Estimator/stdDev", visionFusionResults.getVisionMeasurementStdDevs());
         });
   }
 
@@ -197,28 +202,30 @@ public class VisionSubsystem extends SubsystemBase {
     return new VisionFusionResults(fusedPose, time, fusedStdDev, numTags);
   }
 
-  private Optional<VisionFusionResults> processMegaTags(VisionIOInputsAutoLogged inputs) {
-    boolean isBasicFiltered = passedBasicFilter(inputs);
-    boolean isAdvancedFiltered = passedAdvancedFilter(inputs);
-    boolean useMeasurement;
+  private Optional<VisionFusionResults> processMegaTags(
+      VisionIOInputsAutoLogged inputs, String cameraName) {
+    boolean basicFilterPass = passedBasicFilter(inputs, cameraName);
+    boolean advancedFilterPass = passedAdvancedFilter(inputs, cameraName);
+    boolean bothFilterPass;
 
     if (oneCameraMode) {
-      useMeasurement = isBasicFiltered;
-
+      bothFilterPass = basicFilterPass;
     } else {
-      useMeasurement = isBasicFiltered && isAdvancedFiltered;
+      bothFilterPass = basicFilterPass && advancedFilterPass;
     }
 
-    if (!useMeasurement) {
-      Logger.recordOutput("Vision/FilterOutResults", true);
+    /// we expect these to be green
+    Logger.recordOutput("Vision/" + cameraName + "/BasicPass", basicFilterPass);
+    Logger.recordOutput("Vision/" + cameraName + "/AdvancedPass", advancedFilterPass);
+    Logger.recordOutput("Vision/" + cameraName + "/ValidResults", bothFilterPass);
+
+    if (!bothFilterPass) {
       return Optional.empty();
     }
 
     double xStd = 0.3;
     double yStd = 0.3;
     //    double theta = inputs.rawStdDev[11];
-
-    Logger.recordOutput("Vision/FilterOutResults", false);
 
     return Optional.of(
         new VisionFusionResults(
@@ -229,7 +236,7 @@ public class VisionSubsystem extends SubsystemBase {
             inputs.tagCount));
   }
 
-  private boolean passedAdvancedFilter(VisionIOInputsAutoLogged inputs) {
+  private boolean passedAdvancedFilter(VisionIOInputsAutoLogged inputs, String cameraName) {
 
     // Single‑tag extra checks
     //    if (inputs.tagCount < 2) {
@@ -238,27 +245,45 @@ public class VisionSubsystem extends SubsystemBase {
     //      }
     //    }
 
-    if (proportionalDistance(inputs) > VisionConstants.maxDistanceFromRobotToApril) {
-      return false;
-    }
-    if (inputs.ta < VisionConstants.kTagMinAreaForSingleTagMegatag) {
-      return false;
-    }
-    return true;
+    double distance = proportionalDistance(inputs);
+
+    boolean distanceValid = distance < VisionConstants.maxDistanceFromRobotToApril;
+
+    boolean areaValid = inputs.ta > VisionConstants.kTagMinAreaForSingleTagMegatag;
+
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/ProportionalDistance", distance);
+
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/DistanceValid", distanceValid);
+
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/AreaValid", areaValid);
+
+    return distanceValid && areaValid;
   }
 
-  private boolean passedBasicFilter(VisionIOInputsAutoLogged inputs) {
+  private boolean passedBasicFilter(VisionIOInputsAutoLogged inputs, String cameraName) {
+    boolean tagValid = isValidInputs(inputs);
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/TagValid", tagValid);
+    //    if (!isValidInputs(inputs)) {
+    //      boolean TagCountValid = false;
+    //      return false;
+    //    }
+    double gyroChange = getGyroChange(pose2dSupplier);
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/GyroChange", gyroChange);
 
-    if (!isValidInputs(inputs)) {
-      return false;
-    }
+    boolean gyroValid = gyroChange <= VisionConstants.maxGyroChange;
+    Logger.recordOutput("Vision/" + cameraName + "/Filter/GyroValid", gyroValid);
 
-    if (getGyroChange(pose2dSupplier) > VisionConstants.maxGyroChange) {
-      return false;
-    }
-    return true;
+    //    if (getGyroChange(pose2dSupplier) > VisionConstants.maxGyroChange) {
+    //      return false;
+    //    }
+    return tagValid && gyroValid;
   }
 
+  private void logAutoAimInputs(Supplier<Pose2d> supplier) {
+    Logger.recordOutput("Aim/CurrentHubPose", AutoAimUtil.getTargetHubPose3d());
+    Logger.recordOutput("Aim/TargetAngle", AutoAimUtil.getAngleToHub(supplier));
+    Logger.recordOutput("Aim/DistanceToHub", AutoAimUtil.getDistanceToHub(supplier));
+  }
   /// are we a valid pose?
   /// yes sir!
   private boolean isValidInputs(VisionIOInputsAutoLogged inputs) {
@@ -286,22 +311,15 @@ public class VisionSubsystem extends SubsystemBase {
     // ignore this gyro change result
     if (deltaTime < 1e-6) return 0;
 
-    return Math.abs(deltaGryoDegs / deltaTime);
+    double d = Math.abs(deltaGryoDegs / deltaTime);
+
+    //    Logger.recordOutput("Vision/GyroChangeUsed", d);
+    //    Logger.recordOutput("Vision/GyroDegsUsed", currentGyroDegs);
+    return d;
   }
 
-  private void logAprilTagPose(VisionIOInputsAutoLogged inputs) {
-    if (!inputs.hasTarget) {
-      return;
-    } else {
-      int[] ids = inputs.rawAprilTagID;
-      Pose3d[] aprilTagPoses = new Pose3d[ids.length];
-      for (int i = 0; i < ids.length; i++) {
-        aprilTagPoses[i] = VisionConstants.aprilTagFieldLayout.getTagPose(ids[i]).get();
-      }
-      Logger.recordOutput("Vision/AprilTagPoses", aprilTagPoses);
-    }
-  }
-
+  /// /////
+  /// all helper
   private static final String[] CAMERAS = {
     VisionConstants.LIMELIGHT_A, VisionConstants.LIMELIGHT_B
   };
@@ -316,6 +334,7 @@ public class VisionSubsystem extends SubsystemBase {
     forAllCameras(cam -> visionio.setPipeline(cam, pipelineNumber));
   }
 
+  /// set orientation from pose supplier
   private void setIMUModeForAllCameras(int mode) {
     forAllCameras(cam -> visionio.setIMUMode(cam, mode));
   }
@@ -326,9 +345,13 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void setIMUOrientationForAllCameras() {
-    forAllCameras(
-        cam -> visionio.setRobotOrientation(cam, pose2dSupplier.get().getRotation().getDegrees()));
+    double robotHeading = pose2dSupplier.get().getRotation().getDegrees();
+    forAllCameras(cam -> visionio.setRobotOrientation(cam, robotHeading));
+    Logger.recordOutput("Vision/GyroInputs/WhileDisabled:robotHeading", robotHeading);
   }
+
+  /// all helper
+  /// /////
 
   private void setVisionPipelineForAllCameras(VisionMode visionMode) {
     switch (visionMode) {
@@ -342,7 +365,7 @@ public class VisionSubsystem extends SubsystemBase {
         setPipelineForAllCameras(VisionConstants.PIPELINE_Teleop);
       }
     }
-    Logger.recordOutput("Vision/CurrentVisionMode", visionMode.toString());
+    Logger.recordOutput("Vision/Mode/pipelineVisionMode", visionMode.toString());
   }
 
   private void seedGyroVisionMode(VisionMode visionMode) {
@@ -358,10 +381,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  @AutoLogOutput(key = "Aim/DistanceToHub")
-  public double getHubDistanceMeter(Pose2d robotPose) {
+  //  @AutoLogOutput(key = "Aim/DistanceToHub")
+  public double getHubDistanceMeter(Supplier<Pose2d> robotPose) {
     return AutoAimUtil.getDistanceToHub(robotPose);
   }
+
+  //  private void logCameraData(String cameraName, VisionIOInputsAutoLogged inputs) {}
 }
 
 /// +++++++++++*****@@@@@@@%+++++++++++*##%*+++@@@@@@@@@@@@@#+++

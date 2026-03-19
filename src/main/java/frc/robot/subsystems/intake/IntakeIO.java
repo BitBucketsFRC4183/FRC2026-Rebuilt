@@ -17,10 +17,10 @@ public interface IntakeIO {
 
   default void updateInputs(IntakeIOInputs inputs) {}
 
-  default void setVelocity(double rps) {}
+  default void setVoltage(double volts) {}
 
   default void stopMotor() {
-    setVelocity(0.0);
+    setVoltage(0.0);
   }
 
   default void extend() {}

@@ -9,21 +9,12 @@ public final class IntakeConstants {
   public static final boolean MOTOR_INVERTED = false;
 
   // all in rps
-  public static final double INTAKE_SPEED = -90.0;
-  public static final double OUTTAKE_SPEED = 50.0;
-  public static final double HOLD_SPEED = 1;
+  public static final double INTAKE_VOLTAGE = -4;
+  public static final double OUTTAKE_VOLTAGE = 4;
 
   // Current limiting
   public static final double SUPPLY_CURRENT_LIMIT = 50.0;
   public static final double STATOR_CURRENT_LIMIT = 50.0;
-
-  // Control Constants
-  public static final double kS = 0;
-  public static final double kV = 1.8;
-  public static final double kA = 0;
-  public static final double kP = 0.1;
-  public static final double kI = 0;
-  public static final double kD = 0;
 
   // Pneumatics
   public static final PneumaticsModuleType PNEUMATICS_TYPE = PneumaticsModuleType.REVPH;
