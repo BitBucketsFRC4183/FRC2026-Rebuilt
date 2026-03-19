@@ -16,7 +16,7 @@ public class ShooterCommands {
         Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
         waitUntil(shooterSubsystem::targetReached)
             .andThen(Commands.waitSeconds(0.80))
-            .andThen(startFeeding(shooterSubsystem, hopperSubsystem)));
+            .andThen(startFeeding(shooterSubsystem, hopperSubsystem))).withTimeout(2.0);
   }
 
   public static Command startFeeding(
