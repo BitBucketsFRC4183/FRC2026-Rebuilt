@@ -7,10 +7,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.VisionConstants;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
@@ -142,52 +139,80 @@ public class VisionIOPhotonVisionSim extends VisionIOLimelight {
     boolean foundMT = false;
     PhotonPipelineResult bestResult = null;
 
+    Set<Short> tagIds = new HashSet<>();
+    List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : results) {
-      List<PhotonTrackedTarget> targets = result.getTargets();
-      inputs.rawAprilTagID = getAprilTagIDs(targets);
+      //      inputs.rawAprilTagID = getAprilTagIDs(targets);
 
+      Transform3d best;
       if (result.getMultiTagResult().isPresent()) {
+        var multitagResult = result.multitagResult.get();
+
         bestResult = result;
         foundMT = true;
         inputs.hasTarget = true;
         inputs.hasMegaTag2 = true;
         inputs.timestamp = result.getTimestampSeconds();
+        tagIds.addAll(multitagResult.fiducialIDsUsed);
+
+        if (bestResult != null) {
+          best = bestResult.getMultiTagResult().get().estimatedPose.best;
+          inputs.tagCount = bestResult.getMultiTagResult().get().fiducialIDsUsed.size();
+          inputs.ta = 5;
+          List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
+          inputs.megaTagPose =
+              new Pose2d(
+                  pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+          poseObservations.add(
+              new PoseObservation(
+                  new Pose3d(inputs.megaTagPose), multitagResult.fiducialIDsUsed.size()));
+        }
+
+        // Add observation
 
       } else if (result.hasTargets() && foundMT == false) {
+        var target = result.targets.get(0);
+
         bestResult = result;
         inputs.hasTarget = true;
         inputs.hasMegaTag2 = false;
         inputs.latency = result.metadata.getLatencyMillis();
         inputs.timestamp = result.getTimestampSeconds();
-      }
-    }
 
-    if (bestResult != null) {
-      Transform3d best;
-      if (foundMT) {
-        best = bestResult.getMultiTagResult().get().estimatedPose.best;
-        inputs.tagCount = bestResult.getMultiTagResult().get().fiducialIDsUsed.size();
-        inputs.ta = 5;
-      } else {
+        tagIds.add((short) target.fiducialId);
+        Transform3d cameraToTarget = target.bestCameraToTarget;
+
         inputs.tagCount = 1;
         var bestTarget = bestResult.getBestTarget();
-        best =
-            VisionConstants.aprilTagFieldLayout
-                .getTagPose(bestTarget.getFiducialId())
-                .get()
-                .minus(Pose3d.kZero)
-                .plus(bestTarget.bestCameraToTarget.inverse());
-        inputs.ta = bestTarget.getArea();
+        if (bestResult != null) {
+          best =
+              VisionConstants.aprilTagFieldLayout
+                  .getTagPose(bestTarget.getFiducialId())
+                  .get()
+                  .minus(Pose3d.kZero)
+                  .plus(bestTarget.bestCameraToTarget.inverse());
+          inputs.ta = bestTarget.getArea();
+          List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
+          inputs.megaTagPose =
+              new Pose2d(
+                  pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+          // Add observation
+          poseObservations.add(new PoseObservation(new Pose3d(inputs.megaTagPose), 1));
+        }
       }
-      inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5, 5, 0.0, 0.0, 0.0, 0.3};
+    }
+    inputs.rawStdDev = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5, 5, 0.0, 0.0, 0.0, 0.3};
 
-      List<Double> pose_data = getBotpose(best, inputs.tagCount, bestResult, cameraSim);
-      // [MT1x, MT1y, MT1z, MT1roll, MT1pitch, MT1Yaw, MT2x, MT2y, MT2z, MT2roll,
-      // MT2pitch,
-      // MT2yaw]
+    inputs.rawPoseObservations = new PoseObservation[poseObservations.size()];
+    for (int i = 0; i < poseObservations.size(); i++) {
+      inputs.rawPoseObservations[i] = poseObservations.get(i);
+    }
 
-      inputs.megaTagPose =
-          new Pose2d(pose_data.get(0), pose_data.get(1), Rotation2d.fromDegrees(pose_data.get(5)));
+    // Save tag IDs to inputs objects
+    inputs.rawTagIds = new int[tagIds.size()];
+    int i = 0;
+    for (int id : tagIds) {
+      inputs.rawTagIds[i++] = id;
     }
   }
 
