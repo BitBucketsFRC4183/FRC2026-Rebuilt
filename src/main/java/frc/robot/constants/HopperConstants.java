@@ -11,6 +11,7 @@ public final class HopperConstants {
   public static final boolean MOTOR_INVERTED = false;
 
   // Percent outputs
-  public static final double CONVEYOR_FORWARD_PERCENT = 0.2;
-  public static final double CONVEYOR_REVERSE_PERCENT = -0.2;
+  private static final double percent = 70;
+  public static final double CONVEYOR_FORWARD_PERCENT = percent / 100;
+  public static final double CONVEYOR_REVERSE_PERCENT = percent / 100;
 }
