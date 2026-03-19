@@ -6,7 +6,8 @@ public class LEDConstants {
   public enum LEDState {
     DISABLED(-1, BlinkinPattern.RAINBOW_RAINBOW_PALETTE),
     ALIGNED(1, BlinkinPattern.BPM_FOREST_PALETTE),
-    INTAKING(5, BlinkinPattern.BPM_LAVA_PALETTE);
+    INTAKING(5, BlinkinPattern.FIRE_LARGE),
+    IDLE(9999, BlinkinPattern.TWINKLES_OCEAN_PALETTE);
 
     private final int priority;
     private final BlinkinPattern pattern;

@@ -72,6 +72,9 @@ public class LEDSubsystem extends SubsystemBase {
             newState = Optional.of(candidateState);
           }
           break;
+        case IDLE:
+          newState = Optional.of(candidateState);
+          break;
       }
     }
 
