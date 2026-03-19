@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -96,6 +97,9 @@ public class RobotContainer {
             new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
 
         driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
+
+        Robot.orchestra.loadMusic("sounds/bootup.chrp");
+        Robot.orchestra.play();
         break;
 
       case SIM:
@@ -214,6 +218,7 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
+        
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
