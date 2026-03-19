@@ -27,6 +27,9 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.led.LEDIO;
+import frc.robot.subsystems.led.LEDIOBlinkin;
+import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
@@ -43,6 +46,8 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private PowerDistributionSubsystem powerSubsystem;
+  private final LEDSubsystem ledSubsystem;
+
   private final Field2d field;
   private AutoSubsystem autoSubsystem;
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -83,6 +88,8 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
+        ledSubsystem =
+            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
 
         driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
         break;
@@ -116,6 +123,8 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
+        ledSubsystem =
+            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
         break;
         // thinking to what
 
@@ -138,7 +147,7 @@ public class RobotContainer {
         visionSubsystem =
             new VisionSubsystem(
                 visionIO, () -> driveSimulation.getSimulatedDriveTrainPose(), driveSubsystem);
-
+        ledSubsystem = new LEDSubsystem(new LEDIO() {}, driveSubsystem::getPose, intakeSubsystem);
         break;
     }
 
