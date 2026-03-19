@@ -335,7 +335,7 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
+        .onTrue(ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController
