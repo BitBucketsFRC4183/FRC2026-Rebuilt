@@ -11,6 +11,7 @@ public class PowerDistributionSubsystem extends SubsystemBase {
   private final ShooterSubsystem shooter;
 
   private PowerState currentState = PowerState.FULL_DRIVE;
+  private PowerState overrideState = PowerState.FULL_DRIVE;
   private boolean overrideActive = false;
   public double driveFactor = 1.0;
 
@@ -35,12 +36,12 @@ public class PowerDistributionSubsystem extends SubsystemBase {
         currentState = PowerState.FULL_DRIVE;
       }
     } else {
-      currentState = PowerState.DRIVE_OVERRIDE;
+      currentState = overrideState;
     }
 
     switch (currentState) {
       case INTAKE_DRIVE:
-        driveFactor = 0.3;
+        driveFactor = 0.17;
         break;
 
       case SHOOTING_DRIVE:
@@ -50,6 +51,10 @@ public class PowerDistributionSubsystem extends SubsystemBase {
 
       case DRIVE_OVERRIDE:
         driveFactor = 1.0;
+        break;
+
+      case SLOW_MODE:
+        driveFactor = 0.20;
         break;
 
       case FULL_DRIVE:
@@ -64,6 +69,10 @@ public class PowerDistributionSubsystem extends SubsystemBase {
 
   public void setOverride(boolean enabled) {
     overrideActive = enabled;
+  }
+
+  public void setOverrideState(PowerState overrideState) {
+    this.overrideState = overrideState;
   }
 
   public double getDriveFactor() {

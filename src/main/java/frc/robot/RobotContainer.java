@@ -23,6 +23,7 @@ import frc.robot.commands.*;
 import frc.robot.commands.shooter.ShooterCommands;
 import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -98,7 +99,7 @@ public class RobotContainer {
 
         driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
 
-        Robot.orchestra.loadMusic("sounds/bootup.chrp");
+        Robot.orchestra.loadMusic("sounds/blackhole.chrp");
         Robot.orchestra.play();
         System.out.println(Robot.orchestra.isPlaying());
 
@@ -282,8 +283,23 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
+    //    driverController
+    //        .leftTrigger()
+    //        .whileTrue(
+    //            Commands.runOnce(
+    //                () -> {
+    //                  powerSubsystem.setOverride(true);
+    //                  powerSubsystem.setOverrideState(PowerState.SLOW_MODE);
+    //                }))
+    //        .whileFalse(
+    //            Commands.runOnce(
+    //                () -> {
+    //                  powerSubsystem.setOverride(false);
+    //                  powerSubsystem.setOverrideState(PowerState.FULL_DRIVE);
+    //                }));
+
     driverController
-        .a()
+        .b()
         .whileTrue(
             driverJoystickDriveAtAngle(
                 () -> AutoAimUtil.getAngleToHub(() -> driveSubsystem.getPose())));
@@ -305,6 +321,7 @@ public class RobotContainer {
                   new Pose2d(driveSubsystem.getPose().getTranslation(), flip), false);
             };
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+    driverController.rightTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
     // Overrides the DPD Subsystem
     driverController
@@ -348,10 +365,12 @@ public class RobotContainer {
         .onTrue(ShooterCommands.shootAtRPS(ShooterConstants.defaultPassingSpeed, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+    //        operatorController
+    //            .rightTrigger()
+    //            .onTrue(new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem,
+    // visionSubsystem).withTimeout(1.0)
+    //            )
+    //            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 

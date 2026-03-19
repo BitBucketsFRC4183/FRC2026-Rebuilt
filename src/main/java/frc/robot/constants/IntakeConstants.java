@@ -33,7 +33,7 @@ public final class IntakeConstants {
 
   // Servo Stuff
   public static final double SERVO_0 = -20;
-  public static final double SERVO_90 = 110;
+  public static final double SERVO_90 = 113;
 
   private IntakeConstants() {}
 }

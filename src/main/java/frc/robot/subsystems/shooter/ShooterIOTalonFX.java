@@ -26,6 +26,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // Hopefully can make the wind uptime for the flywheel faster
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    motorConfig.Audio.AllowMusicDurDisable = true;
+    motorConfig.Audio.BeepOnConfig = false;
 
     // PID and FF Configs
     Slot0Configs slot0 = motorConfig.Slot0;

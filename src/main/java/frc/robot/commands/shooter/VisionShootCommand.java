@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.commands.shooter.ShooterCommands.startFeeding;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,24 +28,24 @@ public class VisionShootCommand extends Command {
     addRequirements(shooter);
   }
 
-    public void initialize() {
-        shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
-    }
+  public void initialize() {
+    shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
+  }
 
-    public void execute() {
-        Commands.sequence(Commands.waitUntil(shooter::targetReached),
-                waitSeconds(0.8),
-                startFeeding(shooter, hopper),
-                Commands.runOnce(shooter::charge),
-                waitSeconds(0.02),
-                Commands.runOnce(shooter::calculateVelocity)
-                ).withTimeout(2.0);
-    }
+  public void execute() {
+    Commands.sequence(
+        Commands.waitUntil(shooter::targetReached),
+        waitSeconds(0.8),
+        startFeeding(shooter, hopper),
+        Commands.runOnce(shooter::charge),
+        waitSeconds(0.02),
+        Commands.runOnce(shooter::calculateVelocity));
+  }
 
-    public void end(boolean interrupted) {
-        shooter.resetStoredDistance();
-        shooter.stopFlywheel();
-        shooter.stopIntermediateMotor();
-        hopper.stopConveyor();
-    }
+  public void end(boolean interrupted) {
+    shooter.resetStoredDistance();
+    shooter.stopFlywheel();
+    shooter.stopIntermediateMotor();
+    hopper.stopConveyor();
+  }
 }

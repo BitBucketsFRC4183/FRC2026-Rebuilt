@@ -105,6 +105,9 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
     var driveConfig = constants.DriveMotorInitialConfigs;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
+    driveConfig.Audio.AllowMusicDurDisable = true;
+    driveConfig.Audio.BeepOnBoot = false;
+    driveConfig.Audio.BeepOnConfig = true;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
@@ -119,6 +122,9 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
 
     // Configure turn motor
     var turnConfig = new TalonFXConfiguration();
+    turnConfig.Audio.AllowMusicDurDisable = true;
+    turnConfig.Audio.BeepOnBoot = false;
+    turnConfig.Audio.BeepOnConfig = false;
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.Slot0 = constants.SteerMotorGains;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;

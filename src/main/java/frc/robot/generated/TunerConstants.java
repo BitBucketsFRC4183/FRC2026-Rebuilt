@@ -254,7 +254,7 @@ public class TunerConstants {
               kBackRightEncoderInverted);
 
   public static final double LINEAR_SLEW_RATE = 10.0;
-  public static final double ANGULAR_SLEW_RATE = 10.0;
+  public static final double ANGULAR_SLEW_RATE = 8.0;
 
   public static final double steerkP = 0;
   public static final double steerkI = 0;
