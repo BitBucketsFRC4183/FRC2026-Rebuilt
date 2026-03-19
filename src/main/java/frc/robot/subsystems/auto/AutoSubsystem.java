@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.IntakeCommands;
-import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.shooter.ShooterCommands;
+import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -87,7 +88,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command shoot(ShootingPosition position) {
     if (useVisionShooting) {
       System.out.println("shooting with vision");
-      return ShooterCommands.visionShoot(vision, drive, shooter, hopper);
+      return new VisionShootCommand(shooter, hopper, drive, vision);
     } else {
       System.out.println("shooting with setpoint");
       return shootSetpoint(position);
@@ -448,5 +449,19 @@ public class AutoSubsystem extends SubsystemBase {
         shoot(ShootingPosition.POSITION_btm).withTimeout(12),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
+  }
+
+  public Command StartTopNeutralZShootThenIntake() {
+    return Commands.sequence(
+            IntakeCommands.deploy(intake),
+            extendKickerbar(),
+            new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+            goTopStartToneutralZ(),
+            driveAndIntake(intakeNeutralZTop()),
+            NeutralZAimAllianceTop(),
+            new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+            stop(),
+            new InstantCommand(() -> System.out.println("routine complete")));
   }
 }

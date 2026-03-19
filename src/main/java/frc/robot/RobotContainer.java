@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
+import frc.robot.commands.shooter.ShooterCommands;
+import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -202,7 +204,7 @@ public class RobotContainer {
     autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
     autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
+        "StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
     autoChooser.addOption(
         "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
     autoChooser.addOption(
@@ -328,9 +330,7 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.visionShoot(
-                visionSubsystem, driveSubsystem, shooterSubsystem, hopperSubsystem))
+        .onTrue(new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController

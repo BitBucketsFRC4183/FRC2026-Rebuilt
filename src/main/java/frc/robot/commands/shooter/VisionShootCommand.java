@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,33 +10,42 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 import java.util.function.Supplier;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
-import static frc.robot.commands.ShooterCommands.startFeeding;
+import static frc.robot.commands.shooter.ShooterCommands.startFeeding;
 
-public class VisionShootCommand {
-    public static Command visionShoot(
-            VisionSubsystem vision,
-            Drive drive,
-            ShooterSubsystem shooterSubsystem,
-            HopperSubsystem hopperSubsystem) {
-        return Commands.sequence(
-                        Commands.runOnce(
-                                () -> {
-                                    charged = false;
-                                    shooterSubsystem.setStoredDistance(
-                                            vision.getHubDistanceMeter(
-                                                    (Supplier<Pose2d>) drive.poseEstimator.getEstimatedPosition()));
-                                }),
+public class VisionShootCommand extends Command {
+    private final ShooterSubsystem shooter;
+    private final HopperSubsystem hopper;
+    private final Drive drive;
+    private final VisionSubsystem vision;
 
-                        // Runs the flywheel until the target velocity is reached
-                        waitUntil(shooterSubsystem::targetReached)
-                                .andThen(Commands.waitSeconds(0.80))
-                                .andThen(
-                                        Commands.parallel(
-                                                startFeeding(shooterSubsystem, hopperSubsystem),
-                                                Commands.runOnce(shooterSubsystem::charge)))
-                                .andThen(Commands.waitSeconds(0.02))
-                                .andThen(shooterSubsystem::calculateVelocity))
-                .withTimeout(2.0);
+    public VisionShootCommand(ShooterSubsystem shooter, HopperSubsystem hopper, Drive drive, VisionSubsystem vision) {
+        this.shooter = shooter;
+        this.hopper = hopper;
+        this.drive = drive;
+        this.vision = vision;
+        addRequirements(hopper);
+        addRequirements(drive);
+        addRequirements(vision);
+        addRequirements(shooter);
+    }
+
+    public void initialize() {
+        shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
+        waitUntil(shooter::targetReached);
+        waitSeconds(0.8);
+        startFeeding(shooter, hopper);
+        shooter.charge();
+        waitSeconds(0.02);
+        shooter.calculateVelocity();
+        withTimeout(2.0);
+    }
+
+    public void end(boolean interrupted) {
+        shooter.resetStoredDistance();
+        shooter.stopFlywheel();
+        shooter.stopIntermediateMotor();
+        hopper.stopConveyor();
     }
 }
