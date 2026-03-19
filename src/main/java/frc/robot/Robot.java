@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,8 +19,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.ctre.phoenix6.Orchestra;
-
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -29,7 +28,7 @@ import com.ctre.phoenix6.Orchestra;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  public static Orchestra orchestra;
+  public static Orchestra orchestra = new Orchestra();
 
   public Robot() {
     // Record metadata
@@ -78,7 +77,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-
   }
 
   /** This function is called periodically during all modes. */
