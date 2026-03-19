@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Robot;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -56,6 +57,10 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     interMotor.getConfigurator().apply(motorConfig);
     interMotor.getConfigurator().apply(currentConfig);
+
+    Robot.orchestra.addInstrument(flywheelMotor);
+    Robot.orchestra.addInstrument(flywheelMotor2);
+    Robot.orchestra.addInstrument(interMotor);
   }
 
   @Override

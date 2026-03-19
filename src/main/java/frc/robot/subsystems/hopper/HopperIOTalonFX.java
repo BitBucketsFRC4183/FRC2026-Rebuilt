@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Robot;
 import frc.robot.constants.HopperConstants;
 
 public class HopperIOTalonFX implements HopperIO {
@@ -31,6 +32,8 @@ public class HopperIOTalonFX implements HopperIO {
     config.CurrentLimits.StatorCurrentLimit = 80.0;
 
     conveyorMotor.getConfigurator().apply(config);
+
+    Robot.orchestra.addInstrument(conveyorMotor);
   }
 
   @Override

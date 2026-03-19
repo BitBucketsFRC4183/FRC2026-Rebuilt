@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -100,6 +99,8 @@ public class RobotContainer {
 
         Robot.orchestra.loadMusic("sounds/bootup.chrp");
         Robot.orchestra.play();
+        System.out.println(Robot.orchestra.isPlaying());
+
         break;
 
       case SIM:
@@ -218,7 +219,7 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
-        
+
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
         shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -335,7 +336,9 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
+        .onTrue(
+            new VisionShootCommand(
+                shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController

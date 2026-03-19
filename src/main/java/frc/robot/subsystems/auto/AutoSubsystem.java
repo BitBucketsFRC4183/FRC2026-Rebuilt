@@ -453,15 +453,15 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command StartTopNeutralZShootThenIntake() {
     return Commands.sequence(
-            IntakeCommands.deploy(intake),
-            extendKickerbar(),
-            new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-            goTopStartToneutralZ(),
-            driveAndIntake(intakeNeutralZTop()),
-            NeutralZAimAllianceTop(),
-            new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
-            stop(),
-            new InstantCommand(() -> System.out.println("routine complete")));
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+        goTopStartToneutralZ(),
+        driveAndIntake(intakeNeutralZTop()),
+        NeutralZAimAllianceTop(),
+        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 }
