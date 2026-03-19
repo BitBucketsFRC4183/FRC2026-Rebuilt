@@ -147,7 +147,12 @@ public class RobotContainer {
 
     autoSubsystem =
         new AutoSubsystem(
-            driveSubsystem, shooterSubsystem, climberSubsystem, hopperSubsystem, intakeSubsystem, visionSubsystem);
+            driveSubsystem,
+            shooterSubsystem,
+            climberSubsystem,
+            hopperSubsystem,
+            intakeSubsystem,
+            visionSubsystem);
 
     // WARMUP commands
     // FollowPathCommand.warmupCommand().schedule();
@@ -181,16 +186,21 @@ public class RobotContainer {
     autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
     autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption("StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption(
+        "StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
     autoChooser.addOption("StartBottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption("StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
-    autoChooser.addOption("StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
-    autoChooser.addOption("StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
-    autoChooser.addOption("StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
+    autoChooser.addOption(
+        "StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
+    autoChooser.addOption(
+        "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+    autoChooser.addOption(
+        "StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
+    autoChooser.addOption(
+        "StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
 
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
@@ -311,9 +321,8 @@ public class RobotContainer {
     operatorController
         .rightTrigger()
         .onTrue(
-            ShooterCommands.visionShoot(visionSubsystem, driveSubsystem,
-                shooterSubsystem,
-                hopperSubsystem))
+            ShooterCommands.visionShoot(
+                visionSubsystem, driveSubsystem, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController

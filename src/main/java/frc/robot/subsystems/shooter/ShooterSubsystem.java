@@ -6,7 +6,6 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -16,7 +15,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private boolean flywheelsRunning = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private static LoggedNetworkNumber targetVelocity = new LoggedNetworkNumber("Shooter Target RPS", ShooterConstants.flywheelDefaultSpeed);
+  private static LoggedNetworkNumber targetVelocity =
+      new LoggedNetworkNumber("Shooter Target RPS", ShooterConstants.flywheelDefaultSpeed);
   private final SysIdRoutine sysId;
   private double storedDistance = 0;
   private boolean dataRecieved = false;
@@ -67,9 +67,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void calculateVelocity() {
     // Linear Regression
-    targetVelocity.set(0.13 * storedDistance
-    //Conversion to Inches lol
-            * 39.3701 + 28.9);
+    targetVelocity.set(
+        0.13
+                * storedDistance
+                // Conversion to Inches lol
+                * 39.3701
+            + 28.9);
     setTargetVelocity(targetVelocity.get());
   }
 

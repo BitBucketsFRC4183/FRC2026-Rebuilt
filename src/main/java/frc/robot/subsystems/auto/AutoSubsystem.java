@@ -79,21 +79,21 @@ public class AutoSubsystem extends SubsystemBase {
   // 40.89397 for bottom shooting ps
   // 31.62039 for top shooting ps
   // 32.74425 for mid shooting ps
-  public void setUseVisionShooting(boolean useVision){
-    this.useVisionShooting= useVision;
+  public void setUseVisionShooting(boolean useVision) {
+    this.useVisionShooting = useVision;
   }
 
-  //conditional method
-  public Command shoot(ShootingPosition position){
-    if(useVisionShooting){
+  // conditional method
+  public Command shoot(ShootingPosition position) {
+    if (useVisionShooting) {
       System.out.println("shooting with vision");
       return ShooterCommands.visionShoot(vision, drive, shooter, hopper);
-    }else{
+    } else {
       System.out.println("shooting with setpoint");
       return shootSetpoint(position);
     }
   }
-  //shooting w setpoint method
+  // shooting w setpoint method
   public Command shootSetpoint(ShootingPosition position) {
     System.out.println("Beginning to Shoot with Setpoint");
     return ShooterCommands.shootAtRPS(position.velocity, shooter, hopper);
@@ -421,16 +421,16 @@ public class AutoSubsystem extends SubsystemBase {
   // after intaking, the robot turns towards our alliance and shoots balls towards our zone
   public Command StartTopNeutralZDump() {
     return Commands.sequence(
-            IntakeCommands.deploy(intake),
-            extendKickerbar(),
-            new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-            goTopStartToneutralZ(),
-            driveAndIntake(intakeNeutralZTop()),
-            NeutralZAimAllianceTop(),
-            new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
-            stop(),
-            new InstantCommand(() -> System.out.println("routine complete")));
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+        goTopStartToneutralZ(),
+        driveAndIntake(intakeNeutralZTop()),
+        NeutralZAimAllianceTop(),
+        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 
   // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
@@ -438,15 +438,15 @@ public class AutoSubsystem extends SubsystemBase {
   // after intaking, the robot turns towards our alliance and shoots balls towards our zone
   public Command StartBottomNeutralZDump() {
     return Commands.sequence(
-            IntakeCommands.deploy(intake),
-            extendKickerbar(),
-            new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-            goTopStartToneutralZ(),
-            driveAndIntake(intakeNeutralZTop()),
-            NeutralZAimAllianceBtm(),
-            new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-            shoot(ShootingPosition.POSITION_btm).withTimeout(12),
-            stop(),
-            new InstantCommand(() -> System.out.println("routine complete")));
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+        goTopStartToneutralZ(),
+        driveAndIntake(intakeNeutralZTop()),
+        NeutralZAimAllianceBtm(),
+        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
   }
 }
