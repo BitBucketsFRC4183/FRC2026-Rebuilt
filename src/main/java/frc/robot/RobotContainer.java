@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.ShooterCommands;
 import frc.robot.commands.shooter.VisionShootCommand;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -336,7 +337,7 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem))
+        .onTrue(ShooterCommands.shootAtRPS(ShooterConstants.defaultPassingSpeed, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //    operatorController
