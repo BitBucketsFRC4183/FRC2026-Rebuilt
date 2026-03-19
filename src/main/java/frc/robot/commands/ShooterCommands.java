@@ -38,8 +38,8 @@ public class ShooterCommands {
                       shooterSubsystem.setStoredDistance(vision.getHubDistanceMeter((Supplier<Pose2d>) drive.poseEstimator.getEstimatedPosition()));
                     }),
 
-                // Runs the flywheel until the target velocity is reached
-                waitUntil(shooterSubsystem::targetReached)
+            // Runs the flywheel until the target velocity is reached
+            waitUntil(shooterSubsystem::targetReached)
                 .andThen(Commands.waitSeconds(0.80))
                 .andThen(
                     Commands.parallel(
