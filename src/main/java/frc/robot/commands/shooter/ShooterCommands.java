@@ -41,6 +41,10 @@ public class ShooterCommands {
         Commands.runOnce(hopperSubsystem::stopConveyor));
   }
 
+  public static Command switchPassingMode(ShooterSubsystem shooterSubsystem) {
+    return Commands.runOnce(shooterSubsystem::switchPassingMode);
+  }
+
   public static boolean isCharged() {
     return charged;
   }

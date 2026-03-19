@@ -339,6 +339,7 @@ public class RobotContainer {
     //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+    operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
     //     Climber Setpoint Commands
     operatorController
         .x()

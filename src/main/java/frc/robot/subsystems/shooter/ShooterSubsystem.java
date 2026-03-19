@@ -6,6 +6,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.shooter.ShooterCommands;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -13,6 +14,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
   private boolean flywheelsRunning = false;
+  private boolean passing = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   private static LoggedNetworkNumber targetVelocity =
@@ -73,6 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 // Conversion to Inches lol
                 * 39.3701
             + 28.9);
+    if(passing) {targetVelocity.set(ShooterConstants.flywheelDefaultSpeed);}
     setTargetVelocity(targetVelocity.get());
   }
 
@@ -132,5 +135,9 @@ public class ShooterSubsystem extends SubsystemBase {
     Logger.recordOutput("Vision Data Received", dataRecieved);
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);
+  }
+
+  public void switchPassingMode() {
+    passing = !passing;
   }
 }
