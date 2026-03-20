@@ -82,6 +82,11 @@ public class LEDSubsystem extends SubsystemBase {
         case IDLE:
           newState = Optional.of(candidateState);
           break;
+        case PASSING:
+          if (shooter.passing) {
+            newState = Optional.of(candidateState);
+          }
+          break;
         case SHOOTING:
           if (shooter.isFlywheelRunning()) {
             newState = Optional.of(candidateState);

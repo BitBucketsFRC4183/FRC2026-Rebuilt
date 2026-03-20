@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
   private boolean flywheelsRunning = false;
-  private boolean passing = false;
+  public boolean passing = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
   private static double targetVelocity = 0;
