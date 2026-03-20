@@ -325,7 +325,15 @@ public class RobotContainer {
                 },
                 intakeSubsystem));
 
-    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
+    operatorController.leftTrigger().whileTrue(
+            Commands.either(
+                    IntakeCommands.runStowed(intakeSubsystem),
+                    IntakeCommands.intake(intakeSubsystem),
+                    () -> intakeSubsystem.getState() == IntakeState.STOWED
+                            || intakeSubsystem.getState() == IntakeState.RUN_STOWED
+                            || intakeSubsystem.getState() == IntakeState.HOLD_STOWED
+            )
+    );
     operatorController.povLeft().whileTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
     operatorController.povRight().whileTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
@@ -346,6 +354,7 @@ public class RobotContainer {
     //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+
     operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
     //     Climber Setpoint Commands
     operatorController

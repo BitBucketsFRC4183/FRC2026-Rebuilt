@@ -11,6 +11,7 @@ public final class IntakeConstants {
   // all in rps
   public static final double INTAKE_VOLTAGE = -11;
   public static final double OUTTAKE_VOLTAGE = 8;
+  public static final double STOWED_VOLTAGE = -7;
 
   // Current limiting
   public static final double SUPPLY_CURRENT_LIMIT = 50.0;

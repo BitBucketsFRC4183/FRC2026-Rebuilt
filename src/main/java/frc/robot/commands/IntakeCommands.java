@@ -3,7 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+
+import static edu.wpi.first.wpilibj2.command.Commands.startEnd;
 
 /**
  * Factory class for Intake-related commands. All commands assume IntakeSubsystem owns its internal
@@ -25,12 +28,16 @@ public final class IntakeCommands {
 
   // Runs Intake in while being held out
   public static Command intake(IntakeSubsystem intake) {
-    return Commands.startEnd(intake::intake, intake::hold, intake).withName("Intake.Intake");
+    return startEnd(intake::intake, intake::hold, intake).withName("Intake.Intake");
+  }
+
+  public static Command runStowed(IntakeSubsystem intake) {
+    return Commands.startEnd(intake::runStowed, intake::holdStowed, intake).withName("Intake.Intake");
   }
 
   // Runs Intake Out whilst held
   public static Command outtake(IntakeSubsystem intake) {
-    return Commands.startEnd(intake::outtake, intake::hold, intake).withName("Intake.Outtake");
+    return startEnd(intake::outtake, intake::hold, intake).withName("Intake.Outtake");
   }
 
   public static Command moveServoTo0(IntakeSubsystem intake) {
