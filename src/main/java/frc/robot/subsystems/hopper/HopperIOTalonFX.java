@@ -41,6 +41,7 @@ public class HopperIOTalonFX implements HopperIO {
     inputs.conveyorAppliedOutput = conveyorMotor.getDutyCycle().getValueAsDouble();
     inputs.conveyorVoltage = conveyorMotor.getMotorVoltage().getValueAsDouble();
     inputs.conveyorCurrent = conveyorMotor.getSupplyCurrent().getValueAsDouble();
+    inputs.conveyorRPS = conveyorMotor.getVelocity().getValueAsDouble();
   }
 
   @Override
