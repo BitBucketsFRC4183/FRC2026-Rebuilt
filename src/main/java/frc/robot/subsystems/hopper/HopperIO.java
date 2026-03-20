@@ -7,6 +7,8 @@ public interface HopperIO {
   @AutoLog
   public class HopperIOInputs {
     public double conveyorAppliedOutput;
+    public double conveyorVoltage;
+    public double conveyorCurrent;
   }
 
   public default void updateInputs(HopperIOInputs inputs) {}

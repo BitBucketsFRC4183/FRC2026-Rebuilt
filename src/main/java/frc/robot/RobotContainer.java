@@ -172,56 +172,27 @@ public class RobotContainer {
             intakeSubsystem,
             visionSubsystem);
 
-    // WARMUP commands
-    // FollowPathCommand.warmupCommand().schedule();
-    // PathfindingCommand.warmupCommand().schedule();
-    // Set up auto routines
-
     var chooser = AutoBuilder.buildAutoChooser();
     autoChooser = new LoggedDashboardChooser<>("/SmartDashboard/Auto Chooser", chooser);
 
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
 
-    // Set up SysId routines
-    //    autoChooser.addOption(
-    //        "DriveSubsystem Wheel Radius Characterization",
-    //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
-
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Forward)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Reverse)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Forward)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Reverse)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
     autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
     autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
-    autoChooser.addOption(
-        "StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption("StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
-    autoChooser.addOption("StartBottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
-    autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
-    autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
-    autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
-    autoChooser.addOption(
-        "StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
-    autoChooser.addOption(
-        "StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
+    //autoChooser.addOption("StartBottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
+    //autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
+    //autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
+    //autoChooser.addOption("StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption("StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+    autoChooser.addOption("StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
+    autoChooser.addOption("StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
 
-    autoChooser.addOption(
-        "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
+    autoChooser.addOption("shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
 
     autoChooser.addOption(
         "ShooterSubsystem SysId (Quasistatic Forward)",
