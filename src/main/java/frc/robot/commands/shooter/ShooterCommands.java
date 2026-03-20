@@ -13,18 +13,21 @@ public class ShooterCommands {
   public static Command shootAtRPS(
       double targetVelocity, ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
-        Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
-        waitUntil(shooterSubsystem::targetReached)
-            .andThen(Commands.waitSeconds(0.80))
-            .andThen(startFeeding(shooterSubsystem, hopperSubsystem))).withTimeout(2.0);
+            Commands.runOnce(() -> shooterSubsystem.setTargetVelocity(targetVelocity)),
+            waitUntil(shooterSubsystem::targetReached)
+                .andThen(Commands.waitSeconds(0.80))
+                .andThen(startFeeding(shooterSubsystem, hopperSubsystem)))
+        .withTimeout(2.0);
   }
 
   public static Command startFeeding(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
-    return Commands.parallel(
-        Commands.run(shooterSubsystem::startIntermediateMotor),
-        Commands.run(hopperSubsystem::runConveyorForward),
-        Commands.run(() -> charged = true));
+    return Commands.sequence(
+        Commands.waitSeconds(0.8),
+        Commands.parallel(
+            Commands.run(shooterSubsystem::startIntermediateMotor),
+            Commands.run(hopperSubsystem::runConveyorForward),
+            Commands.run(() -> charged = true)));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {

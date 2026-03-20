@@ -74,7 +74,9 @@ public class ShooterSubsystem extends SubsystemBase {
                 // Conversion to Inches lol
                 * 39.3701
             + 28.9);
-    if(passing) {targetVelocity.set(ShooterConstants.defaultPassingSpeed);}
+    if (passing) {
+      targetVelocity.set(ShooterConstants.defaultPassingSpeed);
+    }
     setTargetVelocity(targetVelocity.get());
   }
 
@@ -117,8 +119,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
+    return true;
+    //    return shooterInputs.flywheelVelocity >= (targetVelocity.get() -
+    // ShooterConstants.tolerance)
+    //     && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() -
+    // ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {

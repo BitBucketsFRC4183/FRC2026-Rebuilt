@@ -1,9 +1,5 @@
 package frc.robot.commands.shooter;
 
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
-import static frc.robot.commands.shooter.ShooterCommands.startFeeding;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
@@ -16,6 +12,8 @@ public class VisionShootCommand extends Command {
   private final HopperSubsystem hopper;
   private final Drive drive;
   private final VisionSubsystem vision;
+  private boolean charged = false;
+  private boolean stop = false;
 
   public VisionShootCommand(
       ShooterSubsystem shooter, HopperSubsystem hopper, Drive drive, VisionSubsystem vision) {
@@ -29,24 +27,39 @@ public class VisionShootCommand extends Command {
     addRequirements(shooter);
   }
 
-    public void initialize() {
-        shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
-    }
+  @Override
+  public void initialize() {
+    System.out.println("Started");
+    charged = true;
+    stop = false;
+    shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
+  }
 
-    public void execute() {
-        Commands.sequence(Commands.waitUntil(shooter::targetReached),
-                waitSeconds(0.8),
-                startFeeding(shooter, hopper),
-                Commands.runOnce(shooter::charge),
-                waitSeconds(0.02),
-                Commands.runOnce(shooter::calculateVelocity)
-                ).withTimeout(2.0);
+  @Override
+  public void execute() {
+    if (charged) {
+      Commands.runOnce(shooter::charge);
+      charged = false;
+    } else {
+      Commands.runOnce(shooter::calculateVelocity);
     }
+    if (shooter.targetReached()) {
+      ShooterCommands.startFeeding(shooter, hopper);
+      stop = true;
+    }
+  }
 
-    public void end(boolean interrupted) {
-        shooter.resetStoredDistance();
-        shooter.stopFlywheel();
-        shooter.stopIntermediateMotor();
-        hopper.stopConveyor();
-    }
+  @Override
+  public boolean isFinished() {
+    return stop;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    System.out.println("Command Finished");
+    shooter.resetStoredDistance();
+    shooter.stopFlywheel();
+    shooter.stopIntermediateMotor();
+    hopper.stopConveyor();
+  }
 }
