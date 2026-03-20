@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final ShooterIO io;
@@ -16,11 +15,10 @@ public class ShooterSubsystem extends SubsystemBase {
   private boolean passing = false;
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-  private static LoggedNetworkNumber targetVelocity =
-      new LoggedNetworkNumber("Shooter Target RPS", ShooterConstants.flywheelDefaultSpeed);
+  private static double targetVelocity = 0;
   private final SysIdRoutine sysId;
-  private double storedDistance = 0;
-  private boolean dataRecieved = false;
+  private static double storedDistance = 0;
+  private boolean dataReceived = false;
   // FIRST column is distances (in meters), second column is RPS
   private final double[][] lookupTable =
       new double[][] {
@@ -68,29 +66,28 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void calculateVelocity() {
     // Linear Regression
-    targetVelocity.set(
+    targetVelocity =
         0.13
                 * storedDistance
                 // Conversion to Inches lol
                 * 39.3701
-            + 28.9);
+            + 28.9;
     if (passing) {
-      targetVelocity.set(ShooterConstants.defaultPassingSpeed);
+      targetVelocity = (ShooterConstants.defaultPassingSpeed);
     }
-    setTargetVelocity(targetVelocity.get());
+    setTargetVelocity(targetVelocity);
   }
 
   public void setTargetVelocity(double targetVelocity) {
     io.setFlywheelSpeed(targetVelocity);
     flywheelsRunning = true;
-    ShooterSubsystem.targetVelocity.set(targetVelocity);
+    ShooterSubsystem.targetVelocity = (targetVelocity);
   }
 
   // Stores a distance to be used calculateTargetVelocity()
   public void setStoredDistance(double distance) {
     storedDistance = distance;
-    Logger.recordOutput("storedDistance", storedDistance);
-    dataRecieved = true;
+    dataReceived = true;
     calculateVelocity();
   }
 
@@ -102,7 +99,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stopFlywheel() {
     flywheelsRunning = false;
     io.stopFlywheel();
-    dataRecieved = false;
+    dataReceived = false;
   }
 
   public void startIntermediateMotor() {
@@ -119,8 +116,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
-    return shooterInputs.flywheelVelocity >= (targetVelocity.get() - ShooterConstants.tolerance)
-        && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() - ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity >= (targetVelocity - ShooterConstants.tolerance)
+        && shooterInputs.flywheelVelocity2 >= (targetVelocity - ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
@@ -128,14 +125,19 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public static double getTargetVelocity() {
-    return targetVelocity.get();
+    return targetVelocity;
   }
 
   @Override
   public void periodic() {
-    Logger.recordOutput("Vision Data Received", dataRecieved);
+    Logger.recordOutput("Vision Data Received", dataReceived);
     io.updateInputs(shooterInputs);
     Logger.processInputs("Flywheel", shooterInputs);
+    Logger.recordOutput("Target Velocity", targetVelocity);
+  }
+
+  public static double getStoredDistance() {
+    return storedDistance;
   }
 
   public void switchPassingMode() {

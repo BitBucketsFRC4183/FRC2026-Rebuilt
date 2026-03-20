@@ -7,11 +7,12 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class VisionShootCommand extends Command {
-  private final ShooterSubsystem shooter;
+  private ShooterSubsystem shooter;
   private final HopperSubsystem hopper;
   private final Drive drive;
   private final VisionSubsystem vision;
   private boolean charged = false;
+  private boolean finished = false;
 
   public VisionShootCommand(
       ShooterSubsystem shooter, HopperSubsystem hopper, Drive drive, VisionSubsystem vision) {
@@ -28,6 +29,7 @@ public class VisionShootCommand extends Command {
   @Override
   public void initialize() {
     charged = true;
+    finished = false;
     shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
   }
 
@@ -41,7 +43,22 @@ public class VisionShootCommand extends Command {
     }
     if (shooter.targetReached()) {
       ShooterCommands.startFeeding(shooter, hopper);
-      end(true);
     }
+  }
+
+  public void stop() {
+    finished = true;
+  }
+
+  public boolean isFinished() {
+    return finished;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    shooter.resetStoredDistance();
+    shooter.stopFlywheel();
+    shooter.stopIntermediateMotor();
+    hopper.stopConveyor();
   }
 }

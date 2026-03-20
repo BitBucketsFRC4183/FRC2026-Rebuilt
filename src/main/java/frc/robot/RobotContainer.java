@@ -334,17 +334,12 @@ public class RobotContainer {
         .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
+    VisionShootCommand visionShoot =
+        new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem);
     operatorController
         .rightTrigger()
-        .whileTrue(
-            new VisionShootCommand(
-                shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
-        .whileFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
-
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+        .onTrue(visionShoot)
+        .onFalse(Commands.runOnce(visionShoot::stop));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
     operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
