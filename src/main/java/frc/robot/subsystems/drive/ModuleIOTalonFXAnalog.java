@@ -107,7 +107,7 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Audio.AllowMusicDurDisable = true;
     driveConfig.Audio.BeepOnBoot = false;
-    driveConfig.Audio.BeepOnConfig = true;
+    driveConfig.Audio.BeepOnConfig = false;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
@@ -122,6 +122,7 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
 
     // Configure turn motor
     var turnConfig = new TalonFXConfiguration();
+
     turnConfig.Audio.AllowMusicDurDisable = true;
     turnConfig.Audio.BeepOnBoot = false;
     turnConfig.Audio.BeepOnConfig = false;
@@ -200,8 +201,8 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
         turnCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveTalon, turnTalon);
 
-    Robot.orchestra.addInstrument(driveTalon);
-    Robot.orchestra.addInstrument(turnTalon);
+    Robot.orchestra.addInstrument(driveTalon, 0);
+    Robot.orchestra.addInstrument(turnTalon, 0);
   }
 
   @Override

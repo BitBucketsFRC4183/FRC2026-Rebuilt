@@ -21,8 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.ShooterCommands;
-import frc.robot.commands.shooter.VisionShootCommand;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
@@ -95,13 +93,10 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         ledSubsystem =
-            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
+            new LEDSubsystem(
+                new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
 
         driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
-
-        Robot.orchestra.loadMusic("sounds/blackhole.chrp");
-        Robot.orchestra.play();
-        System.out.println(Robot.orchestra.isPlaying());
 
         break;
 
@@ -135,7 +130,8 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         ledSubsystem =
-            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
+            new LEDSubsystem(
+                new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
         break;
         // thinking to what
 
@@ -158,7 +154,9 @@ public class RobotContainer {
         visionSubsystem =
             new VisionSubsystem(
                 visionIO, () -> driveSimulation.getSimulatedDriveTrainPose(), driveSubsystem);
-        ledSubsystem = new LEDSubsystem(new LEDIO() {}, driveSubsystem::getPose, intakeSubsystem);
+        ledSubsystem =
+            new LEDSubsystem(
+                new LEDIO() {}, driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
         break;
     }
 
@@ -362,7 +360,9 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(ShooterCommands.shootAtRPS(ShooterConstants.defaultPassingSpeed, shooterSubsystem, hopperSubsystem))
+        .onTrue(
+            ShooterCommands.shootAtRPS(
+                ShooterConstants.defaultPassingSpeed, shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
     //        operatorController
@@ -380,8 +380,6 @@ public class RobotContainer {
         .x()
         .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
-
-    operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
     // manual climb command
     new Trigger(

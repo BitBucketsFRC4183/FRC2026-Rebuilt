@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LEDConstants.LEDState;
 import frc.robot.subsystems.intake.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.AutoAimUtil;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -15,13 +16,19 @@ import org.littletonrobotics.junction.Logger;
 public class LEDSubsystem extends SubsystemBase {
   private final Supplier<Pose2d> poseSupplier;
   private final IntakeSubsystem intake;
+  private final ShooterSubsystem shooter;
   private final LEDIO ledController;
   private LEDState state;
   private final LEDInputsAutoLogged inputs = new LEDInputsAutoLogged();
 
-  public LEDSubsystem(LEDIO ledController, Supplier<Pose2d> poseSupplier, IntakeSubsystem intake) {
+  public LEDSubsystem(
+      LEDIO ledController,
+      Supplier<Pose2d> poseSupplier,
+      IntakeSubsystem intake,
+      ShooterSubsystem shooter) {
     this.poseSupplier = poseSupplier;
     this.intake = intake;
+    this.shooter = shooter;
     this.ledController = ledController;
     this.state = LEDState.DISABLED;
   }
@@ -74,6 +81,11 @@ public class LEDSubsystem extends SubsystemBase {
           break;
         case IDLE:
           newState = Optional.of(candidateState);
+          break;
+        case SHOOTING:
+          if (shooter.isFlywheelRunning()) {
+            newState = Optional.of(candidateState);
+          }
           break;
       }
     }

@@ -5,7 +5,8 @@ public class LEDConstants {
 
   public enum LEDState {
     DISABLED(-1, BlinkinPattern.RAINBOW_RAINBOW_PALETTE),
-    ALIGNED(1, BlinkinPattern.BPM_FOREST_PALETTE),
+    ALIGNED(1, BlinkinPattern.STROBE_GOLD),
+    SHOOTING(2, BlinkinPattern.COLOR_WAVES_PARTY_PALETTE),
     INTAKING(5, BlinkinPattern.FIRE_LARGE),
     IDLE(9999, BlinkinPattern.TWINKLES_OCEAN_PALETTE);
 

@@ -74,7 +74,9 @@ public class ShooterSubsystem extends SubsystemBase {
                 // Conversion to Inches lol
                 * 39.3701
             + 28.9);
-    if(passing) {targetVelocity.set(ShooterConstants.defaultPassingSpeed);}
+    if (passing) {
+      targetVelocity.set(ShooterConstants.defaultPassingSpeed);
+    }
     setTargetVelocity(targetVelocity.get());
   }
 
