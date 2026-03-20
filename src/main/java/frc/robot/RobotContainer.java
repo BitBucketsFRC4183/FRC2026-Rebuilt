@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.events.TriggerEvent;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,8 +37,6 @@ import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
-
-import java.util.Timer;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -178,6 +175,24 @@ public class RobotContainer {
     // putting chooser on dashboard
     SmartDashboard.putData("Auto Chooser", autoChooser.getSendableChooser());
 
+    // Set up SysId routines
+    //    autoChooser.addOption(
+    //        "DriveSubsystem Wheel Radius Characterization",
+    //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
+
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Quasistatic Forward)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Quasistatic Reverse)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Dynamic Forward)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Dynamic Reverse)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
     autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
@@ -194,18 +209,18 @@ public class RobotContainer {
 
     autoChooser.addOption("shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
 
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Quasistatic Forward)",
-        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Quasistatic Reverse)",
-        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Dynamic Forward)",
-        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Dynamic Reverse)",
-        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Quasistatic Forward)",
+    //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Quasistatic Reverse)",
+    //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Dynamic Forward)",
+    //        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Dynamic Reverse)",
+    //        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -231,8 +246,6 @@ public class RobotContainer {
         });
 
     SmartDashboard.putData("GyroChooser", gyroChooser.getSendableChooser());
-
-    
   }
 
   public void robotPeriodic() {
@@ -335,12 +348,11 @@ public class RobotContainer {
         .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
-    VisionShootCommand visionShoot =
-        new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem);
     operatorController
         .rightTrigger()
-        .onTrue(visionShoot)
-        .onFalse(Commands.runOnce(visionShoot::stop));
+        .whileTrue(
+            new VisionShootCommand(
+                shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 

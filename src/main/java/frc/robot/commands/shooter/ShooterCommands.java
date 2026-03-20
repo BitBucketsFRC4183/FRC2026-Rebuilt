@@ -23,7 +23,6 @@ public class ShooterCommands {
   public static Command startFeeding(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
     return Commands.sequence(
-        Commands.waitSeconds(0.5),
         Commands.parallel(
             Commands.run(shooterSubsystem::startIntermediateMotor),
             Commands.run(hopperSubsystem::runConveyorForward)));

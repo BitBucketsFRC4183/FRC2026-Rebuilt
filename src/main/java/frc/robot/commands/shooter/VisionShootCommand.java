@@ -12,7 +12,6 @@ public class VisionShootCommand extends Command {
   private final Drive drive;
   private final VisionSubsystem vision;
   private boolean charged = false;
-  private boolean finished = false;
 
   public VisionShootCommand(
       ShooterSubsystem shooter, HopperSubsystem hopper, Drive drive, VisionSubsystem vision) {
@@ -29,7 +28,6 @@ public class VisionShootCommand extends Command {
   @Override
   public void initialize() {
     charged = true;
-    finished = false;
     shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
   }
 
@@ -41,17 +39,11 @@ public class VisionShootCommand extends Command {
     } else {
       shooter.calculateVelocity();
     }
+
     if (shooter.targetReached()) {
-      ShooterCommands.startFeeding(shooter, hopper);
+      shooter.startIntermediateMotor();
+      hopper.runConveyorForward();
     }
-  }
-
-  public void stop() {
-    finished = true;
-  }
-
-  public boolean isFinished() {
-    return finished;
   }
 
   @Override
