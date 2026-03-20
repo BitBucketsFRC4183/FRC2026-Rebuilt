@@ -119,11 +119,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // When Triggered Pressed, wait until true, then use motor to fire all the balls in storage
   public boolean targetReached() {
-    return true;
-    //    return shooterInputs.flywheelVelocity >= (targetVelocity.get() -
-    // ShooterConstants.tolerance)
-    //     && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() -
-    // ShooterConstants.tolerance);
+    return shooterInputs.flywheelVelocity >= (targetVelocity.get() -
+     ShooterConstants.tolerance)
+         && shooterInputs.flywheelVelocity2 >= (targetVelocity.get() -
+     ShooterConstants.tolerance);
   }
 
   public boolean isFlywheelRunning() {
