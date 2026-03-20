@@ -126,9 +126,13 @@ public class IntakeSubsystem extends SubsystemBase {
     setState(IntakeState.DEPLOYED);
   }
 
-  public void intake() {setState(IntakeState.INTAKING);}
+  public void intake() {
+    setState(IntakeState.INTAKING);
+  }
 
-  public void runStowed() {setState(IntakeState.RUN_STOWED);}
+  public void runStowed() {
+    setState(IntakeState.RUN_STOWED);
+  }
 
   public void outtake() {
     setState(IntakeState.OUTTAKING);

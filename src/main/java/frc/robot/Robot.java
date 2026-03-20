@@ -78,7 +78,7 @@ public class Robot extends LoggedRobot {
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
 
-    // Robot.orchestra.loadMusic("sounds/bootup-cr2.chrp");
+    Robot.orchestra.loadMusic("sounds/bootup-cr2.chrp");
     // Robot.orchestra.play();
   }
 

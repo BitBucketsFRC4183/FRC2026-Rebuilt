@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.events.TriggerEvent;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,6 +38,8 @@ import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.power_distribution.PowerDistributionSubsystem;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.vision.*;
+
+import java.util.Timer;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -257,6 +260,8 @@ public class RobotContainer {
         });
 
     SmartDashboard.putData("GyroChooser", gyroChooser.getSendableChooser());
+
+    
   }
 
   public void robotPeriodic() {
@@ -340,15 +345,16 @@ public class RobotContainer {
                 },
                 intakeSubsystem));
 
-    operatorController.leftTrigger().whileTrue(
+    operatorController
+        .leftTrigger()
+        .whileTrue(
             Commands.either(
-                    IntakeCommands.runStowed(intakeSubsystem),
-                    IntakeCommands.intake(intakeSubsystem),
-                    () -> intakeSubsystem.getState() == IntakeState.STOWED
-                            || intakeSubsystem.getState() == IntakeState.RUN_STOWED
-                            || intakeSubsystem.getState() == IntakeState.HOLD_STOWED
-            )
-    );
+                IntakeCommands.runStowed(intakeSubsystem),
+                IntakeCommands.intake(intakeSubsystem),
+                () ->
+                    intakeSubsystem.getState() == IntakeState.STOWED
+                        || intakeSubsystem.getState() == IntakeState.RUN_STOWED
+                        || intakeSubsystem.getState() == IntakeState.HOLD_STOWED));
     operatorController.povLeft().whileTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
     operatorController.povRight().whileTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
