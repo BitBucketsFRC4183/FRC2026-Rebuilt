@@ -1,20 +1,18 @@
 package frc.robot.commands.shooter;
 
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static frc.robot.commands.shooter.ShooterCommands.startFeeding;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class VisionShootCommand extends Command {
-  private final ShooterSubsystem shooter;
+  private ShooterSubsystem shooter;
   private final HopperSubsystem hopper;
   private final Drive drive;
   private final VisionSubsystem vision;
+  private boolean charged = false;
+  private boolean finished = false;
 
   public VisionShootCommand(
       ShooterSubsystem shooter, HopperSubsystem hopper, Drive drive, VisionSubsystem vision) {
@@ -28,20 +26,35 @@ public class VisionShootCommand extends Command {
     addRequirements(shooter);
   }
 
+  @Override
   public void initialize() {
+    charged = true;
+    finished = false;
     shooter.setStoredDistance(vision.getHubDistanceMeter(drive::getPose));
   }
 
+  @Override
   public void execute() {
-    Commands.sequence(
-        Commands.waitUntil(shooter::targetReached),
-        waitSeconds(0.8),
-        startFeeding(shooter, hopper),
-        Commands.runOnce(shooter::charge),
-        waitSeconds(0.02),
-        Commands.runOnce(shooter::calculateVelocity));
+    if (charged) {
+      shooter.charge();
+      charged = false;
+    } else {
+      shooter.calculateVelocity();
+    }
+    if (shooter.targetReached()) {
+      ShooterCommands.startFeeding(shooter, hopper);
+    }
   }
 
+  public void stop() {
+    finished = true;
+  }
+
+  public boolean isFinished() {
+    return finished;
+  }
+
+  @Override
   public void end(boolean interrupted) {
     shooter.resetStoredDistance();
     shooter.stopFlywheel();

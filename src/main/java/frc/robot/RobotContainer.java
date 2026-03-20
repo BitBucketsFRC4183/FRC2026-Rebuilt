@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.ShooterCommands;
-import frc.robot.constants.ShooterConstants;
+import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -358,19 +358,12 @@ public class RobotContainer {
         .whileTrue(ShooterCommands.startFeeding(shooterSubsystem, hopperSubsystem))
         .onFalse(ShooterCommands.stopFeeding(shooterSubsystem, hopperSubsystem));
 
+    VisionShootCommand visionShoot =
+        new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem);
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.shootAtRPS(
-                ShooterConstants.defaultPassingSpeed, shooterSubsystem, hopperSubsystem))
-        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
-
-    //        operatorController
-    //            .rightTrigger()
-    //            .onTrue(new VisionShootCommand(shooterSubsystem, hopperSubsystem, driveSubsystem,
-    // visionSubsystem).withTimeout(1.0)
-    //            )
-    //            .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
+        .onTrue(visionShoot)
+        .onFalse(Commands.runOnce(visionShoot::stop));
 
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 

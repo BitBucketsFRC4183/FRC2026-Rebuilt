@@ -17,15 +17,16 @@ public class ShooterCommands {
             waitUntil(shooterSubsystem::targetReached)
                 .andThen(Commands.waitSeconds(0.80))
                 .andThen(startFeeding(shooterSubsystem, hopperSubsystem)))
-        .withTimeout(1.00);
+        .withTimeout(2.0);
   }
 
   public static Command startFeeding(
       ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
-    return Commands.parallel(
-        Commands.run(shooterSubsystem::startIntermediateMotor),
-        Commands.run(hopperSubsystem::runConveyorForward),
-        Commands.run(() -> charged = true));
+    return Commands.sequence(
+        Commands.waitSeconds(0.5),
+        Commands.parallel(
+            Commands.run(shooterSubsystem::startIntermediateMotor),
+            Commands.run(hopperSubsystem::runConveyorForward)));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
