@@ -26,8 +26,7 @@ public class ShooterCommands {
         Commands.waitSeconds(0.8),
         Commands.parallel(
             Commands.run(shooterSubsystem::startIntermediateMotor),
-            Commands.run(hopperSubsystem::runConveyorForward),
-            Commands.run(() -> charged = true)));
+            Commands.run(hopperSubsystem::runConveyorForward)));
   }
 
   public static Command reset(ShooterSubsystem shooterSubsystem, HopperSubsystem hopperSubsystem) {
