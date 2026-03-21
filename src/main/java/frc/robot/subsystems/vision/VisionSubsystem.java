@@ -5,12 +5,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
@@ -59,14 +59,6 @@ public class VisionSubsystem extends SubsystemBase {
           currentVisionMode = mode;
         });
     SmartDashboard.putData("Vision Mode Chooser", visionModeChooser.getSendableChooser());
-
-    RobotModeTriggers.autonomous().onTrue(changeVisionMode(VisionMode.AUTONOMOUS));
-    RobotModeTriggers.teleop().onTrue(changeVisionMode(VisionMode.TELEOP));
-    RobotModeTriggers.disabled().onTrue(changeVisionMode(VisionMode.DISABLED));
-  }
-
-  private Command changeVisionMode(VisionMode mode) {
-    return Commands.runOnce(() -> currentVisionMode = mode);
   }
 
   // seed once when reseting the pose of the robot
@@ -84,12 +76,17 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (DriverStation.isDisabled()) {
+      currentVisionMode = VisionMode.DISABLED;
+    } else if (DriverStation.isTeleopEnabled()) {
+      currentVisionMode = VisionMode.TELEOP;
+    } else if (DriverStation.isAutonomousEnabled()) {
+      currentVisionMode = VisionMode.AUTONOMOUS;
+    }
+
     visionio.updateInputs(CamOneInputs, CamTwoInputs);
     Logger.processInputs("Vision/front", CamOneInputs);
     Logger.processInputs("Vision/side", CamTwoInputs);
-    //    Logger.recordOutput("Vision/GyroInputs/poseSupplier", pose2dSupplier.get());
-    //    Logger.recordOutput(
-    //        "Vision/GyroInputs/robotHeadingFromPose", pose2dSupplier.get().getRotation());
 
     logAutoAimInputs(pose2dSupplier);
 
@@ -229,26 +226,13 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private boolean passedAdvancedFilter(VisionIOInputsAutoLogged inputs, String cameraName) {
-
-    // Single‑tag extra checks
-    //    if (inputs.tagCount < 2) {
-    //      if (inputs.minAmbiguity > VisionConstant.kMinAmbiguityToFlip) {
-    //        return Optional.empty();
-    //      }
-    //    }
-
     double distance = proportionalDistance(inputs);
-
     boolean distanceValid = distance < VisionConstants.maxDistanceFromRobotToApril;
-
     boolean areaValid = inputs.ta > VisionConstants.kTagMinAreaForSingleTagMegatag;
 
     Logger.recordOutput("Vision/" + cameraName + "/Filter/ProportionalDistance", distance);
-
     Logger.recordOutput("Vision/" + cameraName + "/Filter/DistanceValid", distanceValid);
-
     Logger.recordOutput("Vision/" + cameraName + "/Filter/AreaValid", areaValid);
-
     return distanceValid && areaValid;
   }
 

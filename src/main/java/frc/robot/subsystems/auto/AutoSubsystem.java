@@ -115,6 +115,11 @@ public class AutoSubsystem extends SubsystemBase {
     return IntakeCommands.moveServoTo90(intake);
   }
 
+  public Command retractKickerbar() {
+    System.out.println("extending kickerbar");
+    return IntakeCommands.moveServoTo0(intake);
+  }
+
   // outtake in alliance zone
   private Command outtakeAtAlliance() {
     System.out.println("dumping balls in alliance zone!");
@@ -200,7 +205,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goBottomStartToShootB() {
-    return choreoPath("BottomStartToShootB", false);
+    return choreoPath("BottomStartToShootB", true);
   }
 
   public Command goTopShootertoDepot() {
@@ -248,7 +253,12 @@ public class AutoSubsystem extends SubsystemBase {
   // 8 balls we started with
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
+        extendKickerbar(),
+        new WaitCommand(0.75),
         IntakeCommands.deploy(intake),
+        new WaitCommand(0.7),
+        retractKickerbar(),
+        new WaitCommand(0.4),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
@@ -280,6 +290,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command midStartToShootOnly() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
+        new WaitCommand(0.5),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
@@ -439,11 +450,11 @@ public class AutoSubsystem extends SubsystemBase {
   // after intaking, the robot turns towards our alliance and shoots balls towards our zone
   public Command StartBottomNeutralZDump() {
     return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
+        Commands.sequence(
+            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
         new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
+        goBottomStartToNeutralZ(),
+        driveAndIntake(intakeNeutralZBtm()),
         NeutralZAimAllianceBtm(),
         new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
         shoot(ShootingPosition.POSITION_btm).withTimeout(12),

@@ -27,7 +27,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     // Hopefully can make the wind uptime for the flywheel faster
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     motorConfig.Audio.AllowMusicDurDisable = true;
-    motorConfig.Audio.BeepOnConfig = false;
 
     // PID and FF Configs
     Slot0Configs slot0 = motorConfig.Slot0;
@@ -46,12 +45,17 @@ public class ShooterIOTalonFX implements ShooterIO {
     currentConfig.StatorCurrentLimitEnable = true;
     currentConfig.StatorCurrentLimit = ShooterConstants.statorCurrentLimit;
 
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     flywheelMotor.getConfigurator().apply(motorConfig);
     flywheelMotor.getConfigurator().apply(currentConfig);
 
+    slot0.kP = ShooterConstants.flywheel_kP;
+    slot0.kV = ShooterConstants.flywheel_kV;
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     flywheelMotor2.getConfigurator().apply(motorConfig);
     flywheelMotor2.getConfigurator().apply(currentConfig);
 
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     motorConfig.MotorOutput.Inverted =
         !ShooterConstants.interInverted
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive

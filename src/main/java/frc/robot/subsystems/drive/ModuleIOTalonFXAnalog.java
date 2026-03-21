@@ -106,8 +106,6 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Audio.AllowMusicDurDisable = true;
-    driveConfig.Audio.BeepOnBoot = false;
-    driveConfig.Audio.BeepOnConfig = false;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
