@@ -150,7 +150,7 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public void setRobotOrientation(String cameraName, double headingDegs) {
-    LimelightHelpers.SetRobotOrientation(cameraName, headingDegs, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation_NoFlush(cameraName, headingDegs, 0, 0, 0, 0, 0);
   }
 
   @Override
