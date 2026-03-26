@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  public static Orchestra orchestra = new Orchestra();
 
   public Robot() {
     // Record metadata
@@ -75,6 +77,9 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+    Robot.orchestra.loadMusic("sounds/bootup-cr2.chrp");
+    // Robot.orchestra.play();
   }
 
   /** This function is called periodically during all modes. */
@@ -103,6 +108,10 @@ public class Robot extends LoggedRobot {
     // robotContainer.resetSimulation(new Pose2d(3, 3, new Rotation2d()));
   }
 
+  @Override
+  public void disabledExit() {
+    orchestra.stop();
+  }
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {}
@@ -129,6 +138,7 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }

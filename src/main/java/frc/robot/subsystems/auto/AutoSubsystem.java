@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.IntakeCommands;
-import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.shooter.ShooterCommands;
+import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
@@ -87,7 +88,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command shoot(ShootingPosition position) {
     if (useVisionShooting) {
       System.out.println("shooting with vision");
-      return ShooterCommands.visionShoot(vision, drive, shooter, hopper);
+      return new VisionShootCommand(shooter, hopper, drive, vision);
     } else {
       System.out.println("shooting with setpoint");
       return shootSetpoint(position);
@@ -112,6 +113,11 @@ public class AutoSubsystem extends SubsystemBase {
   public Command extendKickerbar() {
     System.out.println("extending kickerbar");
     return IntakeCommands.moveServoTo90(intake);
+  }
+
+  public Command retractKickerbar() {
+    System.out.println("extending kickerbar");
+    return IntakeCommands.moveServoTo0(intake);
   }
 
   // outtake in alliance zone
@@ -199,7 +205,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goBottomStartToShootB() {
-    return choreoPath("BottomStartToShootB", false);
+    return choreoPath("BottomStartToShootB", true);
   }
 
   public Command goTopShootertoDepot() {
@@ -247,7 +253,12 @@ public class AutoSubsystem extends SubsystemBase {
   // 8 balls we started with
   public Command bottomStartToShootOnly() {
     return Commands.sequence(
+        extendKickerbar(),
+        new WaitCommand(0.75),
         IntakeCommands.deploy(intake),
+        new WaitCommand(0.7),
+        retractKickerbar(),
+        new WaitCommand(0.4),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from bottom position to Bottom shooting position")),
@@ -279,6 +290,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command midStartToShootOnly() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
+        new WaitCommand(0.5),
         extendKickerbar(),
         new InstantCommand(
             () -> System.out.println("Moving from mid position to shooting position")),
@@ -438,12 +450,26 @@ public class AutoSubsystem extends SubsystemBase {
   // after intaking, the robot turns towards our alliance and shoots balls towards our zone
   public Command StartBottomNeutralZDump() {
     return Commands.sequence(
+        Commands.sequence(
+            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
+        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+        goBottomStartToNeutralZ(),
+        driveAndIntake(intakeNeutralZBtm()),
+        NeutralZAimAllianceBtm(),
+        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  }
+
+  public Command StartTopNeutralZShootThenIntake() {
+    return Commands.sequence(
         IntakeCommands.deploy(intake),
         extendKickerbar(),
         new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
         goTopStartToneutralZ(),
         driveAndIntake(intakeNeutralZTop()),
-        NeutralZAimAllianceBtm(),
+        NeutralZAimAllianceTop(),
         new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
         shoot(ShootingPosition.POSITION_btm).withTimeout(12),
         stop(),

@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
+import frc.robot.commands.shooter.ShooterCommands;
+import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -91,9 +93,11 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         ledSubsystem =
-            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
+            new LEDSubsystem(
+                new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
 
         driveSubsystem.setLimelightIMUCallback = (rot) -> visionSubsystem.setLimelightIMUGyro(rot);
+
         break;
 
       case SIM:
@@ -126,7 +130,8 @@ public class RobotContainer {
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
         powerSubsystem = new PowerDistributionSubsystem(intakeSubsystem, shooterSubsystem);
         ledSubsystem =
-            new LEDSubsystem(new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem);
+            new LEDSubsystem(
+                new LEDIOBlinkin(), driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
         break;
         // thinking to what
 
@@ -149,7 +154,9 @@ public class RobotContainer {
         visionSubsystem =
             new VisionSubsystem(
                 visionIO, () -> driveSimulation.getSimulatedDriveTrainPose(), driveSubsystem);
-        ledSubsystem = new LEDSubsystem(new LEDIO() {}, driveSubsystem::getPose, intakeSubsystem);
+        ledSubsystem =
+            new LEDSubsystem(
+                new LEDIO() {}, driveSubsystem::getPose, intakeSubsystem, shooterSubsystem);
         break;
     }
 
@@ -162,11 +169,6 @@ public class RobotContainer {
             intakeSubsystem,
             visionSubsystem);
 
-    // WARMUP commands
-    // FollowPathCommand.warmupCommand().schedule();
-    // PathfindingCommand.warmupCommand().schedule();
-    // Set up auto routines
-
     var chooser = AutoBuilder.buildAutoChooser();
     autoChooser = new LoggedDashboardChooser<>("/SmartDashboard/Auto Chooser", chooser);
 
@@ -178,18 +180,18 @@ public class RobotContainer {
     //        "DriveSubsystem Wheel Radius Characterization",
     //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
 
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Forward)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Quasistatic Reverse)",
-    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Forward)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    //    autoChooser.addOption(
-    //        "DriveSubsystem SysId (Dynamic Reverse)",
-    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Quasistatic Forward)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Quasistatic Reverse)",
+        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Dynamic Forward)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "DriveSubsystem SysId (Dynamic Reverse)",
+        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
     autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
@@ -198,11 +200,12 @@ public class RobotContainer {
         "StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
     autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
     autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
-    autoChooser.addOption("StartBottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
-    autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
-    autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
+    // autoChooser.addOption("StartBottomShootThenOutpost",
+    // autoSubsystem.StartBottomShootOutpost());
+    // autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
+    // autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
+    // autoChooser.addOption("StartBottomGoNeutralZoneThenIntake",
+    // autoSubsystem.StartBottomNeutralZIntake());
     autoChooser.addOption(
         "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
     autoChooser.addOption(
@@ -212,18 +215,19 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Quasistatic Forward)",
-        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Quasistatic Reverse)",
-        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Dynamic Forward)",
-        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "ShooterSubsystem SysId (Dynamic Reverse)",
-        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Quasistatic Forward)",
+    //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Quasistatic Reverse)",
+    //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Dynamic Forward)",
+    //        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "ShooterSubsystem SysId (Dynamic Reverse)",
+    //        shooterSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -273,8 +277,23 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(driveSubsystem::stopWithX, driveSubsystem));
 
+    //    driverController
+    //        .leftTrigger()
+    //        .whileTrue(
+    //            Commands.runOnce(
+    //                () -> {
+    //                  powerSubsystem.setOverride(true);
+    //                  powerSubsystem.setOverrideState(PowerState.SLOW_MODE);
+    //                }))
+    //        .whileFalse(
+    //            Commands.runOnce(
+    //                () -> {
+    //                  powerSubsystem.setOverride(false);
+    //                  powerSubsystem.setOverrideState(PowerState.FULL_DRIVE);
+    //                }));
+
     driverController
-        .a()
+        .b()
         .whileTrue(
             driverJoystickDriveAtAngle(
                 () -> AutoAimUtil.getAngleToHub(() -> driveSubsystem.getPose())));
@@ -296,6 +315,7 @@ public class RobotContainer {
                   new Pose2d(driveSubsystem.getPose().getTranslation(), flip), false);
             };
     driverController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+    driverController.rightTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
 
     // Overrides the DPD Subsystem
     driverController
@@ -316,7 +336,16 @@ public class RobotContainer {
                 },
                 intakeSubsystem));
 
-    operatorController.leftTrigger().whileTrue(IntakeCommands.intake(intakeSubsystem));
+    operatorController
+        .leftTrigger()
+        .whileTrue(
+            Commands.either(
+                IntakeCommands.runStowed(intakeSubsystem),
+                IntakeCommands.intake(intakeSubsystem),
+                () ->
+                    intakeSubsystem.getState() == IntakeState.STOWED
+                        || intakeSubsystem.getState() == IntakeState.RUN_STOWED
+                        || intakeSubsystem.getState() == IntakeState.HOLD_STOWED));
     operatorController.povLeft().whileTrue(IntakeCommands.moveServoTo0(intakeSubsystem));
     operatorController.povRight().whileTrue(IntakeCommands.moveServoTo90(intakeSubsystem));
 
@@ -328,24 +357,19 @@ public class RobotContainer {
 
     operatorController
         .rightTrigger()
-        .onTrue(
-            ShooterCommands.visionShoot(
-                visionSubsystem, driveSubsystem, shooterSubsystem, hopperSubsystem))
+        .whileTrue(
+            new VisionShootCommand(
+                shooterSubsystem, hopperSubsystem, driveSubsystem, visionSubsystem))
         .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
 
-    //    operatorController
-    //        .rightTrigger()
-    //        .whileTrue(ShooterCommands.shootAtRPS(47, shooterSubsystem, hopperSubsystem))
-    //        .onFalse(ShooterCommands.reset(shooterSubsystem, hopperSubsystem));
-
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
+
+    operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
     //     Climber Setpoint Commands
     operatorController
         .x()
         .and(operatorController.back())
         .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
-
-    operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
     // manual climb command
     new Trigger(

@@ -28,6 +28,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 
@@ -104,6 +105,7 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
     var driveConfig = constants.DriveMotorInitialConfigs;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
+    driveConfig.Audio.AllowMusicDurDisable = true;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
@@ -118,6 +120,10 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
 
     // Configure turn motor
     var turnConfig = new TalonFXConfiguration();
+
+    turnConfig.Audio.AllowMusicDurDisable = true;
+    turnConfig.Audio.BeepOnBoot = false;
+    turnConfig.Audio.BeepOnConfig = false;
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.Slot0 = constants.SteerMotorGains;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
@@ -192,6 +198,9 @@ public class ModuleIOTalonFXAnalog implements ModuleIO {
         turnAppliedVolts,
         turnCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveTalon, turnTalon);
+
+    Robot.orchestra.addInstrument(driveTalon, 0);
+    Robot.orchestra.addInstrument(turnTalon, 0);
   }
 
   @Override

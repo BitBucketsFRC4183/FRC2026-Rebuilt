@@ -2,6 +2,7 @@ package frc.robot.subsystems.hopper;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HopperConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class HopperSubsystem extends SubsystemBase {
 
@@ -14,6 +15,7 @@ public class HopperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.processInputs("Hopper", inputs);
     io.updateInputs(inputs);
   }
 

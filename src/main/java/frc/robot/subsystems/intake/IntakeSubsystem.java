@@ -67,11 +67,19 @@ public class IntakeSubsystem extends SubsystemBase {
         io.setVoltage(IntakeConstants.INTAKE_VOLTAGE);
         break;
 
+      case RUN_STOWED:
+        io.setVoltage(IntakeConstants.STOWED_VOLTAGE);
+        break;
+
       case OUTTAKING:
         io.setVoltage(IntakeConstants.OUTTAKE_VOLTAGE);
         break;
 
       case HOLD:
+        io.stopMotor();
+        break;
+
+      case HOLD_STOWED:
         io.stopMotor();
         break;
     }
@@ -122,11 +130,19 @@ public class IntakeSubsystem extends SubsystemBase {
     setState(IntakeState.INTAKING);
   }
 
+  public void runStowed() {
+    setState(IntakeState.RUN_STOWED);
+  }
+
   public void outtake() {
     setState(IntakeState.OUTTAKING);
   }
 
   public void hold() {
     setState(IntakeState.HOLD);
+  }
+
+  public void holdStowed() {
+    setState(IntakeState.HOLD_STOWED);
   }
 }

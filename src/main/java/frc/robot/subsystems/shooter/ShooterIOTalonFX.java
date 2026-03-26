@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Robot;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -25,6 +26,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // Hopefully can make the wind uptime for the flywheel faster
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    motorConfig.Audio.AllowMusicDurDisable = true;
 
     // PID and FF Configs
     Slot0Configs slot0 = motorConfig.Slot0;
@@ -43,12 +45,17 @@ public class ShooterIOTalonFX implements ShooterIO {
     currentConfig.StatorCurrentLimitEnable = true;
     currentConfig.StatorCurrentLimit = ShooterConstants.statorCurrentLimit;
 
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     flywheelMotor.getConfigurator().apply(motorConfig);
     flywheelMotor.getConfigurator().apply(currentConfig);
 
+    slot0.kP = ShooterConstants.flywheel_kP;
+    slot0.kV = ShooterConstants.flywheel_kV;
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     flywheelMotor2.getConfigurator().apply(motorConfig);
     flywheelMotor2.getConfigurator().apply(currentConfig);
 
+    motorConfig.Feedback.SensorToMechanismRatio = 1;
     motorConfig.MotorOutput.Inverted =
         !ShooterConstants.interInverted
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
@@ -56,6 +63,10 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     interMotor.getConfigurator().apply(motorConfig);
     interMotor.getConfigurator().apply(currentConfig);
+
+    Robot.orchestra.addInstrument(flywheelMotor);
+    Robot.orchestra.addInstrument(flywheelMotor2);
+    Robot.orchestra.addInstrument(interMotor);
   }
 
   @Override
@@ -88,6 +99,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
+    inputs.storedDistance = ShooterSubsystem.getStoredDistance();
     inputs.flywheelVelocity = flywheelMotor.getVelocity().getValueAsDouble();
     inputs.flywheelVelocity2 = flywheelMotor2.getVelocity().getValueAsDouble();
 

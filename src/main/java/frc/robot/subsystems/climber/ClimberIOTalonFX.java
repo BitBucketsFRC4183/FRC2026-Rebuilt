@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Robot;
 import frc.robot.constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -39,6 +40,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     climbConfig.Slot0.kS = ClimberConstants.ARM_kS;
 
     climbMotor.getConfigurator().apply(climbConfig);
+
+    Robot.orchestra.addInstrument(climbMotor);
   }
 
   @Override

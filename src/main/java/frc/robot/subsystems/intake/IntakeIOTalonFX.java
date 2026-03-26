@@ -12,6 +12,7 @@ import com.revrobotics.servohub.ServoChannel;
 import com.revrobotics.servohub.ServoChannel.ChannelId;
 import com.revrobotics.servohub.ServoHub;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import frc.robot.Robot;
 import frc.robot.constants.IntakeConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
@@ -62,6 +63,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     servoChannel2.setPowered(true);
     servoChannel2.setEnabled(true);
     setServoAngle(0.0);
+
+    Robot.orchestra.addInstrument(intakeMotor);
   }
 
   @Override
