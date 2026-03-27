@@ -390,9 +390,9 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         goToptoShooterPs(),
         shoot(ShootingPosition.POSITION_top).withTimeout(5),
-        driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
         goTopShootertoDepot(),
+        driveAndIntake(intakeAtDepot()),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }

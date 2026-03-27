@@ -202,11 +202,14 @@ public class RobotContainer {
     autoChooser.addOption("BottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
     autoChooser.addOption("MidShootThenDepot", autoSubsystem.StartMidShootDepot());
     autoChooser.addOption("TopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    autoChooser.addOption("BottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
-    autoChooser.addOption("BottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+    autoChooser.addOption(
+        "BottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
+    autoChooser.addOption(
+        "BottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
     autoChooser.addOption("TopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
     autoChooser.addOption("TopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
-    autoChooser.addOption("shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
+    autoChooser.addOption(
+        "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
     //    autoChooser.addOption(
     //        "ShooterSubsystem SysId (Quasistatic Forward)",
     //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
