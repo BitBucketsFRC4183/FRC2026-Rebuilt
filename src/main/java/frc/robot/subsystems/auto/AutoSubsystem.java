@@ -249,6 +249,7 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command OuttakePstoShootB() {
+
     return choreoPath("OuttakePstoShootB", false);
   }
 
