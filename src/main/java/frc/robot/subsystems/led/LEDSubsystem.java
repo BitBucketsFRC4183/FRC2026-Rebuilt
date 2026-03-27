@@ -93,7 +93,9 @@ public class LEDSubsystem extends SubsystemBase {
           }
           break;
         case INTAKE_STOWED:
-          if (intake.getState() == IntakeState.STOWED || intake.getState() == IntakeState.HOLD_STOWED || intake.getState() == IntakeState.RUN_STOWED) {
+          if (intake.getState() == IntakeState.STOWED
+              || intake.getState() == IntakeState.HOLD_STOWED
+              || intake.getState() == IntakeState.RUN_STOWED) {
             newState = Optional.of(candidateState);
           }
           break;
