@@ -530,7 +530,9 @@ public class AutoSubsystem extends SubsystemBase {
         IntakeCommands.intake(intake).withTimeout(2),
         goIntakeTopToAlliance(),
         OuttakePstoShootT(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(6),
+        Commands.parallel(
+            shoot(ShootingPosition.POSITION_top).withTimeout(6),
+            Commands.sequence(Commands.waitSeconds(4), IntakeCommands.stow(intake))),
         goTopShootertoDepot(),
         driveAndIntake(intakeAtDepot()),
         IntakeCommands.intake(intake).withTimeout(2),
@@ -550,7 +552,8 @@ public class AutoSubsystem extends SubsystemBase {
         goIntakeBtmToAlliance(),
         OuttakePstoShootB(),
         Commands.parallel(
-        shoot(ShootingPosition.POSITION_btm).withTimeout(6), IntakeCommands.stow(intake)),
+            shoot(ShootingPosition.POSITION_btm).withTimeout(6),
+            Commands.sequence(Commands.waitSeconds(4), IntakeCommands.stow(intake))),
         ShootBtoNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
         IntakeCommands.intake(intake).withTimeout(2),
