@@ -47,11 +47,15 @@ public class AutoAimUtil {
   // neccessary
   public static Rotation2d getAngleToHub(Supplier<Pose2d> robotPose) {
 
-    double flip = 0;
+    double flip;
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
         flip = Math.PI;
+      } else {
+        flip = 0;
       }
+    } else {
+      flip = 0;
     }
 
     double x_diff = robotPose.get().getX() - getTargetHubPose2d().getX();

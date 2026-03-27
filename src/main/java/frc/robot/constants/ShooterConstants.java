@@ -11,7 +11,7 @@ public final class ShooterConstants extends SubsystemBase {
 
   // IntermediateMotorSpeed
   // O No
-  public static final int intermediateSpeed = 20;
+  public static final int intermediateSpeed = 10;
 
   public static final int defaultPassingSpeed = 70;
   public static final int flywheelDefaultSpeed = 35;
@@ -26,14 +26,15 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double distanceOffset = 0.93345;
 
   // PID Constants for flywheel
-  public static final double flywheel_kP = 0.6343;
+  // original value is 0.17314
+  public static final double flywheel_kP = 0.17314;
   public static final double flywheel_kI = 0.0;
   public static final double flywheel_kD = 0.0;
 
   // FF for flywheel
-  public static final double flywheel_kS = 0.04199;
-  public static final double flywheel_kV = 0.11757;
-  public static final double flywheel_kA = 0.0068944;
+  public static final double flywheel_kS = 0.10935;
+  public static final double flywheel_kV = 0.11642;
+  public static final double flywheel_kA = 0.0095725;
 
   public static double statorCurrentLimit = 120;
   public static double supplyCurrentLimit = 120;

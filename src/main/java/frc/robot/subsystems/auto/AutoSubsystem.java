@@ -7,11 +7,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.commands.ClimberCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.shooter.ShooterCommands;
 import frc.robot.commands.shooter.VisionShootCommand;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -22,7 +20,7 @@ public class AutoSubsystem extends SubsystemBase {
 
   private final Drive drive;
   private final ShooterSubsystem shooter;
-  private final ClimberSubsystem climber;
+  // private final ClimberSubsystem climber;
   private final HopperSubsystem hopper;
   private final IntakeSubsystem intake;
   private final VisionSubsystem vision;
@@ -31,13 +29,13 @@ public class AutoSubsystem extends SubsystemBase {
   public AutoSubsystem(
       Drive drive,
       ShooterSubsystem shooter,
-      ClimberSubsystem climber,
+      // ClimberSubsystem climber,
       HopperSubsystem hopper,
       IntakeSubsystem intake,
       VisionSubsystem vision) {
     this.drive = drive;
     this.shooter = shooter;
-    this.climber = climber;
+    // this.climber = climber;
     this.hopper = hopper;
     this.intake = intake;
     this.vision = vision;
@@ -67,7 +65,7 @@ public class AutoSubsystem extends SubsystemBase {
     NamedCommands.registerCommand("ShootTop", shoot(ShootingPosition.POSITION_top));
     NamedCommands.registerCommand("ShootBtm", shoot(ShootingPosition.POSITION_btm));
 
-    NamedCommands.registerCommand("Climb", climb());
+    // NamedCommands.registerCommand("Climb", climb());
 
     NamedCommands.registerCommand("ExtendKickerbar", extendKickerbar());
   }
@@ -105,10 +103,10 @@ public class AutoSubsystem extends SubsystemBase {
     return ShooterCommands.reset(shooter, hopper);
   }
 
-  public Command climb() {
-    return ClimberCommands.increaseClimberLengthLevelOne(climber)
-        .beforeStarting(() -> System.out.println("Climbing!"));
-  }
+  //  public Command climb() {
+  //    return ClimberCommands.increaseClimberLengthLevelOne(climber)
+  //        .beforeStarting(() -> System.out.println("Climbing!"));
+  //  }
 
   public Command extendKickerbar() {
     System.out.println("extending kickerbar");
