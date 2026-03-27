@@ -521,6 +521,7 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
         extendKickerbar(),
+        new WaitCommand(0.5),
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goTopStartToneutralZ(),
         driveAndIntake(intakeNeutralZTop()),
@@ -539,13 +540,15 @@ public class AutoSubsystem extends SubsystemBase {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
         extendKickerbar(),
+        Commands.waitSeconds(0.5),
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goBottomStartToNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
         IntakeCommands.intake(intake).withTimeout(2),
         goIntakeBtmToAlliance(),
         OuttakePstoShootB(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
+        Commands.parallel(
+        shoot(ShootingPosition.POSITION_btm).withTimeout(6), IntakeCommands.stow(intake)),
         ShootBtoNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
         IntakeCommands.intake(intake).withTimeout(2),
