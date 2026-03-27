@@ -388,6 +388,7 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("We are moving to the depot now")),
         goMidShootertoDepot(),
         driveAndIntake(intakeAtDepot()),
+        IntakeCommands.intake(intake).withTimeout(2),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -461,7 +462,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartBottomNeutralZDump() {
     return Commands.sequence(
         Commands.sequence(
-            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
+        extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
         new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
         goBottomStartToNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
@@ -522,11 +523,13 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goTopStartToneutralZ(),
         driveAndIntake(intakeNeutralZTop()),
+        IntakeCommands.intake(intake).withTimeout(2),
         goIntakeTopToAlliance(),
         OuttakePstoShootT(),
         shoot(ShootingPosition.POSITION_top).withTimeout(6),
         goTopShootertoDepot(),
         driveAndIntake(intakeAtDepot()),
+        IntakeCommands.intake(intake).withTimeout(2),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -538,11 +541,13 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goBottomStartToNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
+        IntakeCommands.intake(intake).withTimeout(2),
         goIntakeBtmToAlliance(),
         OuttakePstoShootB(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(6),
         ShootBtoNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
+        IntakeCommands.intake(intake).withTimeout(2),
         goIntakeBtmToAlliance(),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
