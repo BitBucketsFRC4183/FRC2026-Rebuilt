@@ -248,6 +248,18 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("NeutralZAimAllianceBtm", false);
   }
 
+  public Command OuttakePstoShootB() {
+    return choreoPath("OuttakePstoShootB", false);
+  }
+
+  public Command OuttakePstoShootT() {
+    return choreoPath("OuttakePstoShootT", false);
+  }
+
+  public Command ShootBtoNeutralZ() {
+    return choreoPath("ShootBtoNeutralZ", false);
+  }
+
   // AUTOROUTINES
   // this routine starts at the bottom start position, moves to a shooting position, and shoots the
   // 8 balls we started with
@@ -390,9 +402,9 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
         goToptoShooterPs(),
         shoot(ShootingPosition.POSITION_top).withTimeout(5),
-        driveAndIntake(intakeAtDepot()),
         new InstantCommand(() -> System.out.println("we are moving to depot now")),
         goTopShootertoDepot(),
+        driveAndIntake(intakeAtDepot()),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -440,7 +452,7 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeNeutralZTop()),
         NeutralZAimAllianceTop(),
         new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        shoot(ShootingPosition.POSITION_top).withTimeout(12),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }
@@ -462,7 +474,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("routine complete")));
   }
 
-  public Command StartTopNeutralZShootThenIntake() {
+  // below is the same code for a diff routine so its commented out for now
+  /*public Command StartTopNeutralZShootThenIntake() {
     return Commands.sequence(
         IntakeCommands.deploy(intake),
         extendKickerbar(),
@@ -471,7 +484,68 @@ public class AutoSubsystem extends SubsystemBase {
         driveAndIntake(intakeNeutralZTop()),
         NeutralZAimAllianceTop(),
         new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+        shoot(ShootingPosition.POSITION_top).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  }
+  */
+  public Command StartBottomNeutralZthenShootBottom() {
+    return Commands.sequence(
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+        goBottomStartToNeutralZ(),
+        driveAndIntake(intakeNeutralZBtm()),
+        goIntakeBtmToAlliance(),
+        OuttakePstoShootB(),
         shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  }
+
+  public Command StartBottomNeutralZthenShootTop() {
+    return Commands.sequence(
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+        goTopStartToneutralZ(),
+        driveAndIntake(intakeNeutralZTop()),
+        goIntakeTopToAlliance(),
+        OuttakePstoShootT(),
+        shoot(ShootingPosition.POSITION_top).withTimeout(12),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  }
+
+  public Command TopNeutralZIntakeShootDepot() {
+    return Commands.sequence(
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+        goTopStartToneutralZ(),
+        driveAndIntake(intakeNeutralZTop()),
+        goIntakeTopToAlliance(),
+        OuttakePstoShootT(),
+        shoot(ShootingPosition.POSITION_top).withTimeout(6),
+        goTopShootertoDepot(),
+        driveAndIntake(intakeAtDepot()),
+        stop(),
+        new InstantCommand(() -> System.out.println("routine complete")));
+  }
+
+  public Command BottomNeutralZIntakeShootThenNeutralZ() {
+    return Commands.sequence(
+        IntakeCommands.deploy(intake),
+        extendKickerbar(),
+        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+        goBottomStartToNeutralZ(),
+        driveAndIntake(intakeNeutralZBtm()),
+        goIntakeBtmToAlliance(),
+        OuttakePstoShootB(),
+        shoot(ShootingPosition.POSITION_btm).withTimeout(6),
+        ShootBtoNeutralZ(),
+        driveAndIntake(intakeNeutralZBtm()),
+        goIntakeBtmToAlliance(),
         stop(),
         new InstantCommand(() -> System.out.println("routine complete")));
   }

@@ -193,29 +193,32 @@ public class RobotContainer {
         "DriveSubsystem SysId (Dynamic Reverse)",
         driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("BottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    autoChooser.addOption("TopToShootOnly", autoSubsystem.topStartToShootOnly());
+    autoChooser.addOption("MidToShootOnly", autoSubsystem.midStartToShootOnly());
+    autoChooser.addOption("BottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption("MidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
+    autoChooser.addOption("TopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
+    autoChooser.addOption("BottomShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
+    autoChooser.addOption("MidShootThenDepot", autoSubsystem.StartMidShootDepot());
+    autoChooser.addOption("TopShootThenDepot", autoSubsystem.StartTopShootDepot());
     autoChooser.addOption(
-        "StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
-    autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
-    autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
-    // autoChooser.addOption("StartBottomShootThenOutpost",
-    // autoSubsystem.StartBottomShootOutpost());
-    // autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
-    // autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    // autoChooser.addOption("StartBottomGoNeutralZoneThenIntake",
-    // autoSubsystem.StartBottomNeutralZIntake());
+        "BottomGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
     autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+        "BottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+    autoChooser.addOption("TopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
+    autoChooser.addOption("TopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
     autoChooser.addOption(
-        "StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
+        "StartBottomNeutralZthenShootBottom", autoSubsystem.StartBottomNeutralZthenShootBottom());
     autoChooser.addOption(
-        "StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
-
+        "StartBottomNeutralZthenShootTop", autoSubsystem.StartBottomNeutralZthenShootTop());
+    autoChooser.addOption(
+        "TopNeutralZIntakeShootDepot", autoSubsystem.TopNeutralZIntakeShootDepot());
+    autoChooser.addOption(
+        "BottomNeutralZIntakeShootThenNeutralZ",
+        autoSubsystem.BottomNeutralZIntakeShootThenNeutralZ());
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
-
     //    autoChooser.addOption(
     //        "ShooterSubsystem SysId (Quasistatic Forward)",
     //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
