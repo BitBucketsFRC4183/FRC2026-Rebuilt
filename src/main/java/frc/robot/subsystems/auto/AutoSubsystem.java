@@ -462,7 +462,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command StartBottomNeutralZDump() {
     return Commands.sequence(
         Commands.sequence(
-        extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
+            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
         new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
         goBottomStartToNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),

@@ -50,7 +50,7 @@ public class AutoAimUtil {
     double flip;
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-        flip = Math.PI;
+        flip = 0;
       } else {
         flip = 0;
       }
