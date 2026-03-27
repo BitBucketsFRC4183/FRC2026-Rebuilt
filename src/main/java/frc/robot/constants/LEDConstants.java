@@ -9,7 +9,9 @@ public class LEDConstants {
     SHOOTING(3, BlinkinPattern.COLOR_WAVES_PARTY_PALETTE),
     INTAKING(6, BlinkinPattern.FIRE_LARGE),
     PASSING(2, BlinkinPattern.STROBE_WHITE),
-    IDLE(9999, BlinkinPattern.TWINKLES_OCEAN_PALETTE);
+    IDLE(9999, BlinkinPattern.TWINKLES_OCEAN_PALETTE),
+    INTAKE_STOWED(8, BlinkinPattern.RAINBOW_OCEAN_PALETTE),
+    INTAKE_DEPLOYED(7, BlinkinPattern.VIOLET);
 
     private final int priority;
     private final BlinkinPattern pattern;
