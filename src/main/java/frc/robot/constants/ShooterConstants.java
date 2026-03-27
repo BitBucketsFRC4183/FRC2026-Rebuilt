@@ -21,12 +21,12 @@ public final class ShooterConstants extends SubsystemBase {
 
   // Allowed RPS offset before shooting
   // Not a perfect FF :sigh:
-  public static final double tolerance = 0.5;
+  public static final double tolerance = 0;
 
   public static final double distanceOffset = 0.93345;
 
   // PID Constants for flywheel
-  public static final double flywheel_kP = 0.16843;
+  public static final double flywheel_kP = 0.6343;
   public static final double flywheel_kI = 0.0;
   public static final double flywheel_kD = 0.0;
 
@@ -35,6 +35,6 @@ public final class ShooterConstants extends SubsystemBase {
   public static final double flywheel_kV = 0.11757;
   public static final double flywheel_kA = 0.0068944;
 
-  public static double statorCurrentLimit = 80;
-  public static double supplyCurrentLimit = 80;
+  public static double statorCurrentLimit = 120;
+  public static double supplyCurrentLimit = 120;
 }
