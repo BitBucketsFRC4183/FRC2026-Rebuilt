@@ -1,6 +1,9 @@
 package frc.robot.subsystems.auto;
 
+import static frc.robot.subsystems.auto.ChoreoPath.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,6 +19,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.vision.AutoAimUtil;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import java.util.HashMap;
 
 public class AutoSubsystem extends SubsystemBase {
 
@@ -25,6 +29,7 @@ public class AutoSubsystem extends SubsystemBase {
   private final HopperSubsystem hopper;
   private final IntakeSubsystem intake;
   private final VisionSubsystem vision;
+  private final HashMap<ChoreoPath, PathPlannerPath> loadedPaths;
   private boolean useVisionShooting = true;
 
   public AutoSubsystem(
@@ -40,6 +45,18 @@ public class AutoSubsystem extends SubsystemBase {
     this.hopper = hopper;
     this.intake = intake;
     this.vision = vision;
+
+    loadedPaths = new HashMap<>();
+    for (ChoreoPath path : ChoreoPath.values()) {
+      try {
+        loadedPaths.put(path, PathPlannerPath.fromChoreoTrajectory(path.filepath));
+      } catch (Exception e) {
+        System.err.println("Failed to load Choreo trajectory: " + path.filepath);
+        e.printStackTrace();
+      }
+    }
+
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   // Setup PathPlanner
@@ -108,10 +125,10 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   // loading autoroutines from choreo to pathplanner
-  public Command choreoPath(String trajName, boolean resetPose) {
+  public Command choreoPath(ChoreoPath trajName, boolean resetPose) {
     try {
       // Loading the path from the deploy/choreo folder
-      PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(trajName);
+      PathPlannerPath path = loadedPaths.get(trajName);
       Command followCommand = AutoBuilder.followPath(path);
 
       if (resetPose) {
@@ -136,47 +153,47 @@ public class AutoSubsystem extends SubsystemBase {
   }
 
   public Command goDepotToShootT() {
-    return choreoPath("DepotToShootT", false);
+    return choreoPath(DepotToShootT, false);
   }
 
   public Command goMidToDepot() {
-    return choreoPath("MidToDepot", true);
+    return choreoPath(MidToDepot, true);
   }
 
   public Command goTopShootertoDepot() {
-    return choreoPath("ShootTtoDepot", false);
+    return choreoPath(ShootTtoDepot, false);
   }
 
   public Command goBottomStartToNeutralZ() {
-    return choreoPath("bottomStartToneutralZ", true);
+    return choreoPath(bottomStartToneutralZ, true);
   }
 
   public Command goIntakeBtmToAlliance() {
-    return choreoPath("IntakeBtmToAlliance", false);
+    return choreoPath(IntakeBtmToAlliance, false);
   }
 
   public Command goTopStartToneutralZ() {
-    return choreoPath("topStartToneutralZ", true);
+    return choreoPath(topStartToneutralZ, true);
   }
 
   public Command goIntakeTopToAlliance() {
-    return choreoPath("IntakeToptoAlliance", false);
+    return choreoPath(IntakeToptoAlliance, false);
   }
 
   public Command intakeNeutralZBtm() {
-    return choreoPath("NeutralZBtmIntake", false);
+    return choreoPath(NeutralZBtmIntake, false);
   }
 
   public Command intakeNeutralZTop() {
-    return choreoPath("NeutralZTopIntake", false);
+    return choreoPath(NeutralZTopIntake, false);
   }
 
   public Command intakeAtDepot() {
-    return choreoPath("DepotIntake", false);
+    return choreoPath(DepotIntake, false);
   }
 
   public Command ShootBtoNeutralZ() {
-    return choreoPath("ShootBtoNeutralZ", false);
+    return choreoPath(ShootBtoNeutralZ, false);
   }
 
   public Command TopNeutralZIntakeShootDepot() {
@@ -184,9 +201,8 @@ public class AutoSubsystem extends SubsystemBase {
         deployIntake(),
         new WaitCommand(0.5),
         goTopStartToneutralZ(),
-        // stop(),
+        stop(),
         driveAndIntake(intakeNeutralZTop()),
-        // stop(),
         goIntakeTopToAlliance(),
         shoot(ShootingPosition.POSITION_top, 6),
         goTopShootertoDepot(),

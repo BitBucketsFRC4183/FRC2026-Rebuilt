@@ -222,7 +222,7 @@ public class VisionSubsystem extends SubsystemBase {
       xStd = 0.3;
       yStd = 0.3;
     }
-    
+
     //    double theta = inputs.rawStdDev[11];
 
     return Optional.of(
