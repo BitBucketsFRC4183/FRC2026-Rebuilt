@@ -527,8 +527,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goTopStartToneutralZ(),
         driveAndIntake(intakeNeutralZTop()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        goIntakeTopToAlliance(),
+        IntakeCommands.intake(intake).withTimeout(1),
+        driveAndIntake(goIntakeTopToAlliance()),
         OuttakePstoShootT(),
         Commands.parallel(
             shoot(ShootingPosition.POSITION_top).withTimeout(6),
@@ -548,8 +548,8 @@ public class AutoSubsystem extends SubsystemBase {
         new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
         goBottomStartToNeutralZ(),
         driveAndIntake(intakeNeutralZBtm()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        goIntakeBtmToAlliance(),
+        IntakeCommands.intake(intake).withTimeout(1),
+        driveAndIntake(goIntakeBtmToAlliance()),
         OuttakePstoShootB(),
         Commands.parallel(
             shoot(ShootingPosition.POSITION_btm).withTimeout(6),
