@@ -104,7 +104,7 @@ public class AutoSubsystem extends SubsystemBase {
   public Command alignToHub() {
     return DriveCommands.joystickDriveAtAngle(
             drive, () -> 0, () -> 0, () -> AutoAimUtil.getAngleToHub(drive::getPose))
-        .withTimeout(0.25);
+        .withTimeout(0.7);
   }
 
   // shooting w setpoint method
