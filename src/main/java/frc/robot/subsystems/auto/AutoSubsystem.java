@@ -224,16 +224,14 @@ public class AutoSubsystem extends SubsystemBase {
 
   public Command BottomNeutralZIntakeShootThenNeutralZ() {
     return Commands.sequence(
-        deployIntake(),
-        Commands.waitSeconds(0.5),
-        goBottomStartToNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        goIntakeBtmToAlliance(),
-        shoot(ShootingPosition.POSITION_btm, 6),
-        ShootBtoNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        goIntakeBtmToAlliance(),
-        stop());
+            deployIntake(),
+            new WaitCommand(0.5),
+            goBottomStartToNeutralZ(),
+            stop(),
+            driveAndIntake(intakeNeutralZBtm()),
+            goIntakeBtmToAlliance(),
+            shoot(ShootingPosition.POSITION_top, 6),
+            stop());
   }
 
   // AUTOROUTINES
