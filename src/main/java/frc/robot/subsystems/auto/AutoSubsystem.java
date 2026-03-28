@@ -1,7 +1,6 @@
 package frc.robot.subsystems.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -39,7 +38,6 @@ public class AutoSubsystem extends SubsystemBase {
     this.hopper = hopper;
     this.intake = intake;
     this.vision = vision;
-    registerNamedCommands();
   }
 
   // Setup PathPlanner
@@ -57,18 +55,7 @@ public class AutoSubsystem extends SubsystemBase {
     }
   }
 
-  private void registerNamedCommands() {
 
-    NamedCommands.registerCommand("Stop", stop());
-
-    NamedCommands.registerCommand("ShootMid", shoot(ShootingPosition.POSITION_mid));
-    NamedCommands.registerCommand("ShootTop", shoot(ShootingPosition.POSITION_top));
-    NamedCommands.registerCommand("ShootBtm", shoot(ShootingPosition.POSITION_btm));
-
-    // NamedCommands.registerCommand("Climb", climb());
-
-    NamedCommands.registerCommand("ExtendKickerbar", extendKickerbar());
-  }
 
   // Auto Actions
   public Command stop() {
@@ -78,56 +65,33 @@ public class AutoSubsystem extends SubsystemBase {
   // 40.89397 for bottom shooting ps
   // 31.62039 for top shooting ps
   // 32.74425 for mid shooting ps
-  public void setUseVisionShooting(boolean useVision) {
-    this.useVisionShooting = useVision;
-  }
-
   // conditional method
-  public Command shoot(ShootingPosition position) {
+  public Command shoot(ShootingPosition position, double timeSeconds) {
     if (useVisionShooting) {
-      System.out.println("shooting with vision");
-      return new VisionShootCommand(shooter, hopper, drive, vision);
+      return new VisionShootCommand(shooter, hopper, drive, vision).withTimeout(timeSeconds);
     } else {
-      System.out.println("shooting with setpoint");
-      return shootSetpoint(position);
+      return shootSetpoint(position).withTimeout(timeSeconds);
     }
   }
+
+  public Command AlignToHub() {
+    return Commands.none();
+  }
+
   // shooting w setpoint method
   public Command shootSetpoint(ShootingPosition position) {
-    System.out.println("Beginning to Shoot with Setpoint");
     return ShooterCommands.shootAtRPS(position.velocity, shooter, hopper);
   }
 
-  public Command stopshooter(ShootingPosition position) {
-    System.out.println("Beginning to Shoot");
-    return ShooterCommands.reset(shooter, hopper);
+
+  public Command deployIntake() {
+    System.out.println("Deploying Intake");
+    return Commands.sequence(
+            IntakeCommands.deploy(intake),
+            IntakeCommands.moveServoTo90(intake)
+    );
   }
 
-  //  public Command climb() {
-  //    return ClimberCommands.increaseClimberLengthLevelOne(climber)
-  //        .beforeStarting(() -> System.out.println("Climbing!"));
-  //  }
-
-  public Command extendKickerbar() {
-    System.out.println("extending kickerbar");
-    return IntakeCommands.moveServoTo90(intake);
-  }
-
-  public Command retractKickerbar() {
-    System.out.println("extending kickerbar");
-    return IntakeCommands.moveServoTo0(intake);
-  }
-
-  // outtake in alliance zone
-  private Command outtakeAtAlliance() {
-    System.out.println("dumping balls in alliance zone!");
-    return IntakeCommands.outtake(intake);
-  }
-  // momentary intake
-  private Command IntakeOnly() {
-    System.out.println("intaking at neutral zone");
-    return IntakeCommands.intake(intake);
-  }
 
   // deadline where intake stops running when traj finishes
   private Command driveAndIntake(Command pathCommand) {
@@ -162,49 +126,14 @@ public class AutoSubsystem extends SubsystemBase {
     }
   }
 
-  public Command goToptoShooterPs() {
-    return choreoPath("TopStartToShootT", true);
-  }
-
-  public Command goMidToShooterPs() {
-    return choreoPath("MidStartToShootM", true);
-  }
-
-  public Command goBottomShootertoDepot() {
-    return choreoPath("ShootBtoDepot", false);
-  }
-
-  public Command goMidShootertoDepot() {
-    return choreoPath("ShootMtoDepot", false);
-  }
-
   public Command goDepotToMid() {
     return choreoPath("DepotToMid", false);
-  }
-
-  public Command goBottomToOutpost() {
-    return choreoPath("BottomToOutpost", true);
-  }
-
-  public Command goOutpostToShootBPs() {
-    return choreoPath("OutpostToShooterB", false);
   }
 
   public Command goMidToDepot() {
     return choreoPath("MidToDepot", true);
   }
 
-  public Command goTopStartToDepot() {
-    return choreoPath("TopStartToDepot", true);
-  }
-
-  public Command goDepotToShootT() {
-    return choreoPath("DepotToShootT", false);
-  }
-
-  public Command goBottomStartToShootB() {
-    return choreoPath("BottomStartToShootB", true);
-  }
 
   public Command goTopShootertoDepot() {
     return choreoPath("ShootTtoDepot", false);
@@ -238,14 +167,6 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("DepotIntake", false);
   }
 
-  public Command NeutralZAimAllianceTop() {
-    return choreoPath("NeutralZAimAllianceTop", false);
-  }
-
-  public Command NeutralZAimAllianceBtm() {
-    return choreoPath("NeutralZAimAllianceBtm", false);
-  }
-
   public Command OuttakePstoShootB() {
 
     return choreoPath("OuttakePstoShootB", false);
@@ -259,301 +180,296 @@ public class AutoSubsystem extends SubsystemBase {
     return choreoPath("ShootBtoNeutralZ", false);
   }
 
-  // AUTOROUTINES
-  // this routine starts at the bottom start position, moves to a shooting position, and shoots the
-  // 8 balls we started with
-  public Command bottomStartToShootOnly() {
-    return Commands.sequence(
-        extendKickerbar(),
-        new WaitCommand(0.75),
-        IntakeCommands.deploy(intake),
-        new WaitCommand(0.7),
-        retractKickerbar(),
-        new WaitCommand(0.4),
-        extendKickerbar(),
-        new InstantCommand(
-            () -> System.out.println("Moving from bottom position to Bottom shooting position")),
-        goBottomStartToShootB(),
-        new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // this routine starts at the top start position, moves to a shooting position, and shoots the 8
-  // balls we started with
-  public Command topStartToShootOnly() {
-
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(
-            () -> System.out.println("Moving from top position to shooting position")),
-        goToptoShooterPs(),
-        new InstantCommand(() -> System.out.println("Reached top shooting position")),
-        shoot(ShootingPosition.POSITION_top).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // this routine starts at the middle start position, moves to a shooting position, and shoots the
-  // 8 balls we started with
-  public Command midStartToShootOnly() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        new WaitCommand(0.5),
-        extendKickerbar(),
-        new InstantCommand(
-            () -> System.out.println("Moving from mid position to shooting position")),
-        goMidToShooterPs(),
-        new InstantCommand(() -> System.out.println("Reached mid shooting position")),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-  // this routine starts at the bottom starting position, and moves directly to the outppst and
-  // waits for 3s,human
-  // player opens it, robot holds more fuel,
-  // and then the robot moves to a shooting position and shoots
-  public Command StartBottomToOutpostShoot() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
-        goBottomToOutpost(),
-        new WaitCommand(3),
-        new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
-        goOutpostToShootBPs(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("complete routine")));
-  }
-
-  // this routine starts at the middle starting position, and moves directly to the depot,intakes
-  // fuel,
-  // and then the robot moves to a shooting position and shoots
-  public Command StartMidToDepotShoot() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from mid starting ps to depot")),
-        goMidToDepot(),
-        driveAndIntake(intakeAtDepot()),
-        new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        goDepotToMid(),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // this routine starts at the top starting position, and moves directly to the depot,intakes fuel,
-  // and then the robot moves to a shooting position and shoots
-  public Command StartTopToDepotShoot() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
-        goTopStartToDepot(),
-        driveAndIntake(intakeAtDepot()),
-        new InstantCommand(() -> System.out.println("We are moving to shooting position")),
-        goDepotToShootT(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(5),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // this routine starts at the bottom starting position, moves to a shooting position, shoots, and
-  // then goes to the outpost to fuel up
-  public Command StartBottomShootOutpost() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
-        goBottomStartToShootB(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
-        new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
-        goBottomShootertoDepot(),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // this routine starts at the middle starting position, moves to a shooting position, shoots, and
-  // then goes to the depot to fuel up
-  public Command StartMidShootDepot() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
-        goMidToShooterPs(),
-        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
-        new InstantCommand(() -> System.out.println("We are moving to the depot now")),
-        goMidShootertoDepot(),
-        driveAndIntake(intakeAtDepot()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-  // this routine starts at the top starting position, moves to a shooting position, shoots, and
-  // then goes to the depot to fuel up
-  public Command StartTopShootDepot() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
-        goToptoShooterPs(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(5),
-        new InstantCommand(() -> System.out.println("we are moving to depot now")),
-        goTopShootertoDepot(),
-        driveAndIntake(intakeAtDepot()),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-  // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
-  // smh), and then intakes fuel
-  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
-  public Command StartBottomNeutralZIntake() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone")),
-        goBottomStartToNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        goIntakeBtmToAlliance(),
-        outtakeAtAlliance().withTimeout(3),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // robot starts at the top starting position, goes to the neutral zone (the Z stands for zone
-  // smh), and then intakes fuel
-  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
-  public Command StartTopNeutralZIntake() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
-        goIntakeTopToAlliance(),
-        outtakeAtAlliance().withTimeout(3),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // robot starts at the top starting position, goes to the neutral zone (the Z stands for zone
-  // smh), and then intakes fuel
-  // after intaking, the robot turns towards our alliance and shoots balls towards our zone
-  public Command StartTopNeutralZDump() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
-        NeutralZAimAllianceTop(),
-        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-        shoot(ShootingPosition.POSITION_top).withTimeout(12),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
-  // smh), and then intakes fuel
-  // after intaking, the robot turns towards our alliance and shoots balls towards our zone
-  public Command StartBottomNeutralZDump() {
-    return Commands.sequence(
-        Commands.sequence(
-            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
-        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        goBottomStartToNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        NeutralZAimAllianceBtm(),
-        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  // below is the same code for a diff routine so its commented out for now
-  /*public Command StartTopNeutralZShootThenIntake() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
-        NeutralZAimAllianceTop(),
-        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
-        shoot(ShootingPosition.POSITION_top).withTimeout(12),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-  */
-  public Command StartBottomNeutralZthenShootBottom() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
-        goBottomStartToNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        goIntakeBtmToAlliance(),
-        OuttakePstoShootB(),
-        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
-  public Command StartBottomNeutralZthenShootTop() {
-    return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
-        goIntakeTopToAlliance(),
-        OuttakePstoShootT(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(12),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
-  }
-
   public Command TopNeutralZIntakeShootDepot() {
     return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        new WaitCommand(0.5),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
-        goTopStartToneutralZ(),
-        driveAndIntake(intakeNeutralZTop()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        goIntakeTopToAlliance(),
-        OuttakePstoShootT(),
-        shoot(ShootingPosition.POSITION_top).withTimeout(6),
-        goTopShootertoDepot(),
-        driveAndIntake(intakeAtDepot()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
+            deployIntake(),
+            new WaitCommand(0.5),
+            goTopStartToneutralZ(),
+            driveAndIntake(intakeNeutralZTop()),
+            IntakeCommands.intake(intake).withTimeout(2),
+            goIntakeTopToAlliance(),
+            OuttakePstoShootT(),
+            shoot(ShootingPosition.POSITION_top).withTimeout(6),
+            goTopShootertoDepot(),
+            driveAndIntake(intakeAtDepot()),
+            IntakeCommands.intake(intake).withTimeout(2),
+            stop());
+  }
+
+  public Command StartMidToDepotShoot() {
+    return Commands.sequence(
+            deployIntake(),
+            goMidToDepot(),
+            driveAndIntake(intakeAtDepot()),
+            goDepotToMid(),
+            shoot(ShootingPosition.POSITION_mid).withTimeout(5),
+            stop());
   }
 
   public Command BottomNeutralZIntakeShootThenNeutralZ() {
     return Commands.sequence(
-        IntakeCommands.deploy(intake),
-        extendKickerbar(),
-        Commands.waitSeconds(0.5),
-        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
-        goBottomStartToNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        goIntakeBtmToAlliance(),
-        OuttakePstoShootB(),
-        Commands.parallel(
-        shoot(ShootingPosition.POSITION_btm).withTimeout(6), IntakeCommands.stow(intake)),
-        ShootBtoNeutralZ(),
-        driveAndIntake(intakeNeutralZBtm()),
-        IntakeCommands.intake(intake).withTimeout(2),
-        goIntakeBtmToAlliance(),
-        stop(),
-        new InstantCommand(() -> System.out.println("routine complete")));
+            deployIntake(),
+            Commands.waitSeconds(0.5),
+            goBottomStartToNeutralZ(),
+            driveAndIntake(intakeNeutralZBtm()),
+            IntakeCommands.intake(intake).withTimeout(2),
+            goIntakeBtmToAlliance(),
+            OuttakePstoShootB(),
+            Commands.parallel(
+                    shoot(ShootingPosition.POSITION_btm).withTimeout(6), IntakeCommands.stow(intake)),
+            ShootBtoNeutralZ(),
+            driveAndIntake(intakeNeutralZBtm()),
+            IntakeCommands.intake(intake).withTimeout(2),
+            goIntakeBtmToAlliance(),
+            stop()
+            );
   }
+
+  // AUTOROUTINES
+  // this routine starts at the bottom start position, moves to a shooting position, and shoots the
+  // 8 balls we started with
+//  public Command bottomStartToShootOnly() {
+//    return Commands.sequence(
+//        extendKickerbar(),
+//        new WaitCommand(0.75),
+//        IntakeCommands.deploy(intake),
+//        new WaitCommand(0.7),
+//        retractKickerbar(),
+//        new WaitCommand(0.4),
+//        extendKickerbar(),
+//        new InstantCommand(
+//            () -> System.out.println("Moving from bottom position to Bottom shooting position")),
+//        goBottomStartToShootB(),
+//        new InstantCommand(() -> System.out.println("Reached bottom shooting position")),
+//        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // this routine starts at the top start position, moves to a shooting position, and shoots the 8
+//  // balls we started with
+//  public Command topStartToShootOnly() {
+//
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(
+//            () -> System.out.println("Moving from top position to shooting position")),
+//        goToptoShooterPs(),
+//        new InstantCommand(() -> System.out.println("Reached top shooting position")),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(5),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // this routine starts at the middle start position, moves to a shooting position, and shoots the
+//  // 8 balls we started with
+//  public Command midStartToShootOnly() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        new WaitCommand(0.5),
+//        extendKickerbar(),
+//        new InstantCommand(
+//            () -> System.out.println("Moving from mid position to shooting position")),
+//        goMidToShooterPs(),
+//        new InstantCommand(() -> System.out.println("Reached mid shooting position")),
+//        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//  // this routine starts at the bottom starting position, and moves directly to the outppst and
+//  // waits for 3s,human
+//  // player opens it, robot holds more fuel,
+//  // and then the robot moves to a shooting position and shoots
+//  public Command StartBottomToOutpostShoot() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from bottom start ps to outpost")),
+//        goBottomToOutpost(),
+//        new WaitCommand(3),
+//        new InstantCommand(() -> System.out.println("Moving to Shooter B Position")),
+//        goOutpostToShootBPs(),
+//        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("complete routine")));
+//  }
+
+  // this routine starts at the middle starting position, and moves directly to the depot,intakes
+  // fuel,
+  // and then the robot moves to a shooting position and shoots
+
+
+//  // this routine starts at the top starting position, and moves directly to the depot,intakes fuel,
+//  // and then the robot moves to a shooting position and shoots
+//  public Command StartTopToDepotShoot() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from top starting ps to depot")),
+//        goTopStartToDepot(),
+//        driveAndIntake(intakeAtDepot()),
+//        new InstantCommand(() -> System.out.println("We are moving to shooting position")),
+//        goDepotToShootT(),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(5),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // this routine starts at the bottom starting position, moves to a shooting position, shoots, and
+//  // then goes to the outpost to fuel up
+//  public Command StartBottomShootOutpost() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from bottom start to shoot ps")),
+//        goBottomStartToShootB(),
+//        shoot(ShootingPosition.POSITION_btm).withTimeout(5),
+//        new InstantCommand(() -> System.out.println("We are moving to the outpost now")),
+//        goBottomShootertoDepot(),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // this routine starts at the middle starting position, moves to a shooting position, shoots, and
+//  // then goes to the depot to fuel up
+//  public Command StartMidShootDepot() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from mid start to shooting ps")),
+//        goMidToShooterPs(),
+//        shoot(ShootingPosition.POSITION_mid).withTimeout(5),
+//        new InstantCommand(() -> System.out.println("We are moving to the depot now")),
+//        goMidShootertoDepot(),
+//        driveAndIntake(intakeAtDepot()),
+//        IntakeCommands.intake(intake).withTimeout(2),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//  // this routine starts at the top starting position, moves to a shooting position, shoots, and
+//  // then goes to the depot to fuel up
+//  public Command StartTopShootDepot() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from top start to shooting ps")),
+//        goToptoShooterPs(),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(5),
+//        new InstantCommand(() -> System.out.println("we are moving to depot now")),
+//        goTopShootertoDepot(),
+//        driveAndIntake(intakeAtDepot()),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//  // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
+//  // smh), and then intakes fuel
+//  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
+//  public Command StartBottomNeutralZIntake() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone")),
+//        goBottomStartToNeutralZ(),
+//        driveAndIntake(intakeNeutralZBtm()),
+//        goIntakeBtmToAlliance(),
+//        outtakeAtAlliance().withTimeout(3),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // robot starts at the top starting position, goes to the neutral zone (the Z stands for zone
+//  // smh), and then intakes fuel
+//  // after intaking, the robot comes back into the alliance zone, and outtakes the balls
+//  public Command StartTopNeutralZIntake() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+//        goTopStartToneutralZ(),
+//        driveAndIntake(intakeNeutralZTop()),
+//        goIntakeTopToAlliance(),
+//        outtakeAtAlliance().withTimeout(3),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // robot starts at the top starting position, goes to the neutral zone (the Z stands for zone
+//  // smh), and then intakes fuel
+//  // after intaking, the robot turns towards our alliance and shoots balls towards our zone
+//  public Command StartTopNeutralZDump() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+//        goTopStartToneutralZ(),
+//        driveAndIntake(intakeNeutralZTop()),
+//        NeutralZAimAllianceTop(),
+//        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(12),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // robot starts at the bottom starting position, goes to the neutral zone (the Z stands for zone
+//  // smh), and then intakes fuel
+//  // after intaking, the robot turns towards our alliance and shoots balls towards our zone
+//  public Command StartBottomNeutralZDump() {
+//    return Commands.sequence(
+//        Commands.sequence(
+//            extendKickerbar(), Commands.waitSeconds(0.1), IntakeCommands.deploy(intake)),
+//        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+//        goBottomStartToNeutralZ(),
+//        driveAndIntake(intakeNeutralZBtm()),
+//        NeutralZAimAllianceBtm(),
+//        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+//        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  // below is the same code for a diff routine so its commented out for now
+//  /*public Command StartTopNeutralZShootThenIntake() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from top start to neutral zone")),
+//        goTopStartToneutralZ(),
+//        driveAndIntake(intakeNeutralZTop()),
+//        NeutralZAimAllianceTop(),
+//        new InstantCommand(() -> System.out.println("We are now shooting towards alliance")),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(12),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//  */
+//  public Command StartBottomNeutralZthenShootBottom() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+//        goBottomStartToNeutralZ(),
+//        driveAndIntake(intakeNeutralZBtm()),
+//        goIntakeBtmToAlliance(),
+//        OuttakePstoShootB(),
+//        shoot(ShootingPosition.POSITION_btm).withTimeout(12),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+//
+//  public Command StartBottomNeutralZthenShootTop() {
+//    return Commands.sequence(
+//        IntakeCommands.deploy(intake),
+//        extendKickerbar(),
+//        new InstantCommand(() -> System.out.println("Moving from bottom start to neutral zone ")),
+//        goTopStartToneutralZ(),
+//        driveAndIntake(intakeNeutralZTop()),
+//        goIntakeTopToAlliance(),
+//        OuttakePstoShootT(),
+//        shoot(ShootingPosition.POSITION_top).withTimeout(12),
+//        stop(),
+//        new InstantCommand(() -> System.out.println("routine complete")));
+//  }
+
+
 }
