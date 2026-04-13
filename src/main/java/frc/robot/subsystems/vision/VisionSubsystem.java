@@ -212,8 +212,17 @@ public class VisionSubsystem extends SubsystemBase {
       return Optional.empty();
     }
 
-    double xStd = 0.3;
-    double yStd = 0.3;
+    double xStd;
+    double yStd;
+
+    if (DriverStation.isAutonomous()) {
+      xStd = 0.8;
+      yStd = 0.8;
+    } else {
+      xStd = 0.3;
+      yStd = 0.3;
+    }
+
     //    double theta = inputs.rawStdDev[11];
 
     return Optional.of(

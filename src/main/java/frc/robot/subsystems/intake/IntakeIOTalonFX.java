@@ -36,9 +36,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
     CurrentLimitsConfigs currentConfigs = motorConfig.CurrentLimits;
-    currentConfigs.SupplyCurrentLimitEnable = true;
+    currentConfigs.SupplyCurrentLimitEnable = false;
     currentConfigs.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT;
-    currentConfigs.StatorCurrentLimitEnable = true;
+    currentConfigs.StatorCurrentLimitEnable = false;
     currentConfigs.StatorCurrentLimit = STATOR_CURRENT_LIMIT;
 
     intakeMotor.getConfigurator().apply(motorConfig);

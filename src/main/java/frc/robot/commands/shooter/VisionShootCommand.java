@@ -20,8 +20,6 @@ public class VisionShootCommand extends Command {
     this.drive = drive;
     this.vision = vision;
     addRequirements(hopper);
-    addRequirements(drive);
-    addRequirements(vision);
     addRequirements(shooter);
   }
 

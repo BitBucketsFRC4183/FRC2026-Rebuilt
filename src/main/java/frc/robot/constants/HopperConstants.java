@@ -8,7 +8,7 @@ public final class HopperConstants {
   public static final int HOPPER_CONVEYOR_MOTOR_CAN_ID = 13;
 
   // Motor inversion
-  public static final boolean MOTOR_INVERTED = false;
+  public static final boolean MOTOR_INVERTED = true;
 
   // Percent outputs
   private static final double percent = 70;

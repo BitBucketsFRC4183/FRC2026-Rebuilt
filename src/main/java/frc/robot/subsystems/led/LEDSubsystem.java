@@ -92,6 +92,18 @@ public class LEDSubsystem extends SubsystemBase {
             newState = Optional.of(candidateState);
           }
           break;
+        case INTAKE_STOWED:
+          if (intake.getState() == IntakeState.STOWED
+              || intake.getState() == IntakeState.HOLD_STOWED
+              || intake.getState() == IntakeState.RUN_STOWED) {
+            newState = Optional.of(candidateState);
+          }
+          break;
+        case INTAKE_DEPLOYED:
+          if (intake.getState() == IntakeState.DEPLOYED || intake.getState() == IntakeState.HOLD) {
+            newState = Optional.of(candidateState);
+          }
+          break;
       }
     }
 

@@ -17,17 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.commands.shooter.ShooterCommands;
 import frc.robot.commands.shooter.VisionShootCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.auto.AutoSubsystem;
-import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
-import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.hopper.*;
 import frc.robot.subsystems.intake.*;
@@ -60,8 +54,8 @@ public class RobotContainer {
   private VisionIO visionIO;
 
   // Added missing subsystem fields
-  private ClimberIO climberIO;
-  private ClimberSubsystem climberSubsystem;
+  //  private ClimberIO climberIO;
+  //  private ClimberSubsystem climberSubsystem;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -87,7 +81,7 @@ public class RobotContainer {
                 () -> driveSubsystem.poseEstimator.getEstimatedPosition(),
                 driveSubsystem);
 
-        climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
+        // climberSubsystem = new ClimberSubsystem(new ClimberIOTalonFX());
         intakeSubsystem = new IntakeSubsystem(new IntakeIOTalonFX());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
@@ -123,8 +117,8 @@ public class RobotContainer {
                 () -> driveSimulation.getSimulatedDriveTrainPose(),
                 driveSubsystem);
 
-        climberIO = new ClimberIOSim();
-        climberSubsystem = new ClimberSubsystem(climberIO);
+        //        climberIO = new ClimberIOSim();
+        //        climberSubsystem = new ClimberSubsystem(climberIO);
         intakeSubsystem = new IntakeSubsystem(new IntakeIOSim());
         shooterSubsystem = new ShooterSubsystem(new ShooterIOTalonFX());
         hopperSubsystem = new HopperSubsystem(new HopperIOTalonFX());
@@ -146,7 +140,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 (pose) -> {});
 
-        climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
+        // climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
         intakeSubsystem = new IntakeSubsystem(new IntakeIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIO() {});
         hopperSubsystem = new HopperSubsystem(new HopperIO() {});
@@ -164,7 +158,7 @@ public class RobotContainer {
         new AutoSubsystem(
             driveSubsystem,
             shooterSubsystem,
-            climberSubsystem,
+            // climberSubsystem,
             hopperSubsystem,
             intakeSubsystem,
             visionSubsystem);
@@ -180,42 +174,49 @@ public class RobotContainer {
     //        "DriveSubsystem Wheel Radius Characterization",
     //        DriveCommands.wheelRadiusCharacterization(driveSubsystem));
 
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Forward)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Quasistatic Reverse)",
-        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Forward)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "DriveSubsystem SysId (Dynamic Reverse)",
-        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Quasistatic Forward)",
+    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Quasistatic Reverse)",
+    //        driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Dynamic Forward)",
+    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //    autoChooser.addOption(
+    //        "DriveSubsystem SysId (Dynamic Reverse)",
+    //        driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption("StartBottomToShootOnly", autoSubsystem.bottomStartToShootOnly());
-    autoChooser.addOption("StartTopToShootOnly", autoSubsystem.topStartToShootOnly());
-    autoChooser.addOption("StartMidToShootOnly", autoSubsystem.midStartToShootOnly());
+    //    autoChooser.addOption("RightToShootOnly", autoSubsystem.bottomStartToShootOnly());
+    //    autoChooser.addOption("LeftToShootOnly", autoSubsystem.topStartToShootOnly());
+    //    autoChooser.addOption("MidToShootOnly", autoSubsystem.midStartToShootOnly());
+    //    autoChooser.addOption("RightToOutpostThenShoot",
+    // autoSubsystem.StartBottomToOutpostShoot());
+    autoChooser.addOption("[IDBO]MidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
+    //    autoChooser.addOption("LeftToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
+    //    autoChooser.addOption("RightShootThenOutpost", autoSubsystem.StartBottomShootOutpost());
+    //    autoChooser.addOption("MidShootThenDepot", autoSubsystem.StartMidShootDepot());
+    //    autoChooser.addOption("LeftShootThenDepot", autoSubsystem.StartTopShootDepot());
+    //    autoChooser.addOption(
+    //        "RightGoNeutralZoneThenIntake", autoSubsystem.StartBottomNeutralZIntake());
+    //    autoChooser.addOption(
+    //        "RightGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
+    //    autoChooser.addOption("LeftGoNeutralZoneThenHopperDump",
+    // autoSubsystem.StartTopNeutralZDump());
+    //    autoChooser.addOption("LeftGoNeutralZoneThenIntake",
+    // autoSubsystem.StartTopNeutralZIntake());
+    //    autoChooser.addOption(
+    //        "StartRightNeutralZthenShootBottom",
+    // autoSubsystem.StartBottomNeutralZthenShootBottom());
+    //    autoChooser.addOption(
+    //        "StartRightNeutralZthenShootTop", autoSubsystem.StartBottomNeutralZthenShootTop());
     autoChooser.addOption(
-        "StartBottomToOutpostThenShoot", autoSubsystem.StartBottomToOutpostShoot());
-    autoChooser.addOption("StartMidToDepotThenShoot", autoSubsystem.StartMidToDepotShoot());
-    autoChooser.addOption("StartTopToDepotThenShoot", autoSubsystem.StartTopToDepotShoot());
-    // autoChooser.addOption("StartBottomShootThenOutpost",
-    // autoSubsystem.StartBottomShootOutpost());
-    // autoChooser.addOption("StartMidShootThenDepot", autoSubsystem.StartMidShootDepot());
-    // autoChooser.addOption("StartTopShootThenDepot", autoSubsystem.StartTopShootDepot());
-    // autoChooser.addOption("StartBottomGoNeutralZoneThenIntake",
-    // autoSubsystem.StartBottomNeutralZIntake());
+        "[IDBO]LeftNeutralZIntakeShootDepot", autoSubsystem.TopNeutralZIntakeShootDepot());
     autoChooser.addOption(
-        "StartBottomGoNeutralZoneThenHopperDump", autoSubsystem.StartBottomNeutralZDump());
-    autoChooser.addOption(
-        "StartTopGoNeutralZoneThenHopperDump", autoSubsystem.StartTopNeutralZDump());
-    autoChooser.addOption(
-        "StartTopGoNeutralZoneThenIntake", autoSubsystem.StartTopNeutralZIntake());
-
+        "[IDBO]RightNeutralZIntakeShootThenNeutralZ",
+        autoSubsystem.BottomNeutralZIntakeShootThenNeutralZ());
     autoChooser.addOption(
         "shoot", ShooterCommands.shootAtRPS(48, shooterSubsystem, hopperSubsystem));
-
     //    autoChooser.addOption(
     //        "ShooterSubsystem SysId (Quasistatic Forward)",
     //        shooterSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -299,8 +300,8 @@ public class RobotContainer {
                 () -> AutoAimUtil.getAngleToHub(() -> driveSubsystem.getPose())));
 
     // temp only
-    // driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-    // driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+    //    driverController.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    //    driverController.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
     // Reset gyro / odometry
     final Runnable resetOdometry =
@@ -366,17 +367,18 @@ public class RobotContainer {
 
     operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
     //     Climber Setpoint Commands
-    operatorController
-        .x()
-        .and(operatorController.back())
-        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
+    //    operatorController
+    //        .x()
+    //        .and(operatorController.back())
+    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
 
     // manual climb command
-    new Trigger(
-            () ->
-                Math.abs(operatorController.getLeftY()) > 0.1
-                    && (operatorController.povDown()).getAsBoolean())
-        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem, operatorController::getLeftY));
+    //    new Trigger(
+    //            () ->
+    //                Math.abs(operatorController.getLeftY()) > 0.1
+    //                    && (operatorController.povDown()).getAsBoolean())
+    //        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem,
+    // operatorController::getLeftY));
   }
 
   public Command driverJoystickDriveAtAngle(Supplier<Rotation2d> rotation) {
