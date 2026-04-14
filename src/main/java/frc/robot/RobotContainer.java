@@ -366,19 +366,6 @@ public class RobotContainer {
     operatorController.b().whileTrue(IntakeCommands.outtake(intakeSubsystem));
 
     operatorController.y().onTrue(ShooterCommands.switchPassingMode(shooterSubsystem));
-    //     Climber Setpoint Commands
-    //    operatorController
-    //        .x()
-    //        .and(operatorController.back())
-    //        .onTrue(ClimberCommands.climbToLevelOne(climberSubsystem, driveSubsystem));
-
-    // manual climb command
-    //    new Trigger(
-    //            () ->
-    //                Math.abs(operatorController.getLeftY()) > 0.1
-    //                    && (operatorController.povDown()).getAsBoolean())
-    //        .whileTrue(ClimberCommands.joystickClimb(climberSubsystem,
-    // operatorController::getLeftY));
   }
 
   public Command driverJoystickDriveAtAngle(Supplier<Rotation2d> rotation) {
